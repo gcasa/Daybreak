@@ -1,0 +1,11 @@
+/build/
+/obj/
+*.d
+*.o
+/Documentation/API/
+__pycache__/
+.DS_Store
+*.o
+*.app
+.DS_Store
+build
