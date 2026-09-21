@@ -1,0 +1,165 @@
+<?xml version="1.0"?>
+<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 1.0.4//EN" "http://www.gnustep.org/gsdoc-1_0_4.dtd">
+<gsdoc base="DBProcesses" stylesheeturl="default-styles.css">
+  <head>
+    <title>Mesa process scheduling</title>
+    <author name="Daybreak contributors">
+    </author>
+    <date>Generated at 2026-09-21 UTC</date>
+    <copy>2017, Dr. Hans-Walter Latz. See COPYING.</copy>
+  </head>
+  <body>
+    <front><contents /></front>
+    <chapter>
+      <heading>
+        Software documentation for the DBProcessor(Processes)
+        category
+      </heading>
+      <category name="Processes" class="DBProcessor">
+        <declared>DBProcesses.h</declared>
+        <desc>
+          Per-processor priority queues, monitors,
+          interrupts, faults and timeouts. Call these
+          methods on the same thread as instruction execution.
+        </desc>
+        <method type="void">
+          <sel>cleanupCondition:</sel>
+          <arg type="uint32_t">condition</arg>
+          <desc>
+            Remove timeout cleanup links from a
+            <var>condition</var> queue.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>enterFailed:</sel>
+          <arg type="uint32_t">monitor</arg>
+          <desc>
+            Queue the current process on a locked
+            <var>monitor</var> and reschedule.
+          </desc>
+        </method>
+        <method type="BOOL">
+          <sel>exitMonitor:</sel>
+          <arg type="uint32_t">monitor</arg>
+          <desc>
+            Unlock a <var>monitor</var>, returning
+            <code>YES</code> when a waiting process became
+            ready.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>fault:</sel>
+          <arg type="unsigned int">index</arg>
+          <sel>parameter:</sel>
+          <arg type="uint32_t">value</arg>
+          <sel>words:</sel>
+          <arg type="unsigned int">words</arg>
+          <desc>
+            Queue a fault, notify its handler, and save one or
+            two parameter <var>words</var>.
+          </desc>
+        </method>
+        <method type="uint16_t">
+          <sel>loadProcess</sel>
+          <desc>
+            Restore the selected process and return its local
+            frame.
+          </desc>
+        </method>
+        <method type="BOOL">
+          <sel>notifyWakeup:</sel>
+          <arg type="uint32_t">condition</arg>
+          <desc>
+            Notify a device <var>condition</var>, remembering a
+            wakeup when no process waits.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>pollProcesses</sel>
+          <desc>
+            Deliver enabled interrupts and advance the timeout
+            clock between instructions.
+          </desc>
+        </method>
+        <method type="BOOL">
+          <sel>processOpcode:</sel>
+          <arg type="uint8_t">opcode</arg>
+          <sel>escape:</sel>
+          <arg type="BOOL">escape</arg>
+          <sel>execute:</sel>
+          <arg type="BOOL">execute</arg>
+          <desc>
+            Dispatch chapter 10 instructions; execute=NO only
+            queries coverage.
+          </desc>
+        </method>
+        <method type="uint16_t">
+          <sel>processWord:</sel>
+          <arg type="uint16_t">process</arg>
+          <sel>offset:</sel>
+          <arg type="unsigned int">offset</arg>
+          <desc>
+            Read a word in a <var>process</var> state block,
+            validating the index.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>requestInterrupt:</sel>
+          <arg type="uint16_t">mask</arg>
+          <desc>
+            OR device interrupt bits into the wakeup register.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>requeue:</sel>
+          <arg type="uint32_t">source</arg>
+          <sel>to:</sel>
+          <arg type="uint32_t">destination</arg>
+          <sel>process:</sel>
+          <arg type="uint16_t">process</arg>
+          <desc>
+            Move a <var>process</var> between circular priority
+            queues. A zero <var>source</var> removes a
+            timed-out waiter and preserves a cleanup link.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>reschedule:</sel>
+          <arg type="BOOL">preemption</arg>
+          <desc>
+            Select the highest-priority runnable process, saving
+            the current context. Preemption additionally saves the
+            evaluation stack.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>saveProcess:</sel>
+          <arg type="BOOL">preemption</arg>
+          <desc>
+            Save the current process context for a voluntary or
+            preemptive switch.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>setProcessWord:</sel>
+          <arg type="uint16_t">process</arg>
+          <sel>offset:</sel>
+          <arg type="unsigned int">offset</arg>
+          <sel>value:</sel>
+          <arg type="uint16_t">value</arg>
+          <desc>
+            Update a word in a <var>process</var> state block.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>wakeHead:</sel>
+          <arg type="uint32_t">condition</arg>
+          <desc>
+            Wake the highest-priority waiter. The
+            <var>condition</var> must not be empty.
+          </desc>
+        </method>
+      </category>
+    </chapter>
+  </body>
+</gsdoc>

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Restartable Mesa block operations</title>
+<meta http-equiv="Content-Style-Type" content="text/css"/>
+<link rel="stylesheet" type="text/css" href="default-styles.css" media="screen" title="Normal" />
+  </head>
+  <body>
+    <div class="content-bar">
+      <div class="content-bar-top">
+        <div class="content-bar-top-body">
+          <div class="content-bar-top-body-title">Daybreak</div><br />
+        </div>
+      </div>
+      <div class="content-bar-bottom">
+        <div class="content-bar-bottom-body">
+        </div>
+      </div>
+    </div>
+    <div class="content-pane">
+      <div class="content-pane-body">
+        <h1><a name="title$DBBlocks">Restartable Mesa block operations</a></h1>
+        <h3>Authors</h3>
+        <dl>
+          <dt>Daybreak contributors</dt>
+          <dd>
+          </dd>
+        </dl>
+        <p><b>Date:</b> Generated at 2026-09-21 UTC</p>
+        <p><b>Copyright:</b> (C) 2017, Dr. Hans-Walter Latz. See COPYING.</p>
+
+            <div>
+        </div>
+
+              <h1><a name="001000000000">
+        Software documentation for the DBProcessor(Blocks)
+        category
+      </a></h1>
+        <h2>DBProcessor(<a name="category$DBProcessor(Blocks)">Blocks</a>)</h2>
+        <blockquote class="declared">
+          <dl>
+            <dt><b>Declared in:</b></dt>
+            <dd>DBBlocks.h</dd>
+          </dl>
+        </blockquote>
+        <div class="desc">
+
+          Restartable word and byte transfers, comparisons
+          and checksums.
+
+        </div>
+        <p class="global_method_index">
+        </p>
+        <hr class="section-separator">
+<div class="method">
+        <h3><a name="method$DBProcessor(Blocks)-bitBlt$">bitBlt:&nbsp;</a></h3>
+        - (void) <b>bitBlt:</b> (uint8_t)opcode;<br />
+        <div class="desc">
+
+            Execute one monochrome BITBLT, COLORBLT or BITBLTX
+            scanline, retaining independent continuation
+            state across process switches and page faults.
+
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBProcessor(Blocks)-blockOpcode$escape$execute$">blockOpcode:&nbsp;escape:&nbsp;execute:&nbsp;</a></h3>
+        - (BOOL) <b>blockOpcode:</b> (uint8_t)opcode<b> escape:</b> (BOOL)escape<b> execute:</b> (BOOL)execute;<br />
+        <div class="desc">
+
+            Execute one unit of a block operation and leave
+            continuation operands on the stack when more
+            work remains. This bounds interrupt latency and
+            preserves progress across page faults. execute=NO
+            queries coverage.
+
+        </div>
+        <hr class="method-separator">
+</div>
+        <br />
+    </div>
+  </div>
+  </body>
+</html>

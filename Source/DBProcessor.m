@@ -1,6 +1,8 @@
 /* Copyright (c) 2017, Dr. Hans-Walter Latz.  See COPYING. */
 #import "DBProcessorPrivate.h"
 #include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 @implementation DBProcessor
 - (id) initWithMemory: (DBMemory *)memory post40: (BOOL)post40
@@ -23,6 +25,7 @@
 }
 - (void) dealloc
 {
+  [_bitBlts release];
   [_memory release];
   [super dealloc];
 }
@@ -37,6 +40,13 @@
 - (void) reset
 {
   memset (&_state, 0, sizeof (_state));
+  _state.WDC = _state.PTC = 1;
+  _state.running = YES;
+  _guestTraps = NO;
+  [_bitBlts removeAllObjects];
+  _nextBitBlt = 0;
+  [self setIntervalTimer: 0];
+  _lastPulse = 0;
 }
 - (void) push: (uint16_t)value
 {
@@ -79,28 +89,50 @@
 - (void) step
 {
   DBProcessorState saved = _state;
+  volatile uint8_t opcode = 0;
   _state.savedPC = _state.PC;
+  _state.savedSP = _state.SP;
   NS_DURING
-  uint8_t opcode = [self nextCodeByte];
+  opcode = [self nextCodeByte];
   BOOL escape = opcode == 0xf8 || opcode == 0xf9;
   if (escape)
     opcode = [self nextCodeByte];
   if (![self dispatch: opcode escape: escape execute: YES])
-    [NSException raise: escape ? @"DBEscapeOpcodeTrap" : @"DBOpcodeTrap"
-                format: @"Unsupported %@ opcode 0x%02x at CB=%08x PC=%04x",
-                       escape ? @"escape" : @"primary", opcode, _state.CB,
-                       _state.savedPC];
+    {
+      if (getenv ("DAYBREAK_TRACE") != NULL
+          && !(escape
+               && (opcode == 0x2c || (opcode >= 0x45 && opcode <= 0x4f))))
+        fprintf (stderr, "unimplemented %s %02x CB=%x PC=%x\n",
+                 escape ? "ESC" : "OP", opcode, _state.CB, _state.savedPC);
+      [NSException raise: escape ? @"DBEscapeOpcodeTrap" : @"DBOpcodeTrap"
+                  format: @"Unsupported %@ opcode 0x%02x at CB=%08x PC=%04x",
+                         escape ? @"escape" : @"primary", opcode, _state.CB,
+                         _state.savedPC];
+    }
   _state.instructions++;
   NS_HANDLER
-  _state = saved;
-  [localException raise];
+  if (![[localException name] isEqual: @"DBMesaAbort"])
+    {
+      if (!_guestTraps)
+        {
+          _state = saved;
+          [localException raise];
+        }
+      [self dispatchException: localException opcode: opcode];
+    }
   NS_ENDHANDLER
 }
 - (void) runForInstructions: (uint32_t)count
 {
   uint32_t i;
   for (i = 0; i < count; i++)
-    [self step];
+    {
+      if (_guestTraps)
+        [self pollProcesses];
+      if (!_state.running)
+        break;
+      [self step];
+    }
 }
 - (BOOL) supportsOpcode: (uint8_t)opcode escape: (BOOL)escape
 {
@@ -195,6 +227,10 @@
 }
 - (BOOL) dispatch: (uint8_t)opcode escape: (BOOL)escape execute: (BOOL)execute
 {
+  if ([self controlOpcode: opcode escape: escape execute: execute] ||
+      [self blockOpcode: opcode escape: escape execute: execute] ||
+      [self processOpcode: opcode escape: escape execute: execute])
+    return YES;
 #include "DBInstructionDispatch.inc"
   return NO;
 }

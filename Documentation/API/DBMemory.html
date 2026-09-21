@@ -27,7 +27,7 @@
           <dd>
           </dd>
         </dl>
-        <p><b>Date:</b> Generated at 2026-09-20 UTC</p>
+        <p><b>Date:</b> Generated at 2026-09-21 UTC</p>
         <blockquote>
           
       Word-addressed Mesa memory and page maps.
@@ -197,6 +197,17 @@
         <hr class="method-separator">
 </div>
 <div class="method">
+        <h3><a name="method$DBMemory-physicalWord$">physicalWord:&nbsp;</a></h3>
+        - (uint16_t) <b>physicalWord:</b> (uint32_t)address;<br />
+        <div class="desc">
+
+            Read a physical word without modifying map flags
+            (device/display access).
+
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
         <h3><a name="method$DBMemory-readDoubleWord$">readDoubleWord:&nbsp;</a></h3>
         - (uint32_t) <b>readDoubleWord:</b> (uint32_t)address;<br />
         <div class="desc">
@@ -250,11 +261,33 @@
         <hr class="method-separator">
 </div>
 <div class="method">
+        <h3><a name="method$DBMemory-validateWord$writing$">validateWord:&nbsp;writing:&nbsp;</a></h3>
+        - (void) <b>validateWord:</b> (uint32_t)address<b> writing:</b> (BOOL)writing;<br />
+        <div class="desc">
+
+            Validate a virtual word for device or block
+            access, setting map flags.
+
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
         <h3><a name="method$DBMemory-virtualPages">virtualPages&nbsp;</a></h3>
         - (uint32_t) <b>virtualPages</b>;<br />
         <div class="desc">
           
             Return the virtual address space page count.
+
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBMemory-writePhysicalWord$value$">writePhysicalWord:&nbsp;value:&nbsp;</a></h3>
+        - (void) <b>writePhysicalWord:</b> (uint32_t)address<b> value:</b> (uint16_t)value;<br />
+        <div class="desc">
+
+            Write a physical word without <var>address</var>
+            translation.
           
         </div>
         <hr class="method-separator">

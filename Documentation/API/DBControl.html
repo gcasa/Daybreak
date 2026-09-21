@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Mesa control transfers</title>
+<meta http-equiv="Content-Style-Type" content="text/css"/>
+<link rel="stylesheet" type="text/css" href="default-styles.css" media="screen" title="Normal" />
+  </head>
+  <body>
+    <div class="content-bar">
+      <div class="content-bar-top">
+        <div class="content-bar-top-body">
+          <div class="content-bar-top-body-title">Daybreak</div><br />
+        </div>
+      </div>
+      <div class="content-bar-bottom">
+        <div class="content-bar-bottom-body">
+        </div>
+      </div>
+    </div>
+    <div class="content-pane">
+      <div class="content-pane-body">
+        <h1><a name="title$DBControl">Mesa control transfers</a></h1>
+        <h3>Authors</h3>
+        <dl>
+          <dt>Daybreak contributors</dt>
+          <dd>
+          </dd>
+        </dl>
+        <p><b>Date:</b> Generated at 2026-09-21 UTC</p>
+        <p><b>Copyright:</b> (C) 2017, Dr. Hans-Walter Latz. See COPYING.</p>
+
+            <div>
+        </div>
+
+              <h1><a name="001000000000">
+        Software documentation for the DBProcessor(Control)
+        category
+      </a></h1>
+        <h2>DBProcessor(<a name="category$DBProcessor(Control)">Control</a>)</h2>
+        <blockquote class="declared">
+          <dl>
+            <dt><b>Declared in:</b></dt>
+            <dd>DBControl.h</dd>
+          </dl>
+        </blockquote>
+        <div class="desc">
+
+          Frame allocation, calls, traps and architectural stack
+          vectors.
+
+        </div>
+        <p class="global_method_index">
+        </p>
+        <hr class="section-separator">
+<div class="method">
+        <h3><a name="method$DBProcessor(Control)-allocateFrame$">allocateFrame:&nbsp;</a></h3>
+        - (uint16_t) <b>allocateFrame:</b> (uint16_t)index;<br />
+        <div class="desc">
+
+            Allocate an AV frame, following indirect size
+            entries.
+
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBProcessor(Control)-call$">call:&nbsp;</a></h3>
+        - (void) <b>call:</b> (uint32_t)destination;<br />
+        <div class="desc">
+
+            Save caller PC and invoke a procedure.
+
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBProcessor(Control)-checkEmptyStack">checkEmptyStack&nbsp;</a></h3>
+        - (void) <b>checkEmptyStack</b>;<br />
+        <div class="desc">
+
+            Reject a nonempty evaluation stack at a scheduling
+            instruction.
+
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBProcessor(Control)-checkTransferTrap$type$">checkTransferTrap:&nbsp;type:&nbsp;</a></h3>
+        - (void) <b>checkTransferTrap:</b> (uint32_t)destination<b> type:</b> (unsigned int)type;<br />
+        <div class="desc">
+
+            Apply the transfer trap shift register after a
+            successful transfer.
+
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBProcessor(Control)-controlOpcode$escape$execute$">controlOpcode:&nbsp;escape:&nbsp;execute:&nbsp;</a></h3>
+        - (BOOL) <b>controlOpcode:</b> (uint8_t)opcode<b> escape:</b> (BOOL)escape<b> execute:</b> (BOOL)execute;<br />
+        <div class="desc">
+
+            Dispatch control/register instructions; execute=NO
+            only queries coverage.
+
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBProcessor(Control)-deliverException$opcode$">deliverException:&nbsp;opcode:&nbsp;</a></h3>
+        - (BOOL) <b>deliverException:</b> (NSException*)exception<b> opcode:</b> (uint8_t)opcode;<br />
+        <div class="desc">
+
+            Convert a diagnostic <var>exception</var> into a
+            guest trap or fault, if enabled.
+
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBProcessor(Control)-dispatchException$opcode$">dispatchException:&nbsp;opcode:&nbsp;</a></h3>
+        - (void) <b>dispatchException:</b> (NSException*)exception<b> opcode:</b> (uint8_t)opcode;<br />
+        <div class="desc">
+
+            Deliver a trap, including faults raised while
+            entering its handler.
+
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBProcessor(Control)-fetchLink$">fetchLink:&nbsp;</a></h3>
+        - (uint32_t) <b>fetchLink:</b> (uint8_t)offset;<br />
+        <div class="desc">
+
+            Resolve a backward global or code link.
+
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBProcessor(Control)-freeFrame$">freeFrame:&nbsp;</a></h3>
+        - (void) <b>freeFrame:</b> (uint16_t)frame;<br />
+        <div class="desc">
+
+            Return a <var>frame</var> to its AV free list.
+
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBProcessor(Control)-intervalTimer">intervalTimer&nbsp;</a></h3>
+        - (uint32_t) <b>intervalTimer</b>;<br />
+        <div class="desc">
+
+            Read the wrapping interval timer (one pulse per 16
+            microseconds).
+
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBProcessor(Control)-loadStack$">loadStack:&nbsp;</a></h3>
+        - (void) <b>loadStack:</b> (uint32_t)address;<br />
+        <div class="desc">
+
+            Restore stack slots, depth and break byte from a
+            state vector.
+
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBProcessor(Control)-saveStack$">saveStack:&nbsp;</a></h3>
+        - (void) <b>saveStack:</b> (uint32_t)address;<br />
+        <div class="desc">
+
+            Store all stack slots, depth and break byte in a
+            state vector; empty stack.
+
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBProcessor(Control)-setGuestTraps$">setGuestTraps:&nbsp;</a></h3>
+        - (void) <b>setGuestTraps:</b> (BOOL)enabled;<br />
+        <div class="desc">
+
+            Enable Pilot trap delivery; disabled by default for
+            diagnostic execution.
+
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBProcessor(Control)-setIntervalTimer$">setIntervalTimer:&nbsp;</a></h3>
+        - (void) <b>setIntervalTimer:</b> (uint32_t)value;<br />
+        <div class="desc">
+
+            Change the interval timer origin.
+
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBProcessor(Control)-transfer$source$type$free$">transfer:&nbsp;source:&nbsp;type:&nbsp;free:&nbsp;</a></h3>
+        - (void) <b>transfer:</b> (uint32_t)destination<b> source:</b> (uint16_t)source<b> type:</b> (unsigned int)type<b> free:</b> (BOOL)releaseFrame;<br />
+        <div class="desc">
+
+            Transfer to a tagged control link. Types are
+            return=0, call=1, local=2, port=3, transfer=4,
+            trap=5 and process=6.
+
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBProcessor(Control)-trap$parameter$words$">trap:&nbsp;parameter:&nbsp;words:&nbsp;</a></h3>
+        - (void) <b>trap:</b> (unsigned int)index<b> parameter:</b> (uint32_t)value<b> words:</b> (unsigned int)words;<br />
+        <div class="desc">
+
+            Invoke an SD trap and store zero, one or two
+            parameter <var>words</var>.
+
+        </div>
+        <hr class="method-separator">
+</div>
+        <br />
+    </div>
+  </div>
+  </body>
+</html>

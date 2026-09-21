@@ -4,7 +4,7 @@ import pathlib
 import re
 import sys
 bad = []
-for directory in ('Source', 'Tests'):
+for directory in ('Source', 'Tests', 'GUI'):
     for path in pathlib.Path(directory).glob('*'):
         if path.suffix not in ('.h', '.m', '.inc'):
             continue

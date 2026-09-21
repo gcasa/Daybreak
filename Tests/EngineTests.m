@@ -331,6 +331,11 @@ reference_tests (const char *path)
 int
 main (int argc, char **argv)
 {
+#ifdef GNUSTEP
+  extern char **environ;
+  GSInitializeProcess (argc, argv, environ);
+#endif
+
   NSAutoreleasePool *pool = [NSAutoreleasePool new];
   memory_tests ();
   processor_tests ();

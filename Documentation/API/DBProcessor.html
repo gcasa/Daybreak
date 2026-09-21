@@ -27,7 +27,7 @@
           <dd>
           </dd>
         </dl>
-        <p><b>Date:</b> Generated at 2026-09-20 UTC</p>
+        <p><b>Date:</b> Generated at 2026-09-21 UTC</p>
         <blockquote>
           
       A manually managed Objective-C Mesa execution engine.
@@ -95,11 +95,9 @@
           to one thread. The implemented opcode coverage is listed
           in Documentation/PORTING.md. Unimplemented instructions
           raise DBOpcodeTrap or DBEscapeOpcodeTrap; no
-          instruction is silently treated as a no-op.
-          Architectural traps currently report host
-          exceptions rather than invoking Pilot trap
-          handlers, so this engine cannot yet boot a
-          workstation OS.
+          instruction is silently treated as a no-op. Guest
+          trap delivery is enabled explicitly by the machine boot
+          loader.
         
         </div>
         <p class="global_method_index">
@@ -210,10 +208,10 @@
         - (void) <b>runForInstructions:</b> (uint32_t)count;<br />
         <div class="desc">
           
-            Execute exactly <var>count</var> instructions,
-            stopping immediately on an exception. Zero
-            performs no work. The caller controls scheduling
-            and cancellation.
+            Execute at most <var>count</var> units. Guest mode
+            polls interrupts and timeouts; returns early when no
+            process is runnable. Call again to resume after
+            device events. Zero performs no work.
           
         </div>
         <hr class="method-separator">
@@ -234,11 +232,12 @@
         - (void) <b>step</b>;<br />
         <div class="desc">
           
-            Execute one instruction. On exception restore PC
-            and the complete stack to their pre-instruction state.
-            Completed memory writes are not rolled back. The
-            instruction count advances only on successful
-            completion.
+            Execute one instruction or one restartable block
+            unit. Diagnostic mode restores registers and stack on
+            exceptions; guest mode dispatches traps and
+            faults to Pilot and preserves scheduler changes.
+            Memory writes are never rolled back. Successful
+            execution units advance instructions.
           
         </div>
         <hr class="method-separator">
@@ -264,8 +263,9 @@
           
           Processor state. PC and savedPC are byte offsets
           within CB; CB, MDS and GF32 are word addresses. GF16
-          and LF are MDS-relative word pointers. Modify only while
-          the processor is stopped.
+          and LF are MDS-relative word pointers. PSB indexes the
+          PDA; PTC and IT are independent timeout and interval
+          clocks. Modify only while the processor is stopped.
         
         </div>
         <hr class="method-separator">

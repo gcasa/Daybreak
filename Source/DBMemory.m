@@ -3,6 +3,19 @@
 #include <stdlib.h>
 
 @implementation DBMemory
+- (uint16_t) physicalWord: (uint32_t)address
+{
+  if (address >= _realPages * DB_WORDS_PER_PAGE)
+    [NSException raise: NSRangeException
+                format: @"Physical address out of range"];
+  return _words[address];
+}
+- (void) writePhysicalWord: (uint32_t)address value: (uint16_t)value
+{
+  [self physicalWord: address];
+  _words[address] = value;
+}
+
 + (BOOL) isVacant: (uint16_t)flags
 {
   return (flags & 7) == DB_MAP_VACANT;
@@ -78,6 +91,10 @@
   _flags[page]
       |= writing ? DB_MAP_REFERENCED | DB_MAP_DIRTY : DB_MAP_REFERENCED;
   return (_map[page] << 8) | (address & 255);
+}
+- (void) validateWord: (uint32_t)address writing: (BOOL)writing
+{
+  [self translate: address writing: writing];
 }
 - (uint16_t) readWord: (uint32_t)address
 {

@@ -1,0 +1,170 @@
+<?xml version="1.0"?>
+<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 1.0.4//EN" "http://www.gnustep.org/gsdoc-1_0_4.dtd">
+<gsdoc base="DBControl" stylesheeturl="default-styles.css">
+  <head>
+    <title>Mesa control transfers</title>
+    <author name="Daybreak contributors">
+    </author>
+    <date>Generated at 2026-09-21 UTC</date>
+    <copy>2017, Dr. Hans-Walter Latz. See COPYING.</copy>
+  </head>
+  <body>
+    <front><contents /></front>
+    <chapter>
+      <heading>
+        Software documentation for the DBProcessor(Control)
+        category
+      </heading>
+      <category name="Control" class="DBProcessor">
+        <declared>DBControl.h</declared>
+        <desc>
+          Frame allocation, calls, traps and architectural stack
+          vectors.
+        </desc>
+        <method type="uint16_t">
+          <sel>allocateFrame:</sel>
+          <arg type="uint16_t">index</arg>
+          <desc>
+            Allocate an AV frame, following indirect size
+            entries.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>call:</sel>
+          <arg type="uint32_t">destination</arg>
+          <desc>
+            Save caller PC and invoke a procedure.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>checkEmptyStack</sel>
+          <desc>
+            Reject a nonempty evaluation stack at a scheduling
+            instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>checkTransferTrap:</sel>
+          <arg type="uint32_t">destination</arg>
+          <sel>type:</sel>
+          <arg type="unsigned int">type</arg>
+          <desc>
+            Apply the transfer trap shift register after a
+            successful transfer.
+          </desc>
+        </method>
+        <method type="BOOL">
+          <sel>controlOpcode:</sel>
+          <arg type="uint8_t">opcode</arg>
+          <sel>escape:</sel>
+          <arg type="BOOL">escape</arg>
+          <sel>execute:</sel>
+          <arg type="BOOL">execute</arg>
+          <desc>
+            Dispatch control/register instructions; execute=NO
+            only queries coverage.
+          </desc>
+        </method>
+        <method type="BOOL">
+          <sel>deliverException:</sel>
+          <arg type="NSException*">exception</arg>
+          <sel>opcode:</sel>
+          <arg type="uint8_t">opcode</arg>
+          <desc>
+            Convert a diagnostic <var>exception</var> into a
+            guest trap or fault, if enabled.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>dispatchException:</sel>
+          <arg type="NSException*">exception</arg>
+          <sel>opcode:</sel>
+          <arg type="uint8_t">opcode</arg>
+          <desc>
+            Deliver a trap, including faults raised while
+            entering its handler.
+          </desc>
+        </method>
+        <method type="uint32_t">
+          <sel>fetchLink:</sel>
+          <arg type="uint8_t">offset</arg>
+          <desc>
+            Resolve a backward global or code link.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>freeFrame:</sel>
+          <arg type="uint16_t">frame</arg>
+          <desc>
+            Return a <var>frame</var> to its AV free list.
+          </desc>
+        </method>
+        <method type="uint32_t">
+          <sel>intervalTimer</sel>
+          <desc>
+            Read the wrapping interval timer (one pulse per 16
+            microseconds).
+          </desc>
+        </method>
+        <method type="void">
+          <sel>loadStack:</sel>
+          <arg type="uint32_t">address</arg>
+          <desc>
+            Restore stack slots, depth and break byte from a
+            state vector.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>saveStack:</sel>
+          <arg type="uint32_t">address</arg>
+          <desc>
+            Store all stack slots, depth and break byte in a
+            state vector; empty stack.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>setGuestTraps:</sel>
+          <arg type="BOOL">enabled</arg>
+          <desc>
+            Enable Pilot trap delivery; disabled by default for
+            diagnostic execution.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>setIntervalTimer:</sel>
+          <arg type="uint32_t">value</arg>
+          <desc>
+            Change the interval timer origin.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>transfer:</sel>
+          <arg type="uint32_t">destination</arg>
+          <sel>source:</sel>
+          <arg type="uint16_t">source</arg>
+          <sel>type:</sel>
+          <arg type="unsigned int">type</arg>
+          <sel>free:</sel>
+          <arg type="BOOL">releaseFrame</arg>
+          <desc>
+            Transfer to a tagged control link. Types are
+            return=0, call=1, local=2, port=3, transfer=4,
+            trap=5 and process=6.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>trap:</sel>
+          <arg type="unsigned int">index</arg>
+          <sel>parameter:</sel>
+          <arg type="uint32_t">value</arg>
+          <sel>words:</sel>
+          <arg type="unsigned int">words</arg>
+          <desc>
+            Invoke an SD trap and store zero, one or two
+            parameter <var>words</var>.
+          </desc>
+        </method>
+      </category>
+    </chapter>
+  </body>
+</gsdoc>

@@ -6,8 +6,9 @@ SANITIZERS ?= address,undefined
 CPPFLAGS += -ISource
 CFLAGS ?= -O2 -g
 OBJCFLAGS += -Wall -Wextra -Werror -std=gnu99
-CORE = Source/DBMemory.m Source/DBProcessor.m Source/DBInstructions.m
-HEADERS = $(wildcard Source/*.h) Source/DBInstructionDispatch.inc
+CORE = Source/DBMemory.m Source/DBProcessor.m Source/DBInstructions.m Source/DBControl.m Source/DBProcesses.m Source/DBDisk.m Source/DBMachine.m Source/DBBlocks.m
+LDLIBS += -lz
+HEADERS = $(wildcard Source/*.h) Source/DBInstructionDispatch.inc Source/DBIOInitial.inc
 HAVE_GNUSTEP := $(shell command -v $(GNUSTEP_CONFIG) 2>/dev/null)
 ifneq ($(HAVE_GNUSTEP),)
 OBJCFLAGS += $(shell $(GNUSTEP_CONFIG) --objc-flags) -Wno-expansion-to-defined
@@ -27,8 +28,11 @@ build/daybreak: $(CORE) Source/main.m $(HEADERS) | build
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(OBJCFLAGS) $(CORE) Source/main.m -o $@ $(LDLIBS)
 build/tests: $(CORE) Tests/EngineTests.m $(HEADERS) | build
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(OBJCFLAGS) $(CORE) Tests/EngineTests.m -o $@ $(LDLIBS)
-check: build/tests build/daybreak
+build/system-tests: $(CORE) Tests/SystemTests.m $(HEADERS) | build
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(OBJCFLAGS) $(CORE) Tests/SystemTests.m -o $@ $(LDLIBS)
+check: build/tests build/system-tests build/daybreak
 	./build/tests
+	./build/system-tests
 	./build/daybreak --demo
 	python3 Tools/check-objc1.py
 sanitize:
@@ -38,6 +42,30 @@ reference-check: build/tests
 	python3 Tools/check-reference.py "$(DWARF)"
 docs:
 	mkdir -p Documentation/API
-	$(AUTOGSDOC) -Project Daybreak -HeaderDirectory Source -DocumentationDirectory Documentation/API -IgnoreDependencies YES -Warn YES -DocumentInstanceVariables NO Source/DBMemory.h Source/DBProcessor.h Source/DBInstructions.h Source/DBProcessorPrivate.h
+	$(AUTOGSDOC) -Project Daybreak -HeaderDirectory Source -DocumentationDirectory Documentation/API -IgnoreDependencies YES -Warn YES -DocumentInstanceVariables NO $(wildcard Source/*.h) GUI/DBApplication.h
 clean:
 	rm -rf build
+
+ifneq ($(HAVE_GNUSTEP),)
+GUI_LIBS = $(shell $(GNUSTEP_CONFIG) --gui-libs)
+else
+GUI_LIBS = -framework AppKit
+endif
+.PHONY: gui
+ifneq ($(HAVE_GNUSTEP),)
+gui:
+	$(MAKE) -f GNUmakefile.gui
+else
+gui: build/Daybreak.app/Contents/MacOS/Daybreak
+endif
+build/Daybreak.app/Contents/MacOS/Daybreak: $(CORE) GUI/DBApplication.m GUI/main.m GUI/DBApplication.h $(HEADERS)
+	mkdir -p build/Daybreak.app/Contents/MacOS
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(OBJCFLAGS) -Wno-deprecated-declarations $(CORE) GUI/DBApplication.m GUI/main.m -o $@ $(LDLIBS) $(GUI_LIBS)
+	cp GUI/Info.plist build/Daybreak.app/Contents/Info.plist
+
+build/boot-tests: $(CORE) Tests/BootTests.m $(HEADERS) | build
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(OBJCFLAGS) $(CORE) Tests/BootTests.m -o $@ $(LDLIBS)
+.PHONY: boot-check
+boot-check: build/boot-tests
+	./build/boot-tests "$(DWARF)/disks-6085/xde5.0.zdisk" 990 build/xde-boot.pbm
+	./build/boot-tests "$(DWARF)/disks-6085/vp2.0.5.zdisk" 8000 build/viewpoint-boot.pbm

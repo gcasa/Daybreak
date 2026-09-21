@@ -6,11 +6,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Install GNUstep and GCC Objective-C
-        run: sudo apt-get update && sudo apt-get install -y gobjc gnustep-make libgnustep-base-dev python3
+        run: sudo apt-get update && sudo apt-get install -y gobjc gnustep-make libgnustep-base-dev libgnustep-gui-dev zlib1g-dev python3
       - name: Build and test with the GNU runtime
         run: make -f Makefile CC=gcc check
       - name: Build with GNUstep make
         run: make -f GNUmakefile
+      - name: Build GNUstep desktop application
+        run: make -f GNUmakefile.gui
       - name: Generate header documentation
         run: make -f Makefile docs
       - uses: actions/upload-artifact@v4

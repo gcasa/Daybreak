@@ -1,0 +1,104 @@
+<?xml version="1.0"?>
+<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 1.0.4//EN" "http://www.gnustep.org/gsdoc-1_0_4.dtd">
+<gsdoc base="DBDisk" stylesheeturl="default-styles.css">
+  <head>
+    <title>Draco disk images</title>
+    <author name="Daybreak contributors">
+    </author>
+    <date>Generated at 2026-09-21 UTC</date>
+    <copy>2017, Dr. Hans-Walter Latz. See COPYING.</copy>
+  </head>
+  <body>
+    <front><contents /></front>
+    <chapter>
+      <heading>
+        Software documentation for the DBDisk class
+      </heading>
+      <class name="DBDisk" super="NSObject">
+        <declared>DBDisk.h</declared>
+        <desc>
+          A validated zlib-compressed Draco disk. Changes are kept in
+          memory until explicitly exported to a new image; the
+          input file is never overwritten.
+        </desc>
+        <method type="BOOL">
+          <sel>changed</sel>
+          <desc>
+            Return <code>YES</code> after any sector
+            modification.
+          </desc>
+        </method>
+        <method type="uint16_t">
+          <sel>cylinders</sel>
+          <desc>
+            Return the number of cylinders.
+          </desc>
+        </method>
+        <method type="NSData*">
+          <sel>germ</sel>
+          <desc>
+            Extract the contiguous, labelled germ from the
+            physical volume root.
+          </desc>
+        </method>
+        <method type="uint16_t">
+          <sel>heads</sel>
+          <desc>
+            Return the number of heads.
+          </desc>
+        </method>
+        <method type="id">
+          <sel>initWithPath:</sel>
+          <arg type="NSString*">path</arg>
+          <desc>
+            Load a.zdisk and its optional.zdisk.zdelta overlay.
+            Raises DBDiskError for corrupt, incomplete or
+            mismatched images.
+          </desc>
+        </method>
+        <method type="NSString*">
+          <sel>path</sel>
+          <desc>
+            Return the borrowed input path.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>saveCopyToPath:</sel>
+          <arg type="NSString*">path</arg>
+          <desc>
+            Atomically export a complete compressed image.
+            Refuses the input <var>path</var>.
+          </desc>
+        </method>
+        <method type="uint32_t">
+          <sel>sectorCount</sel>
+          <desc>
+            Return the sector count (16 sectors per track).
+          </desc>
+        </method>
+        <method type="uint16_t">
+          <sel>wordAtSector:</sel>
+          <arg type="uint32_t">sector</arg>
+          <sel>offset:</sel>
+          <arg type="unsigned int">offset</arg>
+          <desc>
+            Read a <var>sector</var> word. Offsets 0..9 are labels
+            and 10..265 are data.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>writeSector:</sel>
+          <arg type="uint32_t">sector</arg>
+          <sel>offset:</sel>
+          <arg type="unsigned int">offset</arg>
+          <sel>value:</sel>
+          <arg type="uint16_t">value</arg>
+          <desc>
+            Change a <var>sector</var> word in the private
+            working image.
+          </desc>
+        </method>
+      </class>
+    </chapter>
+  </body>
+</gsdoc>

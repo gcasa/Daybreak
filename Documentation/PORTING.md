@@ -1,74 +1,64 @@
 # Port status and architecture
 
-This release implements a testable Mesa execution core. A complete native
-workstation emulator remains unfinished. The project deliberately reports
-unimplemented instructions rather than pretending to boot an OS.
+Daybreak boots the Draco/6085 XDE 5.0 and ViewPoint 2.0.5 disks supplied in
+the reference checkout. It is a native implementation, not a Java wrapper.
 
-| Dwarf component | Objective-C implementation | Status |
-| --- | --- | --- |
-| `Mem` | `DBMemory` | Word/byte/double-word access, fields, page maps, access flags and protection; no workstation-specific initial mapping or display RAM |
-| `Cpu` | `DBProcessor` | Per-instance registers, evaluation stack, instruction fetch and bounded execution; host-reported exceptions |
-| `Opcodes` | `DBInstructionDispatch.inc` | Explicit primary and ESC/ESCL dispatch with old/new instruction-set selection |
-| Chapter 3 | `DBInstructions` | SM, SMF, GMF, LP, ROB, WOB, RRMDS, WRMDS |
-| Chapter 5 | `DBInstructions` | Integer/stack operations and the six floating-point operations implemented by Dwarf; unsupported floating-point operations trap |
-| Chapter 6 | `DBInstructions` | All jump instructions |
-| Chapter 7 | `DBInstructions` | All assignments, including both global-frame variants |
-| Chapter 8 | — | Block, byte and bit transfers pending |
-| Chapter 9 / `Xfer` | — | Frame allocation and control transfers pending |
-| Chapter 10 / `Processes` | — | Scheduling, synchronization, interrupts and timers pending |
-| `InitialMesaMicrocode` | — | Germ loading and boot requests pending |
-| `agents` | — | Duchess disk, floppy, display, keyboard, mouse, network and other devices pending |
-| `iop6085` | — | Draco hardware and I/O processor pending |
-| Swing UI | — | GNUstep GUI frontend pending |
+| Component | Implementation |
+| --- | --- |
+| Memory | DBMemory: word/byte access, page maps, protection, physical device access |
+| Processor | DBProcessor: per-instance registers and stack, bounded execution, old/new instruction sets |
+| Scalar instructions | DBInstructions: generated arithmetic, stack, jumps and assignments |
+| Control | DBControl: frame allocation, old/new global frames, calls/returns, transfer traps, guest trap dispatch, state vectors |
+| Processes | DBProcesses: priority queues, preemption, monitors, conditions, interrupts, timeouts and fault queues |
+| Transfers/graphics | DBBlocks: restartable word/byte transfers, comparisons/checksum, monochrome BITBLT/COLORBLT/BITBLTX |
+| Boot | DBMachine: Draco memory map, germ extraction, boot request, processor IOP commands |
+| Disk | DBDisk and DBMachine: compressed disk/delta loading, labels/data, asynchronous guest completion protocol, export |
+| Display/input | DBMachine and DBApplication: framebuffer, retrace, keyboard/mouse, native AppKit window and controls |
 
-There are 261 implemented instruction bodies and fewer distinct opcode slots
-because PrincOps 4.0 and post-4.0 share slot numbers for different global-frame
-instructions. `supportsOpcode:escape:` queries availability in the selected
-mode. The ESC and ESCL prefix bytes are dispatch mechanisms, not standalone
-instruction implementations.
+## Execution and ownership
 
-## Representation and ownership
+Memory addresses are Mesa words. External words are big-endian; Mesa double
+words store the low word first. The machine has 4 MiB real and 32 MiB virtual
+memory, with the Draco I/O map and monochrome display bank. The code PC and
+short pointers wrap at 16 bits.
 
-* Mesa words use `uint16_t`; addresses and double words use `uint32_t`.
-* A word's high byte is stored first in an external byte stream. A double
-  word's low word comes first in memory and on the evaluation stack.
-* Code PC wraps at 16 bits; code-word offsets also wrap at 16 bits. MDS
-  pointers wrap before lengthening, while the second word of an MDS double
-  read follows the lengthened address without another short-pointer wrap.
-* Page zero and addresses outside virtual memory raise `DBPointerTrap`.
-  Vacant mapped-space pages raise `DBPageFault`; protected writes raise
-  `DBWriteProtectFault`. Memory exceptions carry an `address` userInfo value.
-* Memory owns its C buffers. The processor retains memory. The borrowed
-  state pointer and memory accessor transfer no ownership. There are no
-  mutable process-wide processor registers.
-* Instances require external serialization. The bounded runner provides a
-  scheduling boundary; it is not yet the emulated process scheduler.
+Each processor owns its register state, interrupt mask, timer, and suspended
+bitmap operations. The processor retains memory; DBMachine owns its working
+disk. Borrowed register and memory accessors do not transfer ownership.
+The GUI executes bounded slices on its main thread, serializing input,
+display, disk access, and emulation. Instances require external serialization.
 
-## Exceptions and deliberate differences
+Plain DBProcessor defaults to diagnostic exception mode: failed instructions
+restore registers/stack but do not roll back memory writes. DBMachine enables
+guest traps: failures enter Mesa trap or process-fault handlers. A page fault
+during trap entry itself is delivered through the process fault machinery.
 
-Dwarf dispatches traps and faults into Mesa/Pilot handlers. This port currently
-raises named Foundation exceptions to its caller. `step` restores the complete
-register and stack snapshot when an instruction fails. Memory writes already
-completed are not reverted. This behavior supports debugging and retrying the
-implemented straight-line instructions; it must not be mistaken for Mesa
-process-fault dispatch. Restartable block transfers will need per-unit progress
-state rather than restarting an entire overlapping transfer.
+Word and byte transfers execute one unit per step; bitmap operations execute
+one scanline per step. Continuations preserve completed work across faults
+and preemption. This intentionally changes instruction counts relative to
+Dwarf without repeating completed writes. Interrupt and timer checks occur
+between execution units. The monotonic interval timer is independent of the
+host wall clock used for the guest calendar.
 
-Double-word push/pop preflight their full stack capacity. Intermediate arithmetic
-uses wider or unsigned C types so Java's wraparound behavior does not introduce
-C signed-overflow undefined behavior. IEEE floating values use `memcpy` to avoid
-aliasing violations. The scalar shifts explicitly handle out-of-range counts.
+## Device scope and remaining work
 
-## Continuing the port
+* The supported boot target is small-screen, monochrome Draco/6085. Duchess
+  device agents, large-screen/color configurations and other OS images have
+  not been ported or validated.
+* Disk changes are private in-memory working copies. Save Copy exports a
+  complete compressed image atomically, refuses the input path, and refuses
+  destinations with a conflicting delta file. Hardware formatting is not
+  implemented. Guest label/data verification reports device errors.
+* Networking reports an offline interface; there is no host network bridge.
+  Floppy hardware reports no medium; queued floppy media operations are not
+  implemented. Beep notifications produce no host audio.
+* The GUI uses a host cursor and a basic US keyboard map. Guest cursor shapes,
+  configurable key mappings, clipboard, printing and full Dwarf UI features
+  remain outside this implementation.
+* TRAPZBLT and VMFIND are not implemented. Unsupported instructions use guest
+  software trap handlers where available, including Dwarf's TXTBLT and
+  floating-point fallback cases. This is not full opcode equivalence.
 
-The next engine work is frame allocation, old/new control transfers, architectural
-trap dispatch, and state vectors. Then add process scheduling and restartable
-block/bit transfers. Boot support depends on those pieces and the selected
-machine's memory map and devices. Duchess uses device agents; Draco requires
-the much larger 6085 I/O processor and different disk-image handling. A GNUstep
-AppKit frontend should consume a machine display/input interface after those
-services are implemented.
-
-Header documentation is authoritative for the current public API. The reference
-instruction names remain in the generated methods to make comparison with the
-Java source straightforward.
+The reference machine ID matches the supplied ViewPoint configuration.
+The guest's calendar and software configuration can still require adjustment
+inside the OS. Header documentation describes individual API contracts.

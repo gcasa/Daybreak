@@ -86,4 +86,7 @@ db_rotate_word (uint16_t value, int32_t count)
 - (BOOL) dispatch: (uint8_t)opcode escape: (BOOL)escape execute: (BOOL)execute;
 @end
 #import "DBInstructions.h"
+#import "DBControl.h"
+#import "DBBlocks.h"
+#import "DBProcesses.h"
 #endif

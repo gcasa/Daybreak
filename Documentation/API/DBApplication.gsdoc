@@ -1,0 +1,193 @@
+<?xml version="1.0"?>
+<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 1.0.4//EN" "http://www.gnustep.org/gsdoc-1_0_4.dtd">
+<gsdoc base="DBApplication" stylesheeturl="default-styles.css">
+  <head>
+    <title>Daybreak desktop interface</title>
+    <author name="Daybreak contributors">
+    </author>
+    <date>Generated at 2026-09-21 UTC</date>
+  </head>
+  <body>
+    <front><contents /></front>
+    <chapter>
+      <heading>
+        Software documentation for the DBApplication class
+      </heading>
+      <class name="DBApplication" super="NSObject">
+        <declared>DBApplication.h</declared>
+        <desc>
+          Application controller. Uses bounded execution
+          slices on the UI thread, avoiding races between
+          emulation, display refresh and device input.
+        </desc>
+        <method type="void">
+          <sel>applicationDidFinishLaunching:</sel>
+          <arg type="NSNotification*">notification</arg>
+          <desc>
+            Create the window and menus, then optionally open
+            the command-line disk.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>applicationDidResignActive:</sel>
+          <arg type="NSNotification*">notification</arg>
+          <desc>
+            Release all guest input when the application loses
+            focus.
+          </desc>
+        </method>
+        <method type="NSApplicationTerminateReply">
+          <sel>applicationShouldTerminate:</sel>
+          <arg type="NSApplication*">application</arg>
+          <desc>
+            Confirm discarding unsaved changes on
+            <var>application</var> termination.
+          </desc>
+        </method>
+        <method type="BOOL">
+          <sel>applicationShouldTerminateAfterLastWindowClosed:</sel>
+          <arg type="NSApplication*">application</arg>
+          <desc>
+            Terminate after the emulator window closes.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>loadDisk:</sel>
+          <arg type="NSString*">path</arg>
+          <desc>
+            Load a disk, replacing the current machine only after
+            successful loading.
+          </desc>
+        </method>
+        <method type="BOOL">
+          <sel>mayDiscardDisk</sel>
+          <desc>
+            Check unsaved disk changes before replacing or
+            quitting the machine.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>openDisk:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+            Offer a disk picker for XDE, ViewPoint or another
+            Draco image.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>pause:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+            Toggle instruction execution.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>refresh</sel>
+          <desc>
+            Refresh the processor status and framebuffer.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>reportException:</sel>
+          <arg type="NSException*">exception</arg>
+          <desc>
+            Stop execution and show the actual
+            <var>exception</var>.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>saveDisk:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+            Export the working disk to a separate.zdisk image.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>step:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+            Execute one instruction while paused.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>tick:</sel>
+          <arg type="NSTimer*">timer</arg>
+          <desc>
+            Run one bounded instruction slice and update the
+            display/status.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>windowDidResignKey:</sel>
+          <arg type="NSNotification*">notification</arg>
+          <desc>
+            Release input when the main window loses key
+            status.
+          </desc>
+        </method>
+        <method type="BOOL">
+          <sel>windowShouldClose:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+            Route window closing through the unsaved-session
+            termination check.
+          </desc>
+        </method>
+      </class>
+    </chapter>
+    <chapter>
+      <heading>
+        Software documentation for the DBDisplayView class
+      </heading>
+      <class name="DBDisplayView" super="NSView">
+        <declared>DBApplication.h</declared>
+        <desc>
+          Display and Level V input surface. Retains its
+          machine and releases all guest keys when focus is
+          lost. All access occurs on the application thread.
+        </desc>
+        <method type="void">
+          <sel>keyEvent:</sel>
+          <arg type="NSEvent*">event</arg>
+          <sel>pressed:</sel>
+          <arg type="BOOL">pressed</arg>
+          <desc>
+            Convert a host keyboard <var>event</var> into a
+            guest key press or release.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>releaseInput</sel>
+          <desc>
+            Release guest input when the application loses
+            focus.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>releaseKey:</sel>
+          <arg type="NSNumber*">key</arg>
+          <desc>
+            Release a guest <var>key</var> after a minimum
+            pulse visible to the guest scanner.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>setMachine:</sel>
+          <arg type="DBMachine*">machine</arg>
+          <desc>
+            Replace the displayed <var>machine</var>, releasing
+            keys on the old <var>machine</var>.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>updateMouse:</sel>
+          <arg type="NSEvent*">event</arg>
+          <desc>
+            Convert window mouse coordinates into guest display
+            coordinates.
+          </desc>
+        </method>
+      </class>
+    </chapter>
+  </body>
+</gsdoc>

@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Daybreak desktop interface</title>
+<meta http-equiv="Content-Style-Type" content="text/css"/>
+<link rel="stylesheet" type="text/css" href="default-styles.css" media="screen" title="Normal" />
+  </head>
+  <body>
+    <div class="content-bar">
+      <div class="content-bar-top">
+        <div class="content-bar-top-body">
+          <div class="content-bar-top-body-title">Daybreak</div><br />
+        </div>
+      </div>
+      <div class="content-bar-bottom">
+        <div class="content-bar-bottom-body">
+        </div>
+      </div>
+    </div>
+    <div class="content-pane">
+      <div class="content-pane-body">
+        <h1><a name="title$DBApplication">Daybreak desktop interface</a></h1>
+        <h3>Authors</h3>
+        <dl>
+          <dt>Daybreak contributors</dt>
+          <dd>
+          </dd>
+        </dl>
+        <p><b>Date:</b> Generated at 2026-09-21 UTC</p>
+
+            <div>
+          <hr class="section-separator">
+          <h3>Contents -</h3>
+          <ol>
+            <li>
+              <a href="#001000000000">Software documentation for the DBApplication class</a>
+            </li>
+            <li>
+              <a href="#002000000000">Software documentation for the DBDisplayView class</a>
+            </li>
+          </ol>
+          <hr class="section-separator">
+        </div>
+
+              <h1><a name="001000000000">
+        Software documentation for the DBApplication class
+      </a></h1>
+        <h2 class="class"><a name="class$DBApplication">DBApplication</a> : NSObject</h2>
+<svg width="154pt" height="116pt"
+ viewBox="0.00 0.00 154.00 116.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 112)">
+<title>class_DBApplication</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-112 150.25,-112 150.25,4 -4,4"/>
+<!-- NSObject -->
+<g id="node1" class="node figure_super">
+<title>NSObject</title>
+<polygon fill="lightgrey" stroke="black" points="120.38,-108 25.88,-108 25.88,-72 120.38,-72 120.38,-108"/>
+<text xml:space="preserve" text-anchor="middle" x="73.12" y="-80.7" font-family="Times,serif" font-size="24.00">NSObject</text>
+</g>
+<!-- DBApplication -->
+<g id="node2" class="node figure_class">
+<title>DBApplication</title>
+<polygon fill="lightgrey" stroke="black" points="146.25,-36 0,-36 0,0 146.25,0 146.25,-36"/>
+<text xml:space="preserve" text-anchor="middle" x="73.12" y="-8.7" font-family="Times,serif" font-size="24.00">DBApplication</text>
+</g>
+<!-- NSObject&#45;&gt;DBApplication -->
+<g id="edge1" class="edge">
+<title>NSObject&#45;&gt;DBApplication</title>
+<path fill="none" stroke="black" d="M73.12,-71.7C73.12,-64.41 73.12,-55.73 73.12,-47.54"/>
+<polygon fill="black" stroke="black" points="76.63,-47.62 73.13,-37.62 69.63,-47.62 76.63,-47.62"/>
+</g>
+</g>
+</svg>
+        <blockquote class="declared">
+          <dl>
+            <dt><b>Declared in:</b></dt>
+            <dd>DBApplication.h</dd>
+          </dl>
+        </blockquote>
+        <div class="desc">
+
+          Application controller. Uses bounded execution
+          slices on the UI thread, avoiding races between
+          emulation, display refresh and device input.
+
+        </div>
+        <p class="global_method_index">
+        </p>
+        <hr class="section-separator">
+<div class="method">
+        <h3><a name="method$DBApplication-applicationDidFinishLaunching$">applicationDidFinishLaunching:&nbsp;</a></h3>
+        - (void) <b>applicationDidFinishLaunching:</b> (NSNotification*)notification;<br />
+        <div class="desc">
+
+            Create the window and menus, then optionally open
+            the command-line disk.
+
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBApplication-applicationDidResignActive$">applicationDidResignActive:&nbsp;</a></h3>
+        - (void) <b>applicationDidResignActive:</b> (NSNotification*)notification;<br />
+        <div class="desc">
+
+            Release all guest input when the application loses
+            focus.
+
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBApplication-applicationShouldTerminate$">applicationShouldTerminate:&nbsp;</a></h3>
+        - (NSApplicationTerminateReply) <b>applicationShouldTerminate:</b> (NSApplication*)application;<br />
+        <div class="desc">
+
+            Confirm discarding unsaved changes on
+            <var>application</var> termination.
+
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBApplication-applicationShouldTerminateAfterLastWindowClosed$">applicationShouldTerminateAfterLastWindowClosed:&nbsp;</a></h3>
+        - (BOOL) <b>applicationShouldTerminateAfterLastWindowClosed:</b> (NSApplication*)application;<br />
+        <div class="desc">
+
+            Terminate after the emulator window closes.
+
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBApplication-loadDisk$">loadDisk:&nbsp;</a></h3>
+        - (void) <b>loadDisk:</b> (NSString*)path;<br />
+        <div class="desc">
+
+            Load a disk, replacing the current machine only after
+            successful loading.
+
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBApplication-mayDiscardDisk">mayDiscardDisk&nbsp;</a></h3>
+        - (BOOL) <b>mayDiscardDisk</b>;<br />
+        <div class="desc">
+
+            Check unsaved disk changes before replacing or
+            quitting the machine.
+
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBApplication-openDisk$">openDisk:&nbsp;</a></h3>
+        - (void) <b>openDisk:</b> (id)sender;<br />
+        <div class="desc">
+
+            Offer a disk picker for XDE, ViewPoint or another
+            Draco image.
+
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBApplication-pause$">pause:&nbsp;</a></h3>
+        - (void) <b>pause:</b> (id)sender;<br />
+        <div class="desc">
+
+            Toggle instruction execution.
+
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBApplication-refresh">refresh&nbsp;</a></h3>
+        - (void) <b>refresh</b>;<br />
+        <div class="desc">
+
+            Refresh the processor status and framebuffer.
+
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBApplication-reportException$">reportException:&nbsp;</a></h3>
+        - (void) <b>reportException:</b> (NSException*)exception;<br />
+        <div class="desc">
+
+            Stop execution and show the actual
+            <var>exception</var>.
+
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBApplication-saveDisk$">saveDisk:&nbsp;</a></h3>
+        - (void) <b>saveDisk:</b> (id)sender;<br />
+        <div class="desc">
+
+            Export the working disk to a separate.zdisk image.
+
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBApplication-step$">step:&nbsp;</a></h3>
+        - (void) <b>step:</b> (id)sender;<br />
+        <div class="desc">
+
+            Execute one instruction while paused.
+
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBApplication-tick$">tick:&nbsp;</a></h3>
+        - (void) <b>tick:</b> (NSTimer*)timer;<br />
+        <div class="desc">
+
+            Run one bounded instruction slice and update the
+            display/status.
+
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBApplication-windowDidResignKey$">windowDidResignKey:&nbsp;</a></h3>
+        - (void) <b>windowDidResignKey:</b> (NSNotification*)notification;<br />
+        <div class="desc">
+
+            Release input when the main window loses key
+            status.
+
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBApplication-windowShouldClose$">windowShouldClose:&nbsp;</a></h3>
+        - (BOOL) <b>windowShouldClose:</b> (id)sender;<br />
+        <div class="desc">
+
+            Route window closing through the unsaved-session
+            termination check.
+
+        </div>
+        <hr class="method-separator">
+</div>
+
+              <h1><a name="002000000000">
+        Software documentation for the DBDisplayView class
+      </a></h1>
+        <h2 class="class"><a name="class$DBDisplayView">DBDisplayView</a> : NSView</h2>
+<svg width="166pt" height="116pt"
+ viewBox="0.00 0.00 166.00 116.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 112)">
+<title>class_DBDisplayView</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-112 161.5,-112 161.5,4 -4,4"/>
+<!-- NSView -->
+<g id="node1" class="node figure_super">
+<title>NSView</title>
+<polygon fill="lightgrey" stroke="black" points="119.25,-108 38.25,-108 38.25,-72 119.25,-72 119.25,-108"/>
+<text xml:space="preserve" text-anchor="middle" x="78.75" y="-80.7" font-family="Times,serif" font-size="24.00">NSView</text>
+</g>
+<!-- DBDisplayView -->
+<g id="node2" class="node figure_class">
+<title>DBDisplayView</title>
+<polygon fill="lightgrey" stroke="black" points="157.5,-36 0,-36 0,0 157.5,0 157.5,-36"/>
+<text xml:space="preserve" text-anchor="middle" x="78.75" y="-8.7" font-family="Times,serif" font-size="24.00">DBDisplayView</text>
+</g>
+<!-- NSView&#45;&gt;DBDisplayView -->
+<g id="edge1" class="edge">
+<title>NSView&#45;&gt;DBDisplayView</title>
+<path fill="none" stroke="black" d="M78.75,-71.7C78.75,-64.41 78.75,-55.73 78.75,-47.54"/>
+<polygon fill="black" stroke="black" points="82.25,-47.62 78.75,-37.62 75.25,-47.62 82.25,-47.62"/>
+</g>
+</g>
+</svg>
+        <blockquote class="declared">
+          <dl>
+            <dt><b>Declared in:</b></dt>
+            <dd>DBApplication.h</dd>
+          </dl>
+        </blockquote>
+        <div class="desc">
+
+          Display and Level V input surface. Retains its
+          machine and releases all guest keys when focus is
+          lost. All access occurs on the application thread.
+
+        </div>
+        <p class="global_method_index">
+        </p>
+        <hr class="section-separator">
+<div class="method">
+        <h3><a name="method$DBDisplayView-keyEvent$pressed$">keyEvent:&nbsp;pressed:&nbsp;</a></h3>
+        - (void) <b>keyEvent:</b> (NSEvent*)event<b> pressed:</b> (BOOL)pressed;<br />
+        <div class="desc">
+
+            Convert a host keyboard <var>event</var> into a
+            guest key press or release.
+
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBDisplayView-releaseInput">releaseInput&nbsp;</a></h3>
+        - (void) <b>releaseInput</b>;<br />
+        <div class="desc">
+
+            Release guest input when the application loses
+            focus.
+
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBDisplayView-releaseKey$">releaseKey:&nbsp;</a></h3>
+        - (void) <b>releaseKey:</b> (NSNumber*)key;<br />
+        <div class="desc">
+
+            Release a guest <var>key</var> after a minimum
+            pulse visible to the guest scanner.
+
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBDisplayView-setMachine$">setMachine:&nbsp;</a></h3>
+        - (void) <b>setMachine:</b> (DBMachine*)machine;<br />
+        <div class="desc">
+
+            Replace the displayed <var>machine</var>, releasing
+            keys on the old <var>machine</var>.
+
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBDisplayView-updateMouse$">updateMouse:&nbsp;</a></h3>
+        - (void) <b>updateMouse:</b> (NSEvent*)event;<br />
+        <div class="desc">
+
+            Convert window mouse coordinates into guest display
+            coordinates.
+
+        </div>
+        <hr class="method-separator">
+</div>
+        <br />
+    </div>
+  </div>
+  </body>
+</html>

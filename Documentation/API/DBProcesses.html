@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Mesa process scheduling</title>
+<meta http-equiv="Content-Style-Type" content="text/css"/>
+<link rel="stylesheet" type="text/css" href="default-styles.css" media="screen" title="Normal" />
+  </head>
+  <body>
+    <div class="content-bar">
+      <div class="content-bar-top">
+        <div class="content-bar-top-body">
+          <div class="content-bar-top-body-title">Daybreak</div><br />
+        </div>
+      </div>
+      <div class="content-bar-bottom">
+        <div class="content-bar-bottom-body">
+        </div>
+      </div>
+    </div>
+    <div class="content-pane">
+      <div class="content-pane-body">
+        <h1><a name="title$DBProcesses">Mesa process scheduling</a></h1>
+        <h3>Authors</h3>
+        <dl>
+          <dt>Daybreak contributors</dt>
+          <dd>
+          </dd>
+        </dl>
+        <p><b>Date:</b> Generated at 2026-09-21 UTC</p>
+        <p><b>Copyright:</b> (C) 2017, Dr. Hans-Walter Latz. See COPYING.</p>
+
+            <div>
+        </div>
+
+              <h1><a name="001000000000">
+        Software documentation for the DBProcessor(Processes)
+        category
+      </a></h1>
+        <h2>DBProcessor(<a name="category$DBProcessor(Processes)">Processes</a>)</h2>
+        <blockquote class="declared">
+          <dl>
+            <dt><b>Declared in:</b></dt>
+            <dd>DBProcesses.h</dd>
+          </dl>
+        </blockquote>
+        <div class="desc">
+
+          Per-processor priority queues, monitors,
+          interrupts, faults and timeouts. Call these
+          methods on the same thread as instruction execution.
+
+        </div>
+        <p class="global_method_index">
+        </p>
+        <hr class="section-separator">
+<div class="method">
+        <h3><a name="method$DBProcessor(Processes)-cleanupCondition$">cleanupCondition:&nbsp;</a></h3>
+        - (void) <b>cleanupCondition:</b> (uint32_t)condition;<br />
+        <div class="desc">
+
+            Remove timeout cleanup links from a
+            <var>condition</var> queue.
+
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBProcessor(Processes)-enterFailed$">enterFailed:&nbsp;</a></h3>
+        - (void) <b>enterFailed:</b> (uint32_t)monitor;<br />
+        <div class="desc">
+
+            Queue the current process on a locked
+            <var>monitor</var> and reschedule.
+
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBProcessor(Processes)-exitMonitor$">exitMonitor:&nbsp;</a></h3>
+        - (BOOL) <b>exitMonitor:</b> (uint32_t)monitor;<br />
+        <div class="desc">
+
+            Unlock a <var>monitor</var>, returning
+            <code>YES</code> when a waiting process became
+            ready.
+
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBProcessor(Processes)-fault$parameter$words$">fault:&nbsp;parameter:&nbsp;words:&nbsp;</a></h3>
+        - (void) <b>fault:</b> (unsigned int)index<b> parameter:</b> (uint32_t)value<b> words:</b> (unsigned int)words;<br />
+        <div class="desc">
+
+            Queue a fault, notify its handler, and save one or
+            two parameter <var>words</var>.
+
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBProcessor(Processes)-loadProcess">loadProcess&nbsp;</a></h3>
+        - (uint16_t) <b>loadProcess</b>;<br />
+        <div class="desc">
+
+            Restore the selected process and return its local
+            frame.
+
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBProcessor(Processes)-notifyWakeup$">notifyWakeup:&nbsp;</a></h3>
+        - (BOOL) <b>notifyWakeup:</b> (uint32_t)condition;<br />
+        <div class="desc">
+
+            Notify a device <var>condition</var>, remembering a
+            wakeup when no process waits.
+
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBProcessor(Processes)-pollProcesses">pollProcesses&nbsp;</a></h3>
+        - (void) <b>pollProcesses</b>;<br />
+        <div class="desc">
+
+            Deliver enabled interrupts and advance the timeout
+            clock between instructions.
+
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBProcessor(Processes)-processOpcode$escape$execute$">processOpcode:&nbsp;escape:&nbsp;execute:&nbsp;</a></h3>
+        - (BOOL) <b>processOpcode:</b> (uint8_t)opcode<b> escape:</b> (BOOL)escape<b> execute:</b> (BOOL)execute;<br />
+        <div class="desc">
+
+            Dispatch chapter 10 instructions; execute=NO only
+            queries coverage.
+
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBProcessor(Processes)-processWord$offset$">processWord:&nbsp;offset:&nbsp;</a></h3>
+        - (uint16_t) <b>processWord:</b> (uint16_t)process<b> offset:</b> (unsigned int)offset;<br />
+        <div class="desc">
+
+            Read a word in a <var>process</var> state block,
+            validating the index.
+
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBProcessor(Processes)-requestInterrupt$">requestInterrupt:&nbsp;</a></h3>
+        - (void) <b>requestInterrupt:</b> (uint16_t)mask;<br />
+        <div class="desc">
+
+            OR device interrupt bits into the wakeup register.
+
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBProcessor(Processes)-requeue$to$process$">requeue:&nbsp;to:&nbsp;process:&nbsp;</a></h3>
+        - (void) <b>requeue:</b> (uint32_t)source<b> to:</b> (uint32_t)destination<b> process:</b> (uint16_t)process;<br />
+        <div class="desc">
+
+            Move a <var>process</var> between circular priority
+            queues. A zero <var>source</var> removes a
+            timed-out waiter and preserves a cleanup link.
+
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBProcessor(Processes)-reschedule$">reschedule:&nbsp;</a></h3>
+        - (void) <b>reschedule:</b> (BOOL)preemption;<br />
+        <div class="desc">
+
+            Select the highest-priority runnable process, saving
+            the current context. Preemption additionally saves the
+            evaluation stack.
+
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBProcessor(Processes)-saveProcess$">saveProcess:&nbsp;</a></h3>
+        - (void) <b>saveProcess:</b> (BOOL)preemption;<br />
+        <div class="desc">
+
+            Save the current process context for a voluntary or
+            preemptive switch.
+
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBProcessor(Processes)-setProcessWord$offset$value$">setProcessWord:&nbsp;offset:&nbsp;value:&nbsp;</a></h3>
+        - (void) <b>setProcessWord:</b> (uint16_t)process<b> offset:</b> (unsigned int)offset<b> value:</b> (uint16_t)value;<br />
+        <div class="desc">
+
+            Update a word in a <var>process</var> state block.
+
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBProcessor(Processes)-wakeHead$">wakeHead:&nbsp;</a></h3>
+        - (void) <b>wakeHead:</b> (uint32_t)condition;<br />
+        <div class="desc">
+
+            Wake the highest-priority waiter. The
+            <var>condition</var> must not be empty.
+
+        </div>
+        <hr class="method-separator">
+</div>
+        <br />
+    </div>
+  </div>
+  </body>
+</html>

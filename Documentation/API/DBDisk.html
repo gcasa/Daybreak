@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Draco disk images</title>
+<meta http-equiv="Content-Style-Type" content="text/css"/>
+<link rel="stylesheet" type="text/css" href="default-styles.css" media="screen" title="Normal" />
+  </head>
+  <body>
+    <div class="content-bar">
+      <div class="content-bar-top">
+        <div class="content-bar-top-body">
+          <div class="content-bar-top-body-title">Daybreak</div><br />
+        </div>
+      </div>
+      <div class="content-bar-bottom">
+        <div class="content-bar-bottom-body">
+        </div>
+      </div>
+    </div>
+    <div class="content-pane">
+      <div class="content-pane-body">
+        <h1><a name="title$DBDisk">Draco disk images</a></h1>
+        <h3>Authors</h3>
+        <dl>
+          <dt>Daybreak contributors</dt>
+          <dd>
+          </dd>
+        </dl>
+        <p><b>Date:</b> Generated at 2026-09-21 UTC</p>
+        <p><b>Copyright:</b> (C) 2017, Dr. Hans-Walter Latz. See COPYING.</p>
+
+            <div>
+        </div>
+
+              <h1><a name="001000000000">
+        Software documentation for the DBDisk class
+      </a></h1>
+        <h2 class="class"><a name="class$DBDisk">DBDisk</a> : NSObject</h2>
+<svg width="103pt" height="116pt"
+ viewBox="0.00 0.00 103.00 116.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 112)">
+<title>class_DBDisk</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-112 98.5,-112 98.5,4 -4,4"/>
+<!-- NSObject -->
+<g id="node1" class="node figure_super">
+<title>NSObject</title>
+<polygon fill="lightgrey" stroke="black" points="94.5,-108 0,-108 0,-72 94.5,-72 94.5,-108"/>
+<text xml:space="preserve" text-anchor="middle" x="47.25" y="-80.7" font-family="Times,serif" font-size="24.00">NSObject</text>
+</g>
+<!-- DBDisk -->
+<g id="node2" class="node figure_class">
+<title>DBDisk</title>
+<polygon fill="lightgrey" stroke="black" points="86.25,-36 8.25,-36 8.25,0 86.25,0 86.25,-36"/>
+<text xml:space="preserve" text-anchor="middle" x="47.25" y="-8.7" font-family="Times,serif" font-size="24.00">DBDisk</text>
+</g>
+<!-- NSObject&#45;&gt;DBDisk -->
+<g id="edge1" class="edge">
+<title>NSObject&#45;&gt;DBDisk</title>
+<path fill="none" stroke="black" d="M47.25,-71.7C47.25,-64.41 47.25,-55.73 47.25,-47.54"/>
+<polygon fill="black" stroke="black" points="50.75,-47.62 47.25,-37.62 43.75,-47.62 50.75,-47.62"/>
+</g>
+</g>
+</svg>
+        <blockquote class="declared">
+          <dl>
+            <dt><b>Declared in:</b></dt>
+            <dd>DBDisk.h</dd>
+          </dl>
+        </blockquote>
+        <div class="desc">
+
+          A validated zlib-compressed Draco disk. Changes are kept in
+          memory until explicitly exported to a new image; the
+          input file is never overwritten.
+
+        </div>
+        <p class="global_method_index">
+        </p>
+        <hr class="section-separator">
+<div class="method">
+        <h3><a name="method$DBDisk-changed">changed&nbsp;</a></h3>
+        - (BOOL) <b>changed</b>;<br />
+        <div class="desc">
+
+            Return <code>YES</code> after any sector
+            modification.
+
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBDisk-cylinders">cylinders&nbsp;</a></h3>
+        - (uint16_t) <b>cylinders</b>;<br />
+        <div class="desc">
+
+            Return the number of cylinders.
+
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBDisk-germ">germ&nbsp;</a></h3>
+        - (NSData*) <b>germ</b>;<br />
+        <div class="desc">
+
+            Extract the contiguous, labelled germ from the
+            physical volume root.
+
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBDisk-heads">heads&nbsp;</a></h3>
+        - (uint16_t) <b>heads</b>;<br />
+        <div class="desc">
+
+            Return the number of heads.
+
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBDisk-initWithPath$">initWithPath:&nbsp;</a></h3>
+        - (id) <b>initWithPath:</b> (NSString*)path;<br />
+        <div class="desc">
+
+            Load a.zdisk and its optional.zdisk.zdelta overlay.
+            Raises DBDiskError for corrupt, incomplete or
+            mismatched images.
+
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBDisk-path">path&nbsp;</a></h3>
+        - (NSString*) <b>path</b>;<br />
+        <div class="desc">
+
+            Return the borrowed input path.
+
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBDisk-saveCopyToPath$">saveCopyToPath:&nbsp;</a></h3>
+        - (void) <b>saveCopyToPath:</b> (NSString*)path;<br />
+        <div class="desc">
+
+            Atomically export a complete compressed image.
+            Refuses the input <var>path</var>.
+
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBDisk-sectorCount">sectorCount&nbsp;</a></h3>
+        - (uint32_t) <b>sectorCount</b>;<br />
+        <div class="desc">
+
+            Return the sector count (16 sectors per track).
+
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBDisk-wordAtSector$offset$">wordAtSector:&nbsp;offset:&nbsp;</a></h3>
+        - (uint16_t) <b>wordAtSector:</b> (uint32_t)sector<b> offset:</b> (unsigned int)offset;<br />
+        <div class="desc">
+
+            Read a <var>sector</var> word. Offsets 0..9 are labels
+            and 10..265 are data.
+
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBDisk-writeSector$offset$value$">writeSector:&nbsp;offset:&nbsp;value:&nbsp;</a></h3>
+        - (void) <b>writeSector:</b> (uint32_t)sector<b> offset:</b> (unsigned int)offset<b> value:</b> (uint16_t)value;<br />
+        <div class="desc">
+
+            Change a <var>sector</var> word in the private
+            working image.
+
+        </div>
+        <hr class="method-separator">
+</div>
+        <br />
+    </div>
+  </div>
+  </body>
+</html>

@@ -46,6 +46,13 @@
 - (uint32_t) realPages;
 /** Return the virtual address space page count. */
 - (uint32_t) virtualPages;
+/** Validate a virtual word for device or block access, setting map flags. */
+- (void) validateWord: (uint32_t)address writing: (BOOL)writing;
+/** Read a physical word without modifying map flags (device/display access).
+ */
+- (uint16_t) physicalWord: (uint32_t)address;
+/** Write a physical word without address translation. */
+- (void) writePhysicalWord: (uint32_t)address value: (uint16_t)value;
 /** Read a word, setting the page's referenced flag. */
 - (uint16_t) readWord: (uint32_t)address;
 /** Write a word, setting referenced and dirty flags. */

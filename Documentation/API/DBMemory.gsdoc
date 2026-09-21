@@ -5,7 +5,7 @@
     <title>Daybreak virtual memory</title>
     <author name="Daybreak contributors">
     </author>
-    <date>Generated at 2026-09-20 UTC</date>
+    <date>Generated at 2026-09-21 UTC</date>
     <abstract>
       Word-addressed Mesa memory and page maps.
     </abstract>
@@ -118,6 +118,14 @@
             raise NSInvalidArgumentException.
           </desc>
         </method>
+        <method type="uint16_t">
+          <sel>physicalWord:</sel>
+          <arg type="uint32_t">address</arg>
+          <desc>
+            Read a physical word without modifying map flags
+            (device/display access).
+          </desc>
+        </method>
         <method type="uint32_t">
           <sel>readDoubleWord:</sel>
           <arg type="uint32_t">address</arg>
@@ -159,10 +167,30 @@
             word.
           </desc>
         </method>
+        <method type="void">
+          <sel>validateWord:</sel>
+          <arg type="uint32_t">address</arg>
+          <sel>writing:</sel>
+          <arg type="BOOL">writing</arg>
+          <desc>
+            Validate a virtual word for device or block
+            access, setting map flags.
+          </desc>
+        </method>
         <method type="uint32_t">
           <sel>virtualPages</sel>
           <desc>
             Return the virtual address space page count.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>writePhysicalWord:</sel>
+          <arg type="uint32_t">address</arg>
+          <sel>value:</sel>
+          <arg type="uint16_t">value</arg>
+          <desc>
+            Write a physical word without <var>address</var>
+            translation.
           </desc>
         </method>
         <method type="void">

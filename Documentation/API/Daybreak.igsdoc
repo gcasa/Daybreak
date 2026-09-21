@@ -1,10 +1,28 @@
 {
     output = {
+	"GUI/DBApplication.h" = (
+	    "DBApplication.gsdoc"
+	);
+	"Source/DBBlocks.h" = (
+	    "DBBlocks.gsdoc"
+	);
+	"Source/DBControl.h" = (
+	    "DBControl.gsdoc"
+	);
+	"Source/DBDisk.h" = (
+	    "DBDisk.gsdoc"
+	);
 	"Source/DBInstructions.h" = (
 	    "DBInstructions.gsdoc"
 	);
+	"Source/DBMachine.h" = (
+	    "DBMachine.gsdoc"
+	);
 	"Source/DBMemory.h" = (
 	    "DBMemory.gsdoc"
+	);
+	"Source/DBProcesses.h" = (
+	    "DBProcesses.gsdoc"
 	);
 	"Source/DBProcessor.h" = (
 	    "DBProcessor.gsdoc"
@@ -14,11 +32,29 @@
 	);
     };
     source = {
+	"GUI/DBApplication.h" = (
+	    "GUI/DBApplication.m"
+	);
+	"Source/DBBlocks.h" = (
+	    "Source/DBBlocks.m"
+	);
+	"Source/DBControl.h" = (
+	    "Source/DBControl.m"
+	);
+	"Source/DBDisk.h" = (
+	    "Source/DBDisk.m"
+	);
 	"Source/DBInstructions.h" = (
 	    "Source/DBInstructions.m"
 	);
+	"Source/DBMachine.h" = (
+	    "Source/DBMachine.m"
+	);
 	"Source/DBMemory.h" = (
 	    "Source/DBMemory.m"
+	);
+	"Source/DBProcesses.h" = (
+	    "Source/DBProcesses.m"
 	);
 	"Source/DBProcessor.h" = (
 	    "Source/DBProcessor.m"

@@ -1,101 +1,90 @@
 # Daybreak
 
-Daybreak is an Objective-C port of the shared Mesa execution engine in
-[Dr. Hans-Walter Latz's Dwarf](https://github.com/devhawala/dwarf).
-It uses GNUstep Base, Objective-C 1.0 syntax, explicit retain/release,
-and GNU-style C formatting. No Java runtime is needed to build or run it.
+Daybreak is an Objective-C implementation of the Mesa engine and Draco/6085
+workstation in [Dwarf](https://github.com/devhawala/dwarf). It uses GNUstep
+Base and GUI, Objective-C 1.0 syntax, manual retain/release, GNU-style
+formatting, and autogsdoc header documentation. No Java runtime is required.
 
-**This is an initial processor-core implementation, not a complete Dwarf
-workstation emulator. It does not yet boot ViewPoint, XDE, or GlobalView.**
-The device agents, 6085 I/O processor, control transfers, process scheduler,
-block transfers, and graphical interface still need porting. See
-[the coverage and porting notes](Documentation/PORTING.md).
-
-The implemented engine has independent processor instances, a 14-word stack,
-16-bit words, 32-bit pointers, virtual-memory mapping and protection, and
-261 instruction implementations (including old/new global-frame variants).
-Unsupported instructions raise descriptive exceptions.
+The included Dwarf **XDE 5.0 and ViewPoint 2.0.5 disk images boot**: XDE to its
+desktop (MP 990), ViewPoint to its logged-out screen and login form (MP 8000).
+Control transfers, guest traps and faults, priority scheduling, synchronization,
+interrupts, restartable block transfers, and monochrome graphics are implemented.
+Networking remains offline; floppy media and Duchess agents are not implemented.
+See [port status](Documentation/PORTING.md) for the precise scope.
 
 ## Build and run
 
-On a GNUstep system, install GNUstep Base development headers, gnustep-make,
-and an Objective-C compiler. On Debian/Ubuntu, the packages are
-`libgnustep-base-dev`, `gnustep-make`, and `gobjc`.
+On Debian/Ubuntu install `gobjc`, `gnustep-make`, `libgnustep-base-dev`,
+`libgnustep-gui-dev`, a GNUstep GUI backend, and `zlib1g-dev`.
+Load your GNUstep environment before building with its native makefiles.
 
 ```sh
-make -f Makefile CC=gcc
-./build/daybreak --demo
 make -f Makefile CC=gcc check
+make -f GNUmakefile.gui
+openapp ./Daybreak.app ../dwarf/disks-6085/xde5.0.zdisk
 ```
 
-The demo executes `7 * 6 + 1`, producing stack word `002b` (43).
-The native GNUstep make build is also available:
+The GUI also has an Open Disk button. It provides an 832 × 633 monochrome
+screen, keyboard and three-button mouse input, Pause/Resume, single Step,
+and Save Copy. Disk changes stay in memory until explicitly exported to a
+new `.zdisk`; the input disk and its optional `.zdelta` are never overwritten.
+Booting the OS itself changes its working disk, so save a copy before closing
+if you want those changes. Export while paused for a consistent emulator state;
+as on physical hardware, guest buffers must be flushed before a clean shutdown.
+
+F1–F8 map to Help, Props, Copy, Move, Find, Open, Undo, Again. Escape is Stop,
+Control is Special, and the mouse buttons are Point, Adjust, Menu. This initial
+keyboard map follows a US keyboard. The host pointer is used for the cursor.
+
+On macOS without GNUstep, `make -f Makefile gui` builds
+`build/Daybreak.app` with Apple AppKit and ARC disabled. Launch with:
 
 ```sh
-make -f GNUmakefile
-./obj/daybreak --demo
+open build/Daybreak.app --args ../dwarf/disks-6085/vp2.0.5.zdisk
 ```
 
-For development on macOS without GNUstep, `make -f Makefile` uses Apple
-Foundation with ARC disabled. All project runtime APIs are available in
-GNUstep Base; Apple Foundation is only an alternate development build.
-
-Execute a raw, even-length, big-endian Mesa bytecode image:
+The command-line build supports bounded boot runs and PBM framebuffer exports:
 
 ```sh
-./build/daybreak --steps 5 --base 0x30000 --pc 0 program.bin
+make -f Makefile
+./build/daybreak --disk ../dwarf/disks-6085/xde5.0.zdisk --seconds 30 \
+  --snapshot build/xde.pbm
+./build/daybreak --disk ../dwarf/disks-6085/vp2.0.5.zdisk --seconds 30 \
+  --save-copy build/session.zdisk
+./build/daybreak --demo
 ```
 
-`--post40` selects the changed-chapters global-frame instructions. PC is a
-byte offset; base is a word address. The runner supplies 4 MiB of RAM and
-32 MiB of virtual address space. It initially maps installed RAM directly;
-virtual page zero always traps. This raw format is **not** a germ, disk, or
-compressed `.zdisk` file. Execution is bounded by the requested instruction
-count and reports errors with a nonzero exit status.
+`--switches STRING` overrides the default germ boot switches. `--steps N`
+may replace `--seconds N`; restartable block transfers count their individual
+execution units. The raw bytecode runner remains available:
+`./build/daybreak --steps 5 --base 0x30000 --pc 0 program.bin`.
+`--post40` selects changed-chapters instructions for raw images. Raw files are
+big-endian words, not compressed disks or standalone boot germs.
 
-## Documentation
-
-Public headers contain autogsdoc comments, including ownership, addressing,
-error behavior, and limitations. With GNUstep's `autogsdoc` installed:
+## Documentation and validation
 
 ```sh
 make -f Makefile docs
-```
-
-HTML and GSDoc XML for public and internal headers are written to
-`Documentation/API/`. The public entry
-points are `Source/DBMemory.h` and `Source/DBProcessor.h`.
-
-## Validation
-
-```sh
 make -f Makefile check
-make -f Makefile sanitize
 make -f Makefile reference-check DWARF=../dwarf
+make -f Makefile boot-check DWARF=../dwarf
+make -f Makefile sanitize CC=clang
 ```
 
-`check` runs memory, stack, opcode, fault/retry, and instruction-mode tests,
-the executable demo, and a guard against Objective-C 2.0 syntax.
-`sanitize` rebuilds with AddressSanitizer and UndefinedBehaviorSanitizer;
-select an appropriate compiler with `CC=...`.
-
-`reference-check` additionally requires Python 3 and a JDK. It compiles an
-unmodified local Dwarf checkout and compares thousands of successful
-arithmetic and jump executions, including all active and inactive stack
-slots. It does not claim full instruction, fault-handler, or OS equivalence.
-No Java sources or Xerox disk images are redistributed here.
-
-Detailed results and limitations are recorded in
-[the validation notes](Documentation/VALIDATION.md).
-
-The `.github/workflows/gnustep.yml` workflow builds with GCC and the GNU
-Objective-C runtime and generates documentation on Ubuntu.
+Autogsdoc writes HTML and GSDoc XML from all engine and GUI headers to
+`Documentation/API/`. Start with `DBMachine.h`, `DBProcessor.h`, and
+`DBMemory.h`. The reference comparison requires a JDK and a local Dwarf
+checkout; boot checks additionally require the two disks shown above. They
+keep disk writes in memory and export screenshots to `build/`.
+Xerox images are not redistributed. Detailed results are in
+[validation notes](Documentation/VALIDATION.md).
 
 ## Source provenance
 
-The reference checkout used for this port is Dwarf commit
-`c264af5e37f89d7aa0eec968aa23818bf5a89837`.
+The reference is Dwarf commit `c264af5e37f89d7aa0eec968aa23818bf5a89837`.
 Its BSD 3-Clause license and original copyright are retained in `COPYING`.
-`Tools/port-instructions.py` reproduces the straight-line instruction bodies
-from a local reference checkout; generated Objective-C is checked in.
-After regeneration, run `Tools/format-source.py` with `clang-format`.
+`Tools/port-instructions.py` regenerates straight-line instruction bodies;
+`Tools/format-source.py` applies the GNU layout and Objective-C selector style.
+`Tools/DumpIO.java`, compiled against the reference classes, dumps initial
+6085 IOP words to its first argument and field descriptions to stdout; these
+are the source of the annotated constants in `DBIOInitial.inc`.

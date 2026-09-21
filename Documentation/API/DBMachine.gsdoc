@@ -1,0 +1,124 @@
+<?xml version="1.0"?>
+<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 1.0.4//EN" "http://www.gnustep.org/gsdoc-1_0_4.dtd">
+<gsdoc base="DBMachine" stylesheeturl="default-styles.css">
+  <head>
+    <title>Draco workstation</title>
+    <author name="Daybreak contributors">
+    </author>
+    <date>Generated at 2026-09-21 UTC</date>
+    <copy>2017, Dr. Hans-Walter Latz. See COPYING.</copy>
+  </head>
+  <body>
+    <front><contents /></front>
+    <chapter>
+      <heading>
+        Software documentation for the DBMachine class
+      </heading>
+      <class name="DBMachine" super="DBProcessor">
+        <declared>DBMachine.h</declared>
+        <desc>
+          A single-threaded Draco machine with 4 MB RAM, disk,
+          keyboard and an 832 by 633 monochrome display. Owns
+          a private, writable disk image.
+        </desc>
+        <method type="DBDisk*">
+          <sel>disk</sel>
+          <desc>
+            Return the borrowed working disk.
+          </desc>
+        </method>
+        <method type="uint64_t">
+          <sel>diskReads</sel>
+          <desc>
+            Return completed disk sector reads.
+          </desc>
+        </method>
+        <method type="uint64_t">
+          <sel>diskWrites</sel>
+          <desc>
+            Return completed disk sector writes.
+          </desc>
+        </method>
+        <method type="NSData*">
+          <sel>displayData</sel>
+          <desc>
+            Return packed monochrome scanlines, most significant
+            pixel first.
+          </desc>
+        </method>
+        <method type="BOOL">
+          <sel>displayEnabled</sel>
+          <desc>
+            Return whether the guest has enabled display
+            refresh.
+          </desc>
+        </method>
+        <method type="BOOL">
+          <sel>halted</sel>
+          <desc>
+            Return <code>YES</code> after the guest requests
+            shutdown or suspension.
+          </desc>
+        </method>
+        <method type="id">
+          <sel>initWithDisk:</sel>
+          <arg type="NSString*">path</arg>
+          <sel>switches:</sel>
+          <arg type="NSString*">switches</arg>
+          <desc>
+            Load a Draco disk, initialize the IOP, install its
+            germ, and enter sBoot. This starts execution at the
+            germ; OS readiness depends on guest progress.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>notifyDevice:</sel>
+          <arg type="uint16_t">mask</arg>
+          <desc>
+            Service a notified IOP device. Unknown device masks
+            raise DBDeviceError.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>releaseKeys</sel>
+          <desc>
+            Release all keys, for example on focus loss.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>runForInstructions:</sel>
+          <arg type="uint32_t">count</arg>
+          <desc>
+            Execute a bounded slice, polling device events and
+            process scheduling.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>serviceDisk</sel>
+          <desc>
+            Service pending rigid disk requests.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>setKey:</sel>
+          <arg type="unsigned int">key</arg>
+          <sel>pressed:</sel>
+          <arg type="BOOL">pressed</arg>
+          <desc>
+            Update a Level V keyboard bit (0..143);
+            <var>pressed</var> keys are active low.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>setMouseX:</sel>
+          <arg type="uint16_t">x</arg>
+          <sel>y:</sel>
+          <arg type="uint16_t">y</arg>
+          <desc>
+            Update guest mouse coordinates in display pixels.
+          </desc>
+        </method>
+      </class>
+    </chapter>
+  </body>
+</gsdoc>

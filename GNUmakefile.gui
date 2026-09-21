@@ -1,0 +1,14 @@
+MAKEFILE_NAME = GNUmakefile.gui
+# Native GNUstep application bundle (make -f GNUmakefile.gui).
+GNUSTEP_MAKEFILES ?= $(shell gnustep-config --variable=GNUSTEP_MAKEFILES)
+include $(GNUSTEP_MAKEFILES)/common.make
+APP_NAME = Daybreak
+Daybreak_OBJC_FILES = Source/DBMemory.m Source/DBProcessor.m \
+  Source/DBInstructions.m Source/DBControl.m Source/DBProcesses.m \
+  Source/DBDisk.m Source/DBMachine.m Source/DBBlocks.m \
+  GUI/DBApplication.m GUI/main.m
+Daybreak_APPLICATION_ICON =
+ADDITIONAL_INCLUDE_DIRS = -ISource -IGUI
+ADDITIONAL_OBJCFLAGS = -Wall -Wextra -std=gnu99
+ADDITIONAL_GUI_LIBS = -lz
+include $(GNUSTEP_MAKEFILES)/application.make

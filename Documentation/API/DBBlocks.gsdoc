@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 1.0.4//EN" "http://www.gnustep.org/gsdoc-1_0_4.dtd">
+<gsdoc base="DBBlocks" stylesheeturl="default-styles.css">
+  <head>
+    <title>Restartable Mesa block operations</title>
+    <author name="Daybreak contributors">
+    </author>
+    <date>Generated at 2026-09-21 UTC</date>
+    <copy>2017, Dr. Hans-Walter Latz. See COPYING.</copy>
+  </head>
+  <body>
+    <front><contents /></front>
+    <chapter>
+      <heading>
+        Software documentation for the DBProcessor(Blocks)
+        category
+      </heading>
+      <category name="Blocks" class="DBProcessor">
+        <declared>DBBlocks.h</declared>
+        <desc>
+          Restartable word and byte transfers, comparisons
+          and checksums.
+        </desc>
+        <method type="void">
+          <sel>bitBlt:</sel>
+          <arg type="uint8_t">opcode</arg>
+          <desc>
+            Execute one monochrome BITBLT, COLORBLT or BITBLTX
+            scanline, retaining independent continuation
+            state across process switches and page faults.
+          </desc>
+        </method>
+        <method type="BOOL">
+          <sel>blockOpcode:</sel>
+          <arg type="uint8_t">opcode</arg>
+          <sel>escape:</sel>
+          <arg type="BOOL">escape</arg>
+          <sel>execute:</sel>
+          <arg type="BOOL">execute</arg>
+          <desc>
+            Execute one unit of a block operation and leave
+            continuation operands on the stack when more
+            work remains. This bounds interrupt latency and
+            preserves progress across page faults. execute=NO
+            queries coverage.
+          </desc>
+        </method>
+      </category>
+    </chapter>
+  </body>
+</gsdoc>

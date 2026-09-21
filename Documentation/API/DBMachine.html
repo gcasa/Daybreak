@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Draco workstation</title>
+<meta http-equiv="Content-Style-Type" content="text/css"/>
+<link rel="stylesheet" type="text/css" href="default-styles.css" media="screen" title="Normal" />
+  </head>
+  <body>
+    <div class="content-bar">
+      <div class="content-bar-top">
+        <div class="content-bar-top-body">
+          <div class="content-bar-top-body-title">Daybreak</div><br />
+        </div>
+      </div>
+      <div class="content-bar-bottom">
+        <div class="content-bar-bottom-body">
+        </div>
+      </div>
+    </div>
+    <div class="content-pane">
+      <div class="content-pane-body">
+        <h1><a name="title$DBMachine">Draco workstation</a></h1>
+        <h3>Authors</h3>
+        <dl>
+          <dt>Daybreak contributors</dt>
+          <dd>
+          </dd>
+        </dl>
+        <p><b>Date:</b> Generated at 2026-09-21 UTC</p>
+        <p><b>Copyright:</b> (C) 2017, Dr. Hans-Walter Latz. See COPYING.</p>
+
+            <div>
+        </div>
+
+              <h1><a name="001000000000">
+        Software documentation for the DBMachine class
+      </a></h1>
+        <h2 class="class"><a name="class$DBMachine">DBMachine</a> : DBProcessor</h2>
+<svg width="134pt" height="116pt"
+ viewBox="0.00 0.00 134.00 116.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 112)">
+<title>class_DBMachine</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-112 130,-112 130,4 -4,4"/>
+<!-- DBProcessor -->
+<g id="node1" class="node figure_super">
+<title>DBProcessor</title>
+<polygon fill="lightgrey" stroke="black" points="126,-108 0,-108 0,-72 126,-72 126,-108"/>
+<text xml:space="preserve" text-anchor="middle" x="63" y="-80.7" font-family="Times,serif" font-size="24.00">DBProcessor</text>
+</g>
+<!-- DBMachine -->
+<g id="node2" class="node figure_class">
+<title>DBMachine</title>
+<polygon fill="lightgrey" stroke="black" points="121.12,-36 4.88,-36 4.88,0 121.12,0 121.12,-36"/>
+<text xml:space="preserve" text-anchor="middle" x="63" y="-8.7" font-family="Times,serif" font-size="24.00">DBMachine</text>
+</g>
+<!-- DBProcessor&#45;&gt;DBMachine -->
+<g id="edge1" class="edge">
+<title>DBProcessor&#45;&gt;DBMachine</title>
+<path fill="none" stroke="black" d="M63,-71.7C63,-64.41 63,-55.73 63,-47.54"/>
+<polygon fill="black" stroke="black" points="66.5,-47.62 63,-37.62 59.5,-47.62 66.5,-47.62"/>
+</g>
+</g>
+</svg>
+        <blockquote class="declared">
+          <dl>
+            <dt><b>Declared in:</b></dt>
+            <dd>DBMachine.h</dd>
+          </dl>
+        </blockquote>
+        <div class="desc">
+
+          A single-threaded Draco machine with 4 MB RAM, disk,
+          keyboard and an 832 by 633 monochrome display. Owns
+          a private, writable disk image.
+
+        </div>
+        <p class="global_method_index">
+        </p>
+        <hr class="section-separator">
+<div class="method">
+        <h3><a name="method$DBMachine-disk">disk&nbsp;</a></h3>
+        - (DBDisk*) <b>disk</b>;<br />
+        <div class="desc">
+
+            Return the borrowed working disk.
+
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBMachine-diskReads">diskReads&nbsp;</a></h3>
+        - (uint64_t) <b>diskReads</b>;<br />
+        <div class="desc">
+
+            Return completed disk sector reads.
+
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBMachine-diskWrites">diskWrites&nbsp;</a></h3>
+        - (uint64_t) <b>diskWrites</b>;<br />
+        <div class="desc">
+
+            Return completed disk sector writes.
+
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBMachine-displayData">displayData&nbsp;</a></h3>
+        - (NSData*) <b>displayData</b>;<br />
+        <div class="desc">
+
+            Return packed monochrome scanlines, most significant
+            pixel first.
+
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBMachine-displayEnabled">displayEnabled&nbsp;</a></h3>
+        - (BOOL) <b>displayEnabled</b>;<br />
+        <div class="desc">
+
+            Return whether the guest has enabled display
+            refresh.
+
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBMachine-halted">halted&nbsp;</a></h3>
+        - (BOOL) <b>halted</b>;<br />
+        <div class="desc">
+
+            Return <code>YES</code> after the guest requests
+            shutdown or suspension.
+
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBMachine-initWithDisk$switches$">initWithDisk:&nbsp;switches:&nbsp;</a></h3>
+        - (id) <b>initWithDisk:</b> (NSString*)path<b> switches:</b> (NSString*)switches;<br />
+        <div class="desc">
+
+            Load a Draco disk, initialize the IOP, install its
+            germ, and enter sBoot. This starts execution at the
+            germ; OS readiness depends on guest progress.
+
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBMachine-notifyDevice$">notifyDevice:&nbsp;</a></h3>
+        - (void) <b>notifyDevice:</b> (uint16_t)mask;<br />
+        <div class="desc">
+
+            Service a notified IOP device. Unknown device masks
+            raise DBDeviceError.
+
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBMachine-releaseKeys">releaseKeys&nbsp;</a></h3>
+        - (void) <b>releaseKeys</b>;<br />
+        <div class="desc">
+
+            Release all keys, for example on focus loss.
+
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBMachine-runForInstructions$">runForInstructions:&nbsp;</a></h3>
+        - (void) <b>runForInstructions:</b> (uint32_t)count;<br />
+        <div class="desc">
+
+            Execute a bounded slice, polling device events and
+            process scheduling.
+
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBMachine-serviceDisk">serviceDisk&nbsp;</a></h3>
+        - (void) <b>serviceDisk</b>;<br />
+        <div class="desc">
+
+            Service pending rigid disk requests.
+
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBMachine-setKey$pressed$">setKey:&nbsp;pressed:&nbsp;</a></h3>
+        - (void) <b>setKey:</b> (unsigned int)key<b> pressed:</b> (BOOL)pressed;<br />
+        <div class="desc">
+
+            Update a Level V keyboard bit (0..143);
+            <var>pressed</var> keys are active low.
+
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBMachine-setMouseX$y$">setMouseX:&nbsp;y:&nbsp;</a></h3>
+        - (void) <b>setMouseX:</b> (uint16_t)x<b> y:</b> (uint16_t)y;<br />
+        <div class="desc">
+
+            Update guest mouse coordinates in display pixels.
+
+        </div>
+        <hr class="method-separator">
+</div>
+        <br />
+    </div>
+  </div>
+  </body>
+</html>

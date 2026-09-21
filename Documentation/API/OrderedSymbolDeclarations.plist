@@ -1,9 +1,63 @@
 {
+    DBApplication = (
+	"-windowShouldClose:",
+	"-applicationDidFinishLaunching:",
+	"-applicationDidResignActive:",
+	"-windowDidResignKey:",
+	"-applicationShouldTerminateAfterLastWindowClosed:",
+	"-openDisk:",
+	"-loadDisk:",
+	"-pause:",
+	"-step:",
+	"-saveDisk:",
+	"-tick:",
+	"-refresh",
+	"-reportException:",
+	"-mayDiscardDisk",
+	"-applicationShouldTerminate:"
+    );
+    DBDisk = (
+	"-initWithPath:",
+	"-path",
+	"-heads",
+	"-cylinders",
+	"-sectorCount",
+	"-wordAtSector:offset:",
+	"-writeSector:offset:value:",
+	"-germ",
+	"-changed",
+	"-saveCopyToPath:"
+    );
+    DBDisplayView = (
+	"-setMachine:",
+	"-releaseInput",
+	"-keyEvent:pressed:",
+	"-releaseKey:",
+	"-updateMouse:"
+    );
+    DBMachine = (
+	"-initWithDisk:switches:",
+	"-disk",
+	"-diskReads",
+	"-diskWrites",
+	"-halted",
+	"-displayEnabled",
+	"-displayData",
+	"-setKey:pressed:",
+	"-releaseKeys",
+	"-setMouseX:y:",
+	"-runForInstructions:",
+	"-notifyDevice:",
+	"-serviceDisk"
+    );
     DBMemory = (
 	"+isVacant:",
 	"-initWithRealPages:virtualPages:",
 	"-realPages",
 	"-virtualPages",
+	"-validateWord:writing:",
+	"-physicalWord:",
+	"-writePhysicalWord:value:",
 	"-readWord:",
 	"-writeWord:value:",
 	"-readDoubleWord:",
@@ -30,6 +84,28 @@
 	"-recover",
 	"-discard",
 	"-supportsOpcode:escape:"
+    );
+    "DBProcessor(Blocks)" = (
+	"-blockOpcode:escape:execute:",
+	"-bitBlt:"
+    );
+    "DBProcessor(Control)" = (
+	"-allocateFrame:",
+	"-freeFrame:",
+	"-fetchLink:",
+	"-transfer:source:type:free:",
+	"-call:",
+	"-checkTransferTrap:type:",
+	"-saveStack:",
+	"-loadStack:",
+	"-setGuestTraps:",
+	"-trap:parameter:words:",
+	"-controlOpcode:escape:execute:",
+	"-intervalTimer",
+	"-setIntervalTimer:",
+	"-checkEmptyStack",
+	"-deliverException:opcode:",
+	"-dispatchException:opcode:"
     );
     "DBProcessor(Instructions)" = (
 	"-ESC_x07_SM",
@@ -314,5 +390,22 @@
 	"-divCheckTrap",
 	"-hardwareError:",
 	"-dispatch:escape:execute:"
+    );
+    "DBProcessor(Processes)" = (
+	"-processWord:offset:",
+	"-setProcessWord:offset:value:",
+	"-requeue:to:process:",
+	"-cleanupCondition:",
+	"-wakeHead:",
+	"-notifyWakeup:",
+	"-exitMonitor:",
+	"-enterFailed:",
+	"-reschedule:",
+	"-saveProcess:",
+	"-loadProcess",
+	"-fault:parameter:words:",
+	"-requestInterrupt:",
+	"-pollProcesses",
+	"-processOpcode:escape:execute:"
     );
 }

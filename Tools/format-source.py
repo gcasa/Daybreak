@@ -5,7 +5,7 @@ import re
 import subprocess
 import sys
 formatter = sys.argv[1] if len(sys.argv) > 1 else 'clang-format'
-files = sorted(p for directory in ('Source', 'Tests') for p in pathlib.Path(directory).iterdir() if p.suffix in ('.h', '.m'))
+files = sorted(p for directory in ('Source', 'Tests', 'GUI') for p in pathlib.Path(directory).iterdir() if p.suffix in ('.h', '.m'))
 subprocess.run([formatter, '-i', *map(str, files)], check=True)
 for path in files:
     text = path.read_text()
