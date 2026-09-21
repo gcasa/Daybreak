@@ -1,5 +1,6 @@
 /* GNUstep Objective-C 1.0 desktop interface. See COPYING. */
 #import "DBApplication.h"
+#import "DBDuchess.h"
 
 static int
 db_key (unichar character)
@@ -86,6 +87,9 @@ db_key (unichar character)
 {
   [_machine release];
   [_pressedKeys release];
+  [_pasteKeys release];
+  [_guestCursor release];
+  [_cursorShape release];
   [super dealloc];
 }
 - (BOOL) acceptsFirstResponder
@@ -109,6 +113,7 @@ db_key (unichar character)
   [NSObject cancelPreviousPerformRequestsWithTarget: self];
   [_machine releaseKeys];
   [_pressedKeys removeAllObjects];
+  [_pasteKeys removeAllObjects];
 }
 - (void) drawRect: (NSRect)rect
 {
@@ -122,30 +127,129 @@ db_key (unichar character)
   NSRectFill (rect);
   if (_machine == nil || ![_machine displayEnabled])
     return;
-  data = [_machine displayData];
+  if (![_cursorShape isEqual: [_machine cursorData]])
+    {
+      NSBitmapImageRep *cursor = [[NSBitmapImageRep alloc]
+          initWithBitmapDataPlanes: NULL
+                        pixelsWide: 16
+                        pixelsHigh: 16
+                     bitsPerSample: 8
+                   samplesPerPixel: 4
+                          hasAlpha: YES
+                          isPlanar: NO
+                    colorSpaceName: NSDeviceRGBColorSpace
+                       bytesPerRow: 64
+                      bitsPerPixel: 32];
+      NSImage *cursorImage =
+          [[NSImage alloc] initWithSize: NSMakeSize (16, 16)];
+      unsigned int x, y;
+      const uint16_t *shape;
+      [_cursorShape release];
+      _cursorShape = [[_machine cursorData] copy];
+      shape = [_cursorShape bytes];
+      memset ([cursor bitmapData], 0, 1024);
+      for (y = 0; y < 16; y++)
+        for (x = 0; x < 16; x++)
+          [cursor bitmapData][(y * 16 + x) * 4 + 3]
+              = shape[y] & (0x8000 >> x) ? 255 : 0;
+      [cursorImage addRepresentation: cursor];
+      [_guestCursor release];
+      _guestCursor = [[NSCursor alloc] initWithImage: cursorImage
+                                             hotSpot: NSZeroPoint];
+      [cursor release];
+      [cursorImage release];
+      [[self window] invalidateCursorRectsForView: self];
+    }
+  data = [_machine displayRGB];
   source = [data bytes];
   bitmap = [[NSBitmapImageRep alloc]
       initWithBitmapDataPlanes: NULL
-                    pixelsWide: 832
-                    pixelsHigh: 633
-                 bitsPerSample: 1
-               samplesPerPixel: 1
+                    pixelsWide: [_machine displayWidth]
+                    pixelsHigh: [_machine displayHeight]
+                 bitsPerSample: 8
+               samplesPerPixel: 3
                       hasAlpha: NO
                       isPlanar: NO
-                colorSpaceName: NSDeviceWhiteColorSpace
-                   bytesPerRow: 104
-                  bitsPerPixel: 1];
+                colorSpaceName: NSDeviceRGBColorSpace
+                   bytesPerRow: [_machine displayWidth] * 3
+                  bitsPerPixel: 24];
   bytes = [bitmap bitmapData];
   for (i = 0; i < [data length]; i++)
-    bytes[i] = ~source[i];
-  image = [[NSImage alloc] initWithSize: NSMakeSize (832, 633)];
+    bytes[i] = source[i];
+  image = [[NSImage alloc] initWithSize: NSMakeSize ([_machine displayWidth],
+                                                    [_machine displayHeight])];
   [image addRepresentation: bitmap];
   [image drawInRect: [self bounds]
-           fromRect: NSMakeRect (0, 0, 832, 633)
+           fromRect: NSMakeRect (0, 0, [_machine displayWidth],
+                                [_machine displayHeight])
           operation: NSCompositeCopy
            fraction: 1.0];
   [image release];
   [bitmap release];
+}
+- (void) resetCursorRects
+{
+  [self addCursorRect: [self bounds]
+               cursor: _guestCursor ? _guestCursor : [NSCursor arrowCursor]];
+}
+- (void) copy: (id)sender
+{
+  NSPasteboard *pasteboard = [NSPasteboard generalPasteboard];
+  NSBitmapImageRep *bitmap =
+      [self bitmapImageRepForCachingDisplayInRect: [self bounds]];
+  (void) sender;
+  [self cacheDisplayInRect: [self bounds] toBitmapImageRep: bitmap];
+  [pasteboard declareTypes: [NSArray arrayWithObject: NSTIFFPboardType]
+                     owner: nil];
+  [pasteboard setData: [bitmap TIFFRepresentation] forType: NSTIFFPboardType];
+}
+- (void) print: (id)sender
+{
+  (void) sender;
+  [[NSPrintOperation printOperationWithView: self] runOperation];
+}
+- (void) paste: (id)sender
+{
+  NSString *text =
+      [[NSPasteboard generalPasteboard] stringForType: NSStringPboardType];
+  unsigned int i;
+  (void) sender;
+  [self releaseInput];
+  if (_pasteKeys == nil)
+    _pasteKeys = [[NSMutableArray alloc] init];
+  for (i = 0; i < [text length] && i < 65536; i++)
+    {
+      unichar c = [text characterAtIndex: i];
+      NSString *shifted = @"!@#$%^&*()_+{}:\"~<>?|";
+      NSString *plain = @"1234567890-=[];'`,./\\";
+      NSRange match =
+          [shifted rangeOfString: [NSString stringWithCharacters: &c length: 1]];
+      BOOL shift = (c >= 'A' && c <= 'Z') || match.location != NSNotFound;
+      int key;
+      if (match.location != NSNotFound)
+        c = [plain characterAtIndex: match.location];
+      key = db_key (c);
+      if (key >= 0)
+        [_pasteKeys
+            addObject: [NSNumber numberWithInt: key | (shift ? 256 : 0)]];
+    }
+  [self pasteNext: nil];
+}
+- (void) pasteNext: (id)sender
+{
+  unsigned int key;
+  (void) sender;
+  [_machine setKey: 57 pressed: NO];
+  if ([_pasteKeys count] == 0)
+    return;
+  key = [[_pasteKeys objectAtIndex: 0] unsignedIntValue];
+  [_pasteKeys removeObjectAtIndex: 0];
+  [_machine setKey: 57 pressed: (key & 256) != 0];
+  [_machine setKey: key & 255 pressed: YES];
+  [self performSelector: @selector (releaseKey: )
+             withObject: [NSNumber numberWithUnsignedInt: key & 255]
+             afterDelay: 0.06];
+  [self performSelector: @selector (pasteNext: ) withObject: nil afterDelay: 0.12];
 }
 - (void) keyEvent: (NSEvent *)event pressed: (BOOL)pressed
 {
@@ -156,7 +260,12 @@ db_key (unichar character)
       NSString *characters = [event charactersIgnoringModifiers];
       int code =
           [characters length] ? db_key ([characters characterAtIndex: 0]) : -1;
-      if (code < 0)
+      NSDictionary *mapping = [[NSUserDefaults standardUserDefaults]
+          dictionaryForKey: @"KeyboardMap"];
+      NSNumber *custom = [mapping objectForKey: [host stringValue]];
+      if (custom != nil)
+        code = [custom intValue];
+      if (code < 0 || code >= 112)
         return;
       key = [NSNumber numberWithInt: code];
       [_pressedKeys setObject: key forKey: host];
@@ -200,9 +309,11 @@ db_key (unichar character)
 {
   NSPoint point = [self convertPoint: [event locationInWindow] fromView: nil];
   NSRect bounds = [self bounds];
-  int x = point.x * 832 / bounds.size.width,
-      y = 633 - point.y * 633 / bounds.size.height;
-  [_machine setMouseX: MAX (0, MIN (831, x)) y: MAX (0, MIN (632, y))];
+  int width = [_machine displayWidth], height = [_machine displayHeight];
+  int x = point.x * width / bounds.size.width,
+      y = height - point.y * height / bounds.size.height;
+  [_machine setMouseX: MAX (0, MIN (width - 1, x))
+                    y: MAX (0, MIN (height - 1, y))];
 }
 - (void) mouseMoved: (NSEvent *)event
 {
@@ -286,6 +397,20 @@ db_button (NSView *parent, NSString *title, id target, SEL action, CGFloat x)
 }
 
 @implementation DBApplication
+- (BOOL) application: (NSApplication *)application openFile: (NSString *)path
+{
+  (void) application;
+  if (_window == nil)
+    {
+      [_pendingOpenPath release];
+      _pendingOpenPath = [path copy];
+      return YES;
+    }
+  if (![self mayDiscardDisk])
+    return NO;
+  [self loadDisk: path];
+  return !_paused;
+}
 - (void) applicationDidFinishLaunching: (NSNotification *)notification
 {
   NSView *content;
@@ -324,6 +449,13 @@ db_button (NSView *parent, NSString *title, id target, SEL action, CGFloat x)
                                     action: @selector (configureNetwork: )
                              keyEquivalent: @"n"];
   [item setTarget: self];
+  item = [applicationMenu addItemWithTitle: @"Open Machine Configuration…"
+                                    action: @selector (openConfiguration: )
+                             keyEquivalent: @""];
+  [item setTarget: self];
+  [applicationMenu addItemWithTitle: @"Print Display…"
+                             action: @selector (print: )
+                      keyEquivalent: @"p"];
   [applicationMenu addItem: [NSMenuItem separatorItem]];
   [applicationMenu addItemWithTitle: @"Quit Daybreak"
                              action: @selector (terminate: )
@@ -388,12 +520,25 @@ db_button (NSView *parent, NSString *title, id target, SEL action, CGFloat x)
                                            selector: @selector (tick: )
                                            userInfo: nil
                                             repeats: YES] retain];
-  if ([arguments count] > 1 && ![[arguments objectAtIndex: 1] hasPrefix: @"-"])
+  _hubHost = [[[NSUserDefaults standardUserDefaults]
+      stringForKey: @"NetworkHost"] copy];
+  _hubPort =
+      [[NSUserDefaults standardUserDefaults] integerForKey: @"NetworkPort"];
+  if (_hubPort == 0)
+    _hubPort = 3333;
+  if (_pendingOpenPath != nil)
+    {
+      [self loadDisk: _pendingOpenPath];
+      [_pendingOpenPath release];
+      _pendingOpenPath = nil;
+    }
+  else if ([arguments count] > 1
+           && ![[arguments objectAtIndex: 1] hasPrefix: @"-"])
     [self loadDisk: [arguments objectAtIndex: 1]];
   else
     {
-      NSString *last = [[NSUserDefaults standardUserDefaults]
-          stringForKey: @"LastHardDisk"];
+      NSString *last =
+          [[NSUserDefaults standardUserDefaults] stringForKey: @"LastHardDisk"];
       if (last != nil)
         [self loadDisk: last];
     }
@@ -407,6 +552,7 @@ db_button (NSView *parent, NSString *title, id target, SEL action, CGFloat x)
   [_status release];
   [_mediaStatus release];
   [_hubHost release];
+  [_pendingOpenPath release];
   [_window release];
   [super dealloc];
 }
@@ -450,29 +596,140 @@ db_button (NSView *parent, NSString *title, id target, SEL action, CGFloat x)
   (void) application;
   return [self mayDiscardDisk] ? NSTerminateNow : NSTerminateCancel;
 }
+- (void) openConfiguration: (id)sender
+{
+  NSOpenPanel *panel = [NSOpenPanel openPanel];
+  (void) sender;
+  if ([panel runModalForTypes: [NSArray arrayWithObject: @"plist"]]
+      == NSOKButton)
+    {
+      NSMutableDictionary *configuration =
+          [NSMutableDictionary dictionaryWithContentsOfFile: [panel filename]];
+      NSString *key,
+          *base = [[panel filename] stringByDeletingLastPathComponent];
+      NSArray *paths = [NSArray arrayWithObjects: @"Disk", @"Germ", nil];
+      unsigned int i;
+      if (configuration == nil
+          || ![[NSArray arrayWithObjects: @"Draco", @"Duchess", nil]
+              containsObject: [configuration objectForKey: @"Model"]])
+        {
+          NSRunAlertPanel (@"Invalid configuration",
+                           @"Model must be Draco or Duchess.", @"OK", nil,
+                           nil);
+          return;
+        }
+      for (i = 0; i < [paths count]; i++)
+        {
+          NSString *path;
+          key = [paths objectAtIndex: i];
+          path = [configuration objectForKey: key];
+          if (path != nil && ![path isAbsolutePath])
+            [configuration setObject: [base stringByAppendingPathComponent: path]
+                              forKey: key];
+        }
+      if ([configuration objectForKey: @"Disk"] == nil)
+        {
+          [panel setTitle: @"Select the workstation hard disk"];
+          if ([panel
+                  runModalForTypes: [NSArray arrayWithObjects: @"dsk", @"disk",
+                                                             @"zdisk", nil]]
+              != NSOKButton)
+            return;
+          [configuration setObject: [panel filename] forKey: @"Disk"];
+        }
+      if ([[configuration objectForKey: @"Model"] isEqual: @"Duchess"] &&
+          [configuration objectForKey: @"Germ"] == nil)
+        {
+          [panel setTitle: @"Select the Duchess boot germ"];
+          if ([panel runModalForTypes: [NSArray arrayWithObject: @"germ"]]
+              != NSOKButton)
+            return;
+          [configuration setObject: [panel filename] forKey: @"Germ"];
+        }
+      if (![self mayDiscardDisk])
+        return;
+      NSDictionary *old = [[[NSUserDefaults standardUserDefaults]
+          dictionaryForKey: @"MachineConfiguration"] retain];
+      DBMachine *before = _machine;
+      [[NSUserDefaults standardUserDefaults]
+          setObject: configuration
+             forKey: @"MachineConfiguration"];
+      [self loadDisk: [configuration objectForKey: @"Disk"]];
+      if (_machine == before)
+        {
+          if (old)
+            [[NSUserDefaults standardUserDefaults]
+                setObject: old
+                   forKey: @"MachineConfiguration"];
+          else
+            [[NSUserDefaults standardUserDefaults]
+                removeObjectForKey: @"MachineConfiguration"];
+        }
+      [old release];
+    }
+}
 - (void) openDisk: (id)sender
 {
   NSOpenPanel *panel = [NSOpenPanel openPanel];
   (void) sender;
   [panel setAllowsMultipleSelection: NO];
   [panel setDirectory: [[[NSBundle mainBundle] resourcePath]
-      stringByAppendingPathComponent: @"disks-6085"]];
-  if ([panel runModalForTypes: [NSArray arrayWithObject: @"zdisk"]] == NSOKButton
+                          stringByAppendingPathComponent: @"disks-6085"]];
+  if ([panel runModalForTypes: [NSArray arrayWithObjects: @"zdisk", @"dsk",
+                                                        @"disk", nil]]
+          == NSOKButton
       && [self mayDiscardDisk])
     [self loadDisk: [panel filename]];
 }
 - (void) loadDisk: (NSString *)path
 {
   NS_DURING
-  DBMachine *machine = [[DBMachine alloc] initWithDisk: path switches: nil workingCopy: YES];
+  NSDictionary *configuration = [[NSUserDefaults standardUserDefaults]
+      dictionaryForKey: @"MachineConfiguration"];
+  DBMachine *machine;
+  if ([[configuration objectForKey: @"Model"] isEqual: @"Duchess"]
+      && ![[[path pathExtension] lowercaseString] isEqual: @"zdisk"])
+    {
+      machine = [[DBDuchess alloc]
+          initWithDisk: path
+                 width: [[configuration objectForKey: @"Width"] unsignedIntValue]
+                height: [[configuration objectForKey: @"Height"]
+                           unsignedIntValue]
+                 color: [[configuration objectForKey: @"Color"] boolValue]
+           workingCopy: YES];
+      NS_DURING
+      [(DBDuchess *) machine
+          bootWithGerm: [configuration objectForKey: @"Germ"]
+              switches: [configuration objectForKey: @"Switches"]];
+      NS_HANDLER
+      [machine release];
+      [localException raise];
+      NS_ENDHANDLER
+    }
+  else
+    machine = [[DBMachine alloc]
+        initWithDisk: path
+            switches: [configuration objectForKey: @"Switches"]
+         workingCopy: YES
+         largeScreen: [[configuration objectForKey: @"LargeScreen"] boolValue]];
   [_display setMachine: machine];
   [_machine release];
   _machine = machine;
   if (_hubHost != nil)
     [_machine setNetworkHost: _hubHost port: _hubPort];
+  {
+    NSString *floppyPath =
+        [[NSUserDefaults standardUserDefaults] stringForKey: @"FloppyPath"];
+    if (floppyPath &&
+        [[NSFileManager defaultManager] fileExistsAtPath: floppyPath])
+      [_machine insertFloppy: floppyPath
+                    readOnly: [[NSUserDefaults standardUserDefaults]
+                                 boolForKey: @"FloppyReadOnly"]];
+  }
+  _lastSave = [NSDate timeIntervalSinceReferenceDate];
   _paused = NO;
   [[NSUserDefaults standardUserDefaults] setObject: [[_machine disk] path]
-                                           forKey: @"LastHardDisk"];
+                                            forKey: @"LastHardDisk"];
   [_window setTitle: [NSString stringWithFormat: @"Daybreak — %@",
                                                [path lastPathComponent]]];
   [_pauseButton setTitle: @"Pause"];
@@ -504,10 +761,11 @@ db_button (NSView *parent, NSString *title, id target, SEL action, CGFloat x)
   protect = [[[NSButton alloc] initWithFrame: NSMakeRect (0, 0, 300, 28)]
       autorelease];
   [protect setButtonType: NSSwitchButton];
-  [protect setTitle: @"Write protect (DMK is always protected)"];
+  [protect setTitle: @"Write protect"];
   [panel setAccessoryView: protect];
   [panel setAllowsMultipleSelection: NO];
-  if ([panel runModalForTypes: [NSArray arrayWithObjects: @"imd", @"dmk", nil]]
+  if ([panel runModalForTypes: [NSArray arrayWithObjects: @"imd", @"dmk", @"img",
+                                                        @"raw", nil]]
           != NSOKButton
       || ![self mayDiscardFloppy])
     return;
@@ -521,6 +779,10 @@ db_button (NSView *parent, NSString *title, id target, SEL action, CGFloat x)
     [_machine ejectFloppyDiscardingChanges: YES];
   [_machine insertFloppy: [panel filename]
                 readOnly: [protect state] == NSOnState];
+  [[NSUserDefaults standardUserDefaults] setObject: [panel filename]
+                                            forKey: @"FloppyPath"];
+  [[NSUserDefaults standardUserDefaults] setBool: [protect state] == NSOnState
+                                          forKey: @"FloppyReadOnly"];
   [self refresh];
   NS_HANDLER
   NSRunAlertPanel (@"Cannot insert floppy", @"%@", @"OK", nil, nil,
@@ -533,6 +795,7 @@ db_button (NSView *parent, NSString *title, id target, SEL action, CGFloat x)
   if (![self mayDiscardFloppy])
     return;
   [_machine ejectFloppyDiscardingChanges: YES];
+  [[NSUserDefaults standardUserDefaults] removeObjectForKey: @"FloppyPath"];
   [self refresh];
 }
 - (void) saveFloppy: (id)sender
@@ -542,7 +805,8 @@ db_button (NSView *parent, NSString *title, id target, SEL action, CGFloat x)
   if ([_machine floppy] == nil)
     return;
   panel = [NSSavePanel savePanel];
-  [panel setRequiredFileType: @"imd"];
+  [panel setAllowedFileTypes: [NSArray arrayWithObjects: @"imd", @"dmk", @"img",
+                                                       @"raw", nil]];
   if ([panel runModalForDirectory: nil file: @"Floppy-copy.imd"] != NSOKButton)
     return;
   NS_DURING
@@ -611,6 +875,8 @@ db_button (NSView *parent, NSString *title, id target, SEL action, CGFloat x)
       [_machine setNetworkHost: nil port: 0];
       [_hubHost release];
       _hubHost = nil;
+      [[NSUserDefaults standardUserDefaults]
+          removeObjectForKey: @"NetworkHost"];
     }
   else if (answer == 2)
     {
@@ -631,6 +897,10 @@ db_button (NSView *parent, NSString *title, id target, SEL action, CGFloat x)
       [_hubHost release];
       _hubHost = [name copy];
       _hubPort = number;
+      [[NSUserDefaults standardUserDefaults] setObject: name
+                                                forKey: @"NetworkHost"];
+      [[NSUserDefaults standardUserDefaults] setInteger: number
+                                                 forKey: @"NetworkPort"];
       NS_HANDLER
       NSRunAlertPanel (@"Cannot configure network", @"%@", @"OK", nil, nil,
                        [localException reason]);
@@ -666,8 +936,15 @@ db_button (NSView *parent, NSString *title, id target, SEL action, CGFloat x)
   if (_machine == nil)
     return;
   panel = [NSSavePanel savePanel];
-  [panel setRequiredFileType: @"zdisk"];
-  if ([panel runModalForDirectory: nil file: @"Session.zdisk"] != NSOKButton)
+  [panel setRequiredFileType: [[_machine disk] isKindOfClass: [DBGuamDisk class]]
+                                 ? @"dsk"
+                                 : @"zdisk"];
+  if ([panel runModalForDirectory: nil
+                             file: [[_machine disk]
+                                      isKindOfClass: [DBGuamDisk class]]
+                                      ? @"Session.dsk"
+                                      : @"Session.zdisk"]
+      != NSOKButton)
     return;
   NS_DURING
   [[_machine disk] saveCopyToPath: [panel filename]];
@@ -680,6 +957,16 @@ db_button (NSView *parent, NSString *title, id target, SEL action, CGFloat x)
   NSAutoreleasePool *pool = [NSAutoreleasePool new];
   (void) timer;
   NS_DURING
+  if ([NSDate timeIntervalSinceReferenceDate] - _lastSave >= 30)
+    {
+      _lastSave = [NSDate timeIntervalSinceReferenceDate];
+      [[_machine disk] saveWorkingCopy];
+    }
+  if ([_machine beepSerial] != _lastBeep)
+    {
+      _lastBeep = [_machine beepSerial];
+      NSBeep ();
+    }
   if (!_paused)
     [_machine runForInstructions: 50000];
   else

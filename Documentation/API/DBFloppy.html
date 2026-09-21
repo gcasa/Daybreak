@@ -70,12 +70,13 @@
         <div class="desc">
 
           A private floppy working copy with cylinder/head/sector
-          addressing. Loads ImageDisk (.imd) and DMK
-          (.dmk), including mixed sector sizes and
-          nonsequential sector numbering. DMK is always
-          write-protected; writable IMD changes are
-          exported explicitly and never overwrite the input
-          file. All methods require serialization by the caller.
+          addressing. Loads ImageDisk (.imd), DMK (.dmk)
+          standard raw (.img/.raw), and SCP MFM flux media,
+          including mixed sector sizes and nonsequential
+          sector numbering. DMK header protection and the
+          explicit readOnly option are honored. Exports never
+          overwrite the input file. All methods require
+          serialization by the caller.
 
         </div>
         <p class="global_method_index">
@@ -133,7 +134,10 @@
 
             Load and validate an image; malformed/truncated files
             raise DBFloppyError. <var>readOnly</var> additionally
-            protects IMD media from guest writes.
+            protects media from guest writes. DMK CRC errors
+            and SCP CRC errors remain visible as guest data errors.
+            SCP is decoded to sectors; original timing and weak-bit
+            behavior are not emulated.
 
         </div>
         <hr class="method-separator">
@@ -164,10 +168,11 @@
         - (void) <b>saveCopyToPath:</b> (NSString*)path;<br />
         <div class="desc">
 
-            Atomically export complete IMD media to a
-            separate <var>path</var> and clear changed. DMK
-            input may also be exported as IMD. Raises
-            DBFloppyError on failure.
+            Atomically export IMD, DMK or raw media to a
+            separate <var>path</var> and clear changed. The
+            extension selects the format. Raw export rejects
+            lossy conversions; DMK export regenerates MFM tracks
+            and CRCs. Raises DBFloppyError on failure.
 
         </div>
         <hr class="method-separator">

@@ -83,13 +83,35 @@
         <div class="desc">
 
           A single-threaded Draco machine with 4 MB RAM, disk,
-          keyboard and an 832 by 633 monochrome display. Owns
-          a private, writable disk image.
+          keyboard and an 832 by 633 or 1152 by 861 monochrome
+          display. Owns a private, writable disk image.
 
         </div>
         <p class="global_method_index">
         </p>
         <hr class="section-separator">
+<div class="method">
+        <h3><a name="method$DBMachine-beepSerial">beepSerial&nbsp;</a></h3>
+        - (uint32_t) <b>beepSerial</b>;<br />
+        <div class="desc">
+
+            Return a serial incremented by each guest sound
+            request.
+
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBMachine-cursorData">cursorData&nbsp;</a></h3>
+        - (NSData*) <b>cursorData</b>;<br />
+        <div class="desc">
+
+            Return the current sixteen-word cursor bitmap in
+            host word order.
+
+        </div>
+        <hr class="method-separator">
+</div>
 <div class="method">
         <h3><a name="method$DBMachine-disk">disk&nbsp;</a></h3>
         - (DBDisk*) <b>disk</b>;<br />
@@ -143,6 +165,37 @@
         <hr class="method-separator">
 </div>
 <div class="method">
+        <h3><a name="method$DBMachine-displayHeight">displayHeight&nbsp;</a></h3>
+        - (unsigned int) <b>displayHeight</b>;<br />
+        <div class="desc">
+
+            Return the configured display height in pixels.
+
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBMachine-displayRGB">displayRGB&nbsp;</a></h3>
+        - (NSData*) <b>displayRGB</b>;<br />
+        <div class="desc">
+
+            Return display pixels as packed RGB bytes for host
+            rendering.
+
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBMachine-displayWidth">displayWidth&nbsp;</a></h3>
+        - (unsigned int) <b>displayWidth</b>;<br />
+        <div class="desc">
+
+            Return the configured display width in pixels.
+
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
         <h3><a name="method$DBMachine-halted">halted&nbsp;</a></h3>
         - (BOOL) <b>halted</b>;<br />
         <div class="desc">
@@ -173,6 +226,17 @@
             Boot a private Library disk when workingCopy is
             <code>YES</code>; otherwise use an in-memory image
             suitable for isolated tests.
+
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBMachine-initWithDisk$switches$workingCopy$largeScreen$">initWithDisk:&nbsp;switches:&nbsp;workingCopy:&nbsp;largeScreen:&nbsp;</a></h3>
+        - (id) <b>initWithDisk:</b> (NSString*)path<b> switches:</b> (NSString*)switches<b> workingCopy:</b> (BOOL)working<b> largeScreen:</b> (BOOL)large;<br />
+        <div class="desc">
+
+            Configure a Draco small (832x633) or
+            <var>large</var> (1152x861) display before boot.
 
         </div>
         <hr class="method-separator">

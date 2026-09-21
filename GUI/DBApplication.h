@@ -11,7 +11,18 @@
 {
   DBMachine *_machine;
   NSMutableDictionary *_pressedKeys;
+  NSMutableArray *_pasteKeys;
+  NSCursor *_guestCursor;
+  NSData *_cursorShape;
 }
+/** Export the display to the host clipboard as TIFF. */
+- (void) copy: (id)sender;
+/** Type supported clipboard characters through the guest keyboard. */
+- (void) paste: (id)sender;
+/** Send the next queued clipboard character with a bounded key pulse. */
+- (void) pasteNext: (id)sender;
+/** Print the current emulated display using the native print panel. */
+- (void) print: (id)sender;
 /** Replace the displayed machine, releasing keys on the old machine. */
 - (void) setMachine: (DBMachine *)machine;
 /** Release guest input when the application loses focus. */
@@ -31,16 +42,21 @@
   NSWindow *_window;
   DBDisplayView *_display;
   NSTextField *_status, *_mediaStatus;
-  NSString *_hubHost;
+  NSString *_hubHost, *_pendingOpenPath;
   unsigned int _hubPort;
   NSButton *_pauseButton;
   NSTimer *_timer;
   DBMachine *_machine;
   BOOL _paused;
+  NSTimeInterval _lastSave;
+  uint32_t _lastBeep;
 }
 /** Route window closing through working-disk saving and floppy checks. */
 - (BOOL) windowShouldClose: (id)sender;
-/** Create the window and menus, then open the command-line or last working disk. */
+/** Queue Finder/GNUstep file-open events until the workstation UI is ready. */
+- (BOOL) application: (NSApplication *)application openFile: (NSString *)path;
+/** Create the window and menus, then open the queued, command-line or last
+    working disk. */
 - (void) applicationDidFinishLaunching: (NSNotification *)notification;
 /** Release all guest input when the application loses focus. */
 - (void) applicationDidResignActive: (NSNotification *)notification;
@@ -49,9 +65,13 @@
 /** Terminate after the emulator window closes. */
 - (BOOL) applicationShouldTerminateAfterLastWindowClosed:
     (NSApplication *)application;
+/** Select a property-list machine profile with model, disk, germ and display.
+ */
+- (void) openConfiguration: (id)sender;
 /** Offer a disk picker for XDE, ViewPoint or another Draco image. */
 - (void) openDisk: (id)sender;
-/** Import or resume a Library working disk, replacing the machine after loading.
+/** Import or resume a Library working disk, replacing the machine after
+ * loading.
  */
 - (void) loadDisk: (NSString *)path;
 /** Choose and insert IMD/DMK media, with an optional write-protect switch. */
@@ -78,9 +98,11 @@
 - (void) refresh;
 /** Stop execution and show the actual exception. */
 - (void) reportException: (NSException *)exception;
-/** Save the working hard disk and check floppy changes before replacing or quitting. */
+/** Save the working hard disk and check floppy changes before replacing or
+ * quitting. */
 - (BOOL) mayDiscardDisk;
-/** Save the working disk on termination; cancel termination if saving fails. */
+/** Save the working disk on termination; cancel termination if saving fails.
+ */
 - (NSApplicationTerminateReply) applicationShouldTerminate:
     (NSApplication *)application;
 @end

@@ -5,10 +5,11 @@
 #define DAYBREAK_FLOPPY_H
 #import <Foundation/Foundation.h>
 /** A private floppy working copy with cylinder/head/sector addressing.
-    Loads ImageDisk (.imd) and DMK (.dmk), including mixed sector sizes and
-    nonsequential sector numbering. DMK is always write-protected; writable
-    IMD changes are exported explicitly and never overwrite the input file.
-    All methods require serialization by the caller. */
+    Loads ImageDisk (.imd), DMK (.dmk) standard raw (.img/.raw), and SCP MFM
+   flux media, including mixed sector sizes and nonsequential sector numbering.
+   DMK header protection and the explicit readOnly option are honored. Exports
+   never overwrite the input file. All methods require serialization by the
+   caller. */
 @interface DBFloppy : NSObject
 {
   NSString *_path;
@@ -17,7 +18,9 @@
   BOOL _readOnly, _changed;
 }
 /** Load and validate an image; malformed/truncated files raise DBFloppyError.
-    readOnly additionally protects IMD media from guest writes. */
+    readOnly additionally protects media from guest writes. DMK CRC errors
+    and SCP CRC errors remain visible as guest data errors. SCP is decoded
+    to sectors; original timing and weak-bit behavior are not emulated. */
 - (id) initWithPath: (NSString *)path readOnly: (BOOL)readOnly;
 /** Return the borrowed original image path. */
 - (NSString *) path;
@@ -57,8 +60,10 @@
 - (BOOL) readOnly;
 /** Return YES after a write/format until successful export. */
 - (BOOL) changed;
-/** Atomically export complete IMD media to a separate path and clear changed.
-    DMK input may also be exported as IMD. Raises DBFloppyError on failure. */
+/** Atomically export IMD, DMK or raw media to a separate path and clear
+   changed. The extension selects the format. Raw export rejects lossy
+   conversions; DMK export regenerates MFM tracks and CRCs. Raises
+   DBFloppyError on failure. */
 - (void) saveCopyToPath: (NSString *)path;
 @end
 #endif

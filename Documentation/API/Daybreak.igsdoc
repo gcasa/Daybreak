@@ -12,6 +12,9 @@
 	"Source/DBDisk.h" = (
 	    "DBDisk.gsdoc"
 	);
+	"Source/DBDuchess.h" = (
+	    "DBDuchess.gsdoc"
+	);
 	"Source/DBFloppy.h" = (
 	    "DBFloppy.gsdoc"
 	);
@@ -49,6 +52,9 @@
 	);
 	"Source/DBDisk.h" = (
 	    "Source/DBDisk.m"
+	);
+	"Source/DBDuchess.h" = (
+	    "Source/DBDuchess.m"
 	);
 	"Source/DBFloppy.h" = (
 	    "Source/DBFloppy.m"

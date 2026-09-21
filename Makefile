@@ -6,7 +6,7 @@ SANITIZERS ?= address,undefined
 CPPFLAGS += -ISource
 CFLAGS ?= -O2 -g
 OBJCFLAGS += -Wall -Wextra -Werror -std=gnu99
-CORE = Source/DBMemory.m Source/DBProcessor.m Source/DBInstructions.m Source/DBControl.m Source/DBProcesses.m Source/DBDisk.m Source/DBMachine.m Source/DBBlocks.m Source/DBNetwork.m Source/DBFloppy.m Source/DBDevices.m
+CORE = Source/DBMemory.m Source/DBProcessor.m Source/DBInstructions.m Source/DBControl.m Source/DBProcesses.m Source/DBDisk.m Source/DBMachine.m Source/DBDuchess.m Source/DBBlocks.m Source/DBNetwork.m Source/DBFloppy.m Source/DBFlux.m Source/DBDevices.m
 LDLIBS += -lz
 HEADERS = $(wildcard Source/*.h) Source/DBInstructionDispatch.inc Source/DBIOInitial.inc
 HAVE_GNUSTEP := $(shell command -v $(GNUSTEP_CONFIG) 2>/dev/null)
@@ -32,10 +32,11 @@ build/system-tests: $(CORE) Tests/SystemTests.m $(HEADERS) | build
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(OBJCFLAGS) $(CORE) Tests/SystemTests.m -o $@ $(LDLIBS)
 build/device-tests: $(CORE) Tests/DeviceTests.m $(HEADERS) | build
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(OBJCFLAGS) $(CORE) Tests/DeviceTests.m -o $@ $(LDLIBS)
-check: build/tests build/system-tests build/device-tests build/daybreak
+check: build/tests build/system-tests build/device-tests build/feature-tests build/daybreak
 	./build/tests
 	./build/system-tests
 	./build/device-tests
+	./build/feature-tests
 	./build/daybreak --demo
 	python3 Tools/check-objc1.py
 sanitize:
@@ -59,7 +60,7 @@ ifneq ($(HAVE_GNUSTEP),)
 gui:
 	$(MAKE) -f GNUmakefile.gui
 else
-gui: build/Daybreak.app/Contents/MacOS/Daybreak build/Daybreak.app/Contents/Info.plist build/Daybreak.app/Contents/Resources/Daybreak.icns build/Daybreak.app/Contents/Resources/disks-6085/.stamp
+gui: build/Daybreak.app/Contents/MacOS/Daybreak build/Daybreak.app/Contents/Info.plist build/Daybreak.app/Contents/Resources/Daybreak.icns build/Daybreak.app/Contents/Resources/disks-6085/.stamp build/Daybreak.app/Contents/Resources/Configurations/.stamp
 endif
 build/Daybreak.app/Contents/MacOS/Daybreak: $(CORE) GUI/DBApplication.m GUI/main.m GUI/DBApplication.h $(HEADERS)
 	mkdir -p build/Daybreak.app/Contents/MacOS
@@ -83,4 +84,12 @@ boot-check: build/boot-tests
 build/Daybreak.app/Contents/Resources/disks-6085/.stamp: $(wildcard disks-6085/*)
 	mkdir -p $(@D)
 	cp disks-6085/* $(@D)/
+	touch $@
+
+build/feature-tests: $(CORE) Tests/FeatureTests.m $(HEADERS) | build
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(OBJCFLAGS) $(CORE) Tests/FeatureTests.m -o $@ $(LDLIBS)
+
+build/Daybreak.app/Contents/Resources/Configurations/.stamp: $(wildcard Configurations/*)
+	mkdir -p $(@D)
+	cp Configurations/* $(@D)/
 	touch $@

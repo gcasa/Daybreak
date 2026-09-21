@@ -1,6 +1,7 @@
 /* Daybreak Mesa instruction runner.  See COPYING. */
 #import "DBProcessor.h"
 #import "DBMachine.h"
+#import "DBDuchess.h"
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -30,15 +31,19 @@ db_usage (FILE *stream)
       "Usage: daybreak --demo\n"
       "       daybreak [--post40] [--steps N] [--pc N] [--base N] FILE\n"
       "       daybreak --disk [--seconds N | --steps N] [--snapshot "
-      "FILE.pbm]\n"
+      "FILE.ppm]\n"
+      "       Duchess: --duchess --germ FILE [--color] [--width N --height "
+      "N]\n"
+      "       Draco: --large-screen\n"
       "                [--save-copy FILE.zdisk] [--switches STRING] "
       "DISK.zdisk\n"
-      "                [--floppy FILE.imd|FILE.dmk] [--floppy-read-only]\n"
+      "                [--floppy FILE.imd|FILE.dmk|FILE.img|FILE.scp] "
+      "[--floppy-read-only]\n"
       "                [--save-floppy COPY.imd] [--hub HOST] [--hub-port "
       "PORT]\n"
       "                [--host-id 1000FE31AB21]\n\n"
       "Disk mode loads the embedded Draco germ and boots for 30 seconds.\n"
-      "Disk changes stay in memory unless --save-copy is specified.\n"
+      "Disk changes are saved to a private Library working copy.\n"
       "Raw mode defaults to 100 instructions, PC 0, word base 0x30000.\n");
 }
 
@@ -56,7 +61,9 @@ main (int argc, char **argv)
   NSData *data = nil;
   const char *file = NULL, *snapshot = NULL, *saveCopy = NULL,
              *switches = NULL, *floppy = NULL, *floppyCopy = NULL, *hub = NULL,
-             *hostID = NULL;
+             *hostID = NULL, *germ = NULL;
+  BOOL duchess = NO, color = NO, large = NO;
+  uint32_t width = 960, height = 720;
   BOOL floppyReadOnly = NO, explicitHubPort = NO;
   uint32_t hubPort = 3333;
   uint32_t steps = 100, pc = 0, base = 0x30000, seconds = 30;
@@ -70,6 +77,36 @@ main (int argc, char **argv)
           db_usage (stdout);
           [pool release];
           return 0;
+        }
+      else if (strcmp (argv[i], "--duchess") == 0)
+        {
+          duchess = YES;
+          disk = YES;
+        }
+      else if (strcmp (argv[i], "--color") == 0)
+        color = YES;
+      else if (strcmp (argv[i], "--large-screen") == 0)
+        large = YES;
+      else if (strcmp (argv[i], "--germ") == 0)
+        {
+          if (++i == argc)
+            {
+              status = 2;
+              break;
+            }
+          germ = argv[i];
+        }
+      else if (strcmp (argv[i], "--width") == 0
+               || strcmp (argv[i], "--height") == 0)
+        {
+          BOOL isWidth = strcmp (argv[i], "--width") == 0;
+          if (++i == argc
+              || !db_number (argv[i], isWidth ? 2048 : 1536,
+                             isWidth ? &width : &height))
+            {
+              status = 2;
+              break;
+            }
         }
       else if (strcmp (argv[i], "--demo") == 0)
         demo = YES;
@@ -155,9 +192,11 @@ main (int argc, char **argv)
       else
         file = argv[i];
     }
-  if (status || (demo && (disk || file != NULL)) || (!demo && file == NULL)
-      || (explicitSteps && explicitSeconds) || (floppyCopy && !floppy)
-      || (floppyReadOnly && !floppy) || (explicitHubPort && !hub)
+  if (status || (duchess && !germ) || (color && !duchess) || (germ && !duchess)
+      || (large && duchess) || (demo && (disk || file != NULL))
+      || (!demo && file == NULL) || (explicitSteps && explicitSeconds)
+      || (floppyCopy && !floppy) || (floppyReadOnly && !floppy)
+      || (explicitHubPort && !hub)
       || (!disk
           && (snapshot || saveCopy || switches || explicitSeconds || floppy
               || hub || hostID)))
@@ -169,11 +208,28 @@ main (int argc, char **argv)
   NS_DURING
   if (disk)
     {
-      cpu = [[DBMachine alloc]
-          initWithDisk: [NSString stringWithUTF8String: file]
-              switches: switches ? [NSString stringWithUTF8String: switches]
-                                : nil workingCopy: YES];
-      printf ("Working disk: %s\n", [[[(DBMachine *) cpu disk] path] UTF8String]);
+      if (duchess)
+        {
+          cpu = [[DBDuchess alloc]
+              initWithDisk: [NSString stringWithUTF8String: file]
+                     width: width
+                    height: height
+                     color: color
+               workingCopy: YES];
+          [(DBDuchess *) cpu
+              bootWithGerm: [NSString stringWithUTF8String: germ]
+                  switches: switches ? [NSString stringWithUTF8String: switches]
+                                    : nil];
+        }
+      else
+        cpu = [[DBMachine alloc]
+            initWithDisk: [NSString stringWithUTF8String: file]
+                switches: switches ? [NSString stringWithUTF8String: switches]
+                                  : nil
+             workingCopy: YES
+             largeScreen: large];
+      printf ("Working disk: %s\n",
+              [[[(DBMachine *) cpu disk] path] UTF8String]);
       if (hostID)
         [(DBMachine *) cpu setHostID: [NSString stringWithUTF8String: hostID]];
       if (floppy)
@@ -187,12 +243,18 @@ main (int argc, char **argv)
       else
         {
           double end = [NSDate timeIntervalSinceReferenceDate] + seconds;
+          double nextSave = [NSDate timeIntervalSinceReferenceDate] + 30;
           while ([NSDate timeIntervalSinceReferenceDate] < end
                  && ![(DBMachine *) cpu halted])
             {
               NSAutoreleasePool *slice = [NSAutoreleasePool new];
               NS_DURING
               [cpu runForInstructions: 50000];
+              if ([NSDate timeIntervalSinceReferenceDate] >= nextSave)
+                {
+                  [[(DBMachine *) cpu disk] saveWorkingCopy];
+                  nextSave = [NSDate timeIntervalSinceReferenceDate] + 30;
+                }
               NS_HANDLER
               [localException retain];
               [slice release];
@@ -208,9 +270,13 @@ main (int argc, char **argv)
         }
       if (snapshot != NULL)
         {
-          NSMutableData *image = [NSMutableData dataWithBytes: "P4\n832 633\n"
-                                                       length: 11];
-          [image appendData: [(DBMachine *) cpu displayData]];
+          NSString *header =
+              [NSString stringWithFormat: @"P6\n%u %u\n255\n",
+                                         [(DBMachine *) cpu displayWidth],
+                                         [(DBMachine *) cpu displayHeight]];
+          NSMutableData *image = [NSMutableData
+              dataWithData: [header dataUsingEncoding: NSASCIIStringEncoding]];
+          [image appendData: [(DBMachine *) cpu displayRGB]];
           if (![image writeToFile: [NSString stringWithUTF8String: snapshot]
                        atomically: YES])
             [NSException raise: @"DBOutputError"

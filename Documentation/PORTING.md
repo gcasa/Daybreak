@@ -10,11 +10,11 @@ the reference checkout. It is a native implementation, not a Java wrapper.
 | Scalar instructions | DBInstructions: generated arithmetic, stack, jumps and assignments |
 | Control | DBControl: frame allocation, old/new global frames, calls/returns, transfer traps, guest trap dispatch, state vectors |
 | Processes | DBProcesses: priority queues, preemption, monitors, conditions, interrupts, timeouts and fault queues |
-| Transfers/graphics | DBBlocks: restartable word/byte transfers, comparisons/checksum, monochrome BITBLT/COLORBLT/BITBLTX |
-| Boot | DBMachine: Draco memory map, germ extraction, boot request, processor IOP commands |
+| Transfers/graphics | DBBlocks: restartable word/byte transfers, comparisons/checksum, monochrome/color BITBLT/COLORBLT/BITBLTX and TRAPZBLT |
+| Boot | DBMachine: Draco memory map, germ extraction, boot request, processor IOP commands; DBDuchess: Guam map, germ loader and agents |
 | Disk | DBDisk and DBMachine: compressed disk/delta loading, labels/data, asynchronous guest completion protocol, export |
 | Networking | DBNetwork and DBDevices: nonblocking NetHub TCP framing, queued receive buffers, send/receive completion and interrupts, reset/reconnect |
-| Floppy | DBFloppy and DBDevices: IMD/DMK parsing, media changes, read/write/deleted data, read-ID and track format, write protection, DMA errors and export |
+| Floppy | DBFloppy and DBDevices: IMD/DMK/raw/SCP MFM parsing, media changes, read/write/deleted data, read-ID and track format, write protection, DMA errors and export |
 | Display/input | DBMachine and DBApplication: framebuffer, retrace, keyboard/mouse, native AppKit window and controls |
 
 ## Execution and ownership
@@ -44,31 +44,34 @@ host wall clock used for the guest calendar.
 
 ## Device scope and remaining work
 
-* The supported boot target is small-screen, monochrome Draco/6085. Duchess
-  device agents, large-screen/color configurations and other OS images have
-  not been ported or validated.
-* Disk changes are private in-memory working copies. Save Copy exports a
-  complete compressed image atomically, refuses the input path, and refuses
-  destinations with a conflicting delta file. Hardware formatting is not
-  implemented. Guest label/data verification reports device errors.
-* Networking connects to an explicitly configured Dwarf NetHub. A separate
-  XNS service environment is required for network applications. There is no
-  direct host Ethernet/TAP bridge, internal time responder or XNS server.
-  Socket polling is nonblocking; initial endpoint DNS resolution is synchronous.
-* IMD floppies use private writable copies and explicit export; DMK media
-  are protected and may be exported as IMD. Sector-level controller requests
-  include read/write, deleted marks, read-ID and formatting. No raw/flux images,
-  rotational timing or low-level FDC scan commands are implemented. IMD error
-  flags are retained; DMK raw CRC bytes are not verified. Replacing media
-  exposes a 500 ms door-open interval to Pilot.
-* Beep notifications produce no host audio.
-* The GUI uses a host cursor and a basic US keyboard map. Guest cursor shapes,
-  configurable key mappings, clipboard, printing and full Dwarf UI features
-  remain outside this implementation.
-* TRAPZBLT and VMFIND are not implemented. Unsupported instructions use guest
-  software trap handlers where available, including Dwarf's TXTBLT and
-  floating-point fallback cases. This is not full opcode equivalence.
+Implemented additions include Duchess disk/floppy/network/keyboard/mouse/
+processor/display/beep agents, raw Pilot disks with delta import, Draco large
+screens, indexed-color rendering and palettes, VMFIND, TRAPZBLT, hardware disk
+format commands, writable DMK export with CRC validation, raw and SCP MFM
+floppy import, Draco scan operations, TAP transport and local XNS time/echo.
+GUI profiles select machine and display settings. Cursor shapes, configurable
+key mappings, clipboard typing/screen copying, screen printing, host beeps,
+persistent media/network settings and periodic disk checkpoints are present.
+
+Remaining limitations are explicit:
+
+* XNS filer, authentication/clearinghouse services and external login/filer
+  interoperability are not implemented or validated by this change. NetHub
+  and external services can be selected separately.
+* Clipboard copy captures the display, not guest-selected text; printing is
+  host framebuffer printing, not a guest Interpress printer agent. Serial,
+  parallel, stream/file-boot and other unused Guam agents are unavailable.
+* SCP supports MFM decoding into sectors. FM/GCR flux, weak bits, flux export
+  and hardware rotational timing are not emulated. Real Xerox floppy media
+  has not been validated. Disk formatting is logical sector formatting.
+* Checkpoints preserve the prior disk save, not CPU/RAM state. Recovery is
+  manual by opening the `.previous` image; consistency still depends on guest
+  filesystem buffers having been flushed.
+* TXTBLT and floating-point fallback instructions still enter guest software
+  trap handlers where available. Full opcode/device equivalence is not claimed.
+* Dawn/Tajo boots in Duchess monochrome and color configurations, but this does
+  not validate GlobalView or other OS releases, authenticated sessions, every
+  palette/graphics operation or every media/controller combination.
 
 The reference machine ID matches the supplied ViewPoint configuration.
-The guest's calendar and software configuration can still require adjustment
-inside the OS. Header documentation describes individual API contracts.
+Header documentation describes individual API contracts.

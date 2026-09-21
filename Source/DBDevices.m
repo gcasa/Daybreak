@@ -359,13 +359,15 @@ db_dma_write (DBMemory *m, uint32_t at, NSData *data, unsigned int count)
   unsigned int middle = db_device_swap ([_memory readWord: iocb + 78]);
   unsigned int last = db_device_swap ([_memory readWord: iocb + 88]);
   volatile unsigned int result = 1, transferred = 0;
+  volatile BOOL scanHit = NO, scanEqual = NO;
   [_memory writeWord: iocb + 36 value: db_device_swap (index + 1)];
   [_memory writeWord: cmd + 2
                value: ([_memory readWord: cmd + 2] & 0xff00)
                      | ([_memory readWord: cmd + 2] >> 8)];
   NS_DURING
   uint32_t buffer = 0;
-  if (op == 1 || op == 2 || op == 3 || op == 5 || op == 14 || op == 15)
+  if (op == 1 || op == 2 || op == 3 || op == 5 || (op >= 7 && op <= 9)
+      || op == 14 || op == 15)
     buffer = db_opie (_memory, iocb + 14, NO);
   if (([_memory readWord: iocb + 22] >> 8) != 0)
     result = 12;
@@ -412,7 +414,8 @@ db_dma_write (DBMemory *m, uint32_t at, NSData *data, unsigned int count)
       if (result == 1)
         transferred = count * 4;
     }
-  else if (op == 2 || op == 3 || op == 5 || op == 14 || op == 15)
+  else if (op == 2 || op == 3 || op == 5 || (op >= 7 && op <= 9) || op == 14
+           || op == 15)
     {
       unsigned int size = code <= 6 ? 128U << code : 0;
       unsigned int total = first + middle + last,
@@ -451,6 +454,29 @@ db_dma_write (DBMemory *m, uint32_t at, NSData *data, unsigned int count)
                                      sector: sector
                                        data: db_dma_read (_memory, buffer, size)
                                     deleted: op == 15];
+          else if (op >= 7 && op <= 9)
+            {
+              NSData *comparison = db_dma_read (_memory, buffer, size);
+              const unsigned char *diskBytes = [data bytes],
+                                  *cpuBytes = [comparison bytes];
+              unsigned int n;
+              int relation = 0;
+              if (mediaStatus != 1)
+                {
+                  result = mediaStatus;
+                  break;
+                }
+              for (n = 0; n < size; n++)
+                if (cpuBytes[n] != 255 && diskBytes[n] != cpuBytes[n])
+                  {
+                    relation = diskBytes[n] < cpuBytes[n] ? -1 : 1;
+                    break;
+                  }
+              scanEqual = relation == 0;
+              scanHit = op == 7   ? relation == 0
+                        : op == 8 ? relation >= 0
+                                  : relation <= 0;
+            }
           else
             {
               if (mediaStatus == 8)
@@ -466,6 +492,8 @@ db_dma_write (DBMemory *m, uint32_t at, NSData *data, unsigned int count)
             break;
           transferred += size;
           remaining--;
+          if (scanHit)
+            break;
           if ([_memory readWord: iocb + 34] & 0xff00)
             buffer += size / 2;
           sector++;
@@ -512,7 +540,9 @@ db_dma_write (DBMemory *m, uint32_t at, NSData *data, unsigned int count)
                        | ([_memory readWord: cmd + 8] >> 8)];
     [_memory writeWord: cmd + 9 value: (st0 << 8) | st1];
     [_memory writeWord: cmd + 10
-                 value: ((result == 5   ? 0x40
+                 value: ((op >= 7 && op <= 9 && result == 1
+                             ? (scanHit ? (scanEqual ? 8 : 0) : 4)
+                         : result == 5 ? 0x40
                          : result == 8 ? 0x20
                                        : 0)
                         << 8)

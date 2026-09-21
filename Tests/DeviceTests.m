@@ -236,6 +236,14 @@ floppy_io_tests (DBMachine *machine, NSString *path, NSString *directory)
   floppy_request (m, 2, 0, 0, 1, 0, 1);
   [machine serviceFloppy];
   CHECK ([m readWord: 0x3000] == 0x5678);
+  floppy_request (m, 7, 0, 0, 1, 0, 1);
+  [machine serviceFloppy];
+  CHECK (([m readWord: 0x102f] >> 8) == 8);
+  [m writeWord: 0x3000 value: 0];
+  floppy_request (m, 7, 0, 0, 1, 0, 1);
+  [machine serviceFloppy];
+  CHECK (([m readWord: 0x102f] >> 8) == 4);
+
   {
     volatile BOOL caught = NO;
     NS_DURING [machine ejectFloppyDiscardingChanges: NO];

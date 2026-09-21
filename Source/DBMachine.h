@@ -8,7 +8,8 @@
 #import "DBNetwork.h"
 #import "DBFloppy.h"
 /** A single-threaded Draco machine with 4 MB RAM, disk, keyboard and an
-    832 by 633 monochrome display. Owns a private, writable disk image. */
+    832 by 633 or 1152 by 861 monochrome display. Owns a private, writable disk
+   image. */
 @interface DBMachine : DBProcessor
 {
   DBDisk *_disk;
@@ -20,6 +21,9 @@
   uint16_t _hostID[3];
   uint64_t _packetsSent, _packetsReceived;
   BOOL _displayEnabled, _halted;
+  unsigned int _displayWidth, _displayHeight, _displayStride;
+  uint32_t _displayBase, _beepSerial;
+  uint16_t _cursor[16];
   uint32_t _lastRetrace;
   uint64_t _diskReads, _diskWrites;
   int32_t _gmtCorrection;
@@ -30,7 +34,8 @@
 - (id) initWithDisk: (NSString *)path switches: (NSString *)switches;
 /** Boot a private Library disk when workingCopy is YES; otherwise use an
     in-memory image suitable for isolated tests. */
-- (id) initWithDisk: (NSString *)path switches: (NSString *)switches
+- (id) initWithDisk: (NSString *)path
+          switches: (NSString *)switches
        workingCopy: (BOOL)working;
 /** Return the borrowed working disk. */
 - (DBDisk *) disk;
@@ -42,6 +47,22 @@
 - (BOOL) halted;
 /** Return whether the guest has enabled display refresh. */
 - (BOOL) displayEnabled;
+/** Configure a Draco small (832x633) or large (1152x861) display before boot.
+ */
+- (id) initWithDisk: (NSString *)path
+          switches: (NSString *)switches
+       workingCopy: (BOOL)working
+       largeScreen: (BOOL)large;
+/** Return the configured display width in pixels. */
+- (unsigned int) displayWidth;
+/** Return the configured display height in pixels. */
+- (unsigned int) displayHeight;
+/** Return display pixels as packed RGB bytes for host rendering. */
+- (NSData *) displayRGB;
+/** Return the current sixteen-word cursor bitmap in host word order. */
+- (NSData *) cursorData;
+/** Return a serial incremented by each guest sound request. */
+- (uint32_t) beepSerial;
 /** Return packed monochrome scanlines, most significant pixel first. */
 - (NSData *) displayData;
 /** Update a Level V keyboard bit (0..143); pressed keys are active low. */

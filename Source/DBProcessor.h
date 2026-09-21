@@ -39,6 +39,8 @@ typedef struct DBProcessorState DBProcessorState;
   DBMemory *_memory;
   DBProcessorState _state;
   BOOL _post40;
+  unsigned int _displayDepth;
+  uint32_t _displayVirtualStart, _displayVirtualEnd;
   BOOL _guestTraps;
   NSMutableDictionary *_bitBlts;
   uint32_t _nextBitBlt;

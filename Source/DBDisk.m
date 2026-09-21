@@ -68,8 +68,8 @@ db_inflate (NSString *path)
 + (NSString *) workingDirectory
 {
 #ifdef GNUSTEP
-  NSString *library = [NSHomeDirectory ()
-      stringByAppendingPathComponent: @"GNUstep/Library"];
+  NSString *library =
+      [NSHomeDirectory () stringByAppendingPathComponent: @"GNUstep/Library"];
 #else
   NSString *library = [NSHomeDirectory ()
       stringByAppendingPathComponent: @"Library/Application Support"];
@@ -89,9 +89,10 @@ db_inflate (NSString *path)
   if ([input hasPrefix: [root stringByAppendingString: @"/"]])
     {
       source = [NSString stringWithContentsOfFile:
-          [[input stringByDeletingLastPathComponent]
-              stringByAppendingPathComponent: @"source.txt"]
-          encoding: NSUTF8StringEncoding error: NULL];
+                             [[input stringByDeletingLastPathComponent]
+                                 stringByAppendingPathComponent: @"source.txt"]
+                                         encoding: NSUTF8StringEncoding
+                                            error: NULL];
       if (source == nil)
         [NSException raise: @"DBDiskError"
                     format: @"Managed disk has no source record: %@", input];
@@ -99,19 +100,23 @@ db_inflate (NSString *path)
     }
   else
     {
-      directory = [root stringByAppendingPathComponent:
-          [[NSProcessInfo processInfo] globallyUniqueString]];
+      directory =
+          [root stringByAppendingPathComponent: [[NSProcessInfo processInfo]
+                                                   globallyUniqueString]];
       if (![manager createDirectoryAtPath: directory
-              withIntermediateDirectories: YES attributes: nil error: NULL])
+              withIntermediateDirectories: YES
+                               attributes: nil
+                                    error: NULL])
         [NSException raise: @"DBDiskError"
                     format: @"Cannot create hard disk directory %@", directory];
-      destination = [directory stringByAppendingPathComponent:
-          [input lastPathComponent]];
-      if (![input writeToFile: [directory stringByAppendingPathComponent:
-                                  @"source.txt"]
-                  atomically: YES encoding: NSUTF8StringEncoding error: NULL])
-        [NSException raise: @"DBDiskError"
-                    format: @"Cannot record disk source"];
+      destination =
+          [directory stringByAppendingPathComponent: [input lastPathComponent]];
+      if (![input writeToFile: [directory
+                                  stringByAppendingPathComponent: @"source.txt"]
+                   atomically: YES
+                     encoding: NSUTF8StringEncoding
+                        error: NULL])
+        [NSException raise: @"DBDiskError" format: @"Cannot record disk source"];
       [self writeImageToPath: destination];
       _sourcePath = [_path copy];
       [_path release];
@@ -128,6 +133,14 @@ db_inflate (NSString *path)
 {
   if (_workingCopy && _changed)
     {
+      NSData *previous = [NSData dataWithContentsOfFile: _path];
+      NSString *backup = [[_path stringByDeletingPathExtension]
+          stringByAppendingString: [NSString
+                                      stringWithFormat: @".previous.%@",
+                                                       [_path pathExtension]]];
+      if (previous == nil || ![previous writeToFile: backup atomically: YES])
+        [NSException raise: @"DBDiskError"
+                    format: @"Cannot checkpoint disk %@", _path];
       [self writeImageToPath: _path];
       _changed = NO;
     }
@@ -280,8 +293,8 @@ db_inflate (NSString *path)
 }
 - (void) saveCopyToPath: (NSString *)path
 {
-  if ([db_absolute_path (path) isEqual: _path]
-      || [db_absolute_path (path) isEqual: _sourcePath])
+  if ([db_absolute_path (path) isEqual: _path] ||
+      [db_absolute_path (path) isEqual: _sourcePath])
     [NSException raise: @"DBDiskError" format: @"Choose a new output file"];
   [self writeImageToPath: path];
   if (!_workingCopy)

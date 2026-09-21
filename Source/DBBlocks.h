@@ -10,8 +10,11 @@
     the stack when more work remains. This bounds interrupt latency and
     preserves progress across page faults. execute=NO queries coverage. */
 - (BOOL) blockOpcode: (uint8_t)opcode escape: (BOOL)escape execute: (BOOL)execute;
-/** Execute one monochrome BITBLT, COLORBLT or BITBLTX scanline, retaining
-    independent continuation state across process switches and page faults. */
+/** Execute one restartable trapezoid scanline using 16.16 edge interpolators.
+ */
+- (void) trapZBlt;
+/** Execute one monochrome or indexed-color BITBLT, COLORBLT or BITBLTX
+    scanline, retaining continuation state across process switches and faults. */
 - (void) bitBlt: (uint8_t)opcode;
 @end
 #endif

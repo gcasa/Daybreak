@@ -118,10 +118,13 @@
         - (id) <b>initWithHost:</b> (NSString*)host<b> port:</b> (unsigned int)port;<br />
         <div class="desc">
 
-            Resolve <var>host</var> and start connecting.
-            Invalid endpoints raise DBNetworkError. Connection
-            failures are reported by status and retried every
-            two seconds.
+            Use <var>host</var> &quot;local&quot; for built-in XNS time/echo,
+            &quot;tap:NAME&quot; for a Linux TAP interface, or
+            &quot;tap:/dev/tapN&quot; for an existing macOS TAP
+            device. Otherwise resolve <var>host</var> and start
+            connecting. Invalid endpoints raise
+            DBNetworkError. Connection failures are
+            reported by status and retried every two seconds.
 
         </div>
         <hr class="method-separator">
@@ -133,6 +136,18 @@
 
             Service bounded nonblocking reads/writes and
             connection progress.
+
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBNetwork-receiveLoopbackPacket$">receiveLoopbackPacket:&nbsp;</a></h3>
+        - (BOOL) <b>receiveLoopbackPacket:</b> (NSData*)packet;<br />
+        <div class="desc">
+
+            Queue a private copy of a transmitted frame for the
+            guest hear-self option. Return <code>NO</code> for
+            malformed frames or a full receive queue.
 
         </div>
         <hr class="method-separator">

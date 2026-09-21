@@ -17,6 +17,85 @@ db_net_time (void)
   clock_gettime (CLOCK_MONOTONIC, &t);
   return t.tv_sec + t.tv_nsec / 1000000000.0;
 }
+#include <sys/ioctl.h>
+#ifdef __linux__
+#include <linux/if.h>
+#include <linux/if_tun.h>
+#endif
+static uint16_t
+db_packet_word (const unsigned char *p, unsigned int word)
+{
+  return (p[word * 2] << 8) | p[word * 2 + 1];
+}
+static NSData *
+db_local_response (NSData *packet)
+{
+  const unsigned char *p = [packet bytes];
+  uint16_t words[37];
+  unsigned int i;
+  uint32_t now;
+  NSMutableData *data;
+  unsigned char *bytes;
+  if ([packet length] < 46 || db_packet_word (p, 6) != 0x600
+      || db_packet_word (p, 8) < 32
+      || db_packet_word (p, 8) > [packet length] - 14)
+    return nil;
+  if ((db_packet_word (p, 9) & 255) == 2 && db_packet_word (p, 22) == 1)
+    {
+      unsigned char address[12];
+      data = [[packet mutableCopy] autorelease];
+      bytes = [data mutableBytes];
+      memcpy (address, bytes, 6);
+      memcpy (bytes, bytes + 6, 6);
+      memcpy (bytes + 6, address, 6);
+      memcpy (address, bytes + 20, 12);
+      memcpy (bytes + 20, bytes + 32, 12);
+      memcpy (bytes + 32, address, 12);
+      bytes[14] = bytes[15] = 255;
+      bytes[44] = 0;
+      bytes[45] = 2;
+      return data;
+    }
+  if ([packet length] < 54 || db_packet_word (p, 15) != 8
+      || (db_packet_word (p, 9) & 255) != 4 || db_packet_word (p, 24) != 1
+      || db_packet_word (p, 25) != 2 || db_packet_word (p, 26) != 1)
+    return nil;
+  memset (words, 0, sizeof (words));
+  for (i = 0; i < 3; i++)
+    words[i] = db_packet_word (p, i + 3);
+  words[3] = 0x1000;
+  words[4] = 0x1a33;
+  words[5] = 0x3333;
+  words[6] = 0x600;
+  words[7] = 65535;
+  words[8] = 60;
+  words[9] = 4;
+  for (i = 0; i < 6; i++)
+    words[10 + i] = db_packet_word (p, 16 + i);
+  words[16] = 4;
+  words[17] = 1;
+  words[18] = words[3];
+  words[19] = words[4];
+  words[20] = words[5];
+  words[21] = 8;
+  words[22] = db_packet_word (p, 22);
+  words[23] = db_packet_word (p, 23);
+  words[24] = 1;
+  words[25] = 2;
+  words[26] = 2;
+  now = (uint32_t) time (NULL) + 2177452800U;
+  words[27] = now >> 16;
+  words[28] = now;
+  words[34] = 1;
+  data = [NSMutableData dataWithLength: sizeof (words)];
+  bytes = [data mutableBytes];
+  for (i = 0; i < 37; i++)
+    {
+      bytes[i * 2] = words[i] >> 8;
+      bytes[i * 2 + 1] = words[i];
+    }
+  return data;
+}
 @interface DBNetwork (Private)
 - (void) beginConnection;
 - (void) lostConnection: (NSString *)reason;
@@ -38,6 +117,50 @@ db_net_time (void)
       [NSException raise: @"DBNetworkError"
                   format: @"A host and port 1..65535 are required"];
       return nil;
+    }
+  if ([host isEqual: @"local"] || [host hasPrefix: @"tap:"])
+    {
+      _host = [host copy];
+      _incoming = [NSMutableArray new];
+      _outgoing = [NSMutableArray new];
+      _input = [NSMutableData new];
+      _localServices = [host isEqual: @"local"];
+      _tap = !_localServices;
+      if (_tap)
+        {
+          NSString *device = [host substringFromIndex: 4];
+#ifdef __linux__
+          struct ifreq request;
+          memset (&request, 0, sizeof (request));
+          request.ifr_flags = IFF_TAP | IFF_NO_PI;
+          if ([device length] >= IFNAMSIZ)
+            {
+              [self release];
+              [NSException raise: @"DBNetworkError"
+                          format: @"TAP name too long"];
+            }
+          strncpy (request.ifr_name, [device UTF8String], IFNAMSIZ - 1);
+          _socket = open ("/dev/net/tun", O_RDWR | O_NONBLOCK);
+          if (_socket >= 0 && ioctl (_socket, TUNSETIFF, &request) < 0)
+            {
+              close (_socket);
+              _socket = -1;
+            }
+#else
+          _socket
+              = open ([device fileSystemRepresentation], O_RDWR | O_NONBLOCK);
+#endif
+          if (_socket < 0)
+            {
+              [self release];
+              [NSException raise: @"DBNetworkError"
+                          format: @"Cannot open configured TAP device"];
+            }
+          fcntl (_socket, F_SETFD, FD_CLOEXEC);
+        }
+      _status = [_localServices ? @"Local XNS time and echo" : @"Connected TAP"
+          copy];
+      return self;
     }
   memset (&hints, 0, sizeof (hints));
   hints.ai_socktype = SOCK_STREAM;
@@ -140,7 +263,7 @@ db_net_time (void)
 }
 - (BOOL) connected
 {
-  return _socket >= 0 && !_connecting;
+  return !_closed && (_localServices || (_socket >= 0 && !_connecting));
 }
 - (NSString *) status
 {
@@ -154,11 +277,31 @@ db_net_time (void)
   if (![self connected] || [_outgoing count] >= 64 || length < 14
       || length > 766)
     return NO;
+  if (_localServices)
+    {
+      NSData *response = db_local_response (packet);
+      if (response != nil && [_incoming count] < 64)
+        [_incoming addObject: response];
+      return YES;
+    }
+  if (_tap)
+    {
+      [_outgoing addObject: [[packet copy] autorelease]];
+      return YES;
+    }
   header[0] = length >> 8;
   header[1] = length;
   frame = [NSMutableData dataWithBytes: header length: 2];
   [frame appendData: packet];
   [_outgoing addObject: frame];
+  return YES;
+}
+- (BOOL) receiveLoopbackPacket: (NSData *)packet
+{
+  if (_closed || [packet length] < 14 || [packet length] > 766 ||
+      [_incoming count] >= 64)
+    return NO;
+  [_incoming addObject: [[packet copy] autorelease]];
   return YES;
 }
 - (NSData *) receivePacket
@@ -179,6 +322,41 @@ db_net_time (void)
   unsigned int work;
   if (_closed)
     return;
+  if (_localServices)
+    return;
+  if (_tap)
+    {
+      for (work = 0; work < 64; work++)
+        {
+          unsigned char bytes[2048];
+          ssize_t length = read (_socket, bytes, sizeof (bytes));
+          if (length < 0
+              && (errno == EAGAIN || errno == EWOULDBLOCK || errno == EINTR))
+            break;
+          if (length <= 0)
+            {
+              [self close];
+              return;
+            }
+          if (length >= 14 && length <= 766 && [_incoming count] < 64)
+            [_incoming addObject: [NSData dataWithBytes: bytes length: length]];
+        }
+      for (work = 0; work < 64 && [_outgoing count]; work++)
+        {
+          NSData *packet = [_outgoing objectAtIndex: 0];
+          ssize_t length = write (_socket, [packet bytes], [packet length]);
+          if (length < 0
+              && (errno == EAGAIN || errno == EWOULDBLOCK || errno == EINTR))
+            break;
+          if (length != (ssize_t)[packet length])
+            {
+              [self close];
+              return;
+            }
+          [_outgoing removeObjectAtIndex: 0];
+        }
+      return;
+    }
   if (_socket < 0)
     {
       if (db_net_time () >= _retryAt)

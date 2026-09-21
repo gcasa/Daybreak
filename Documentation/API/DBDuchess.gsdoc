@@ -1,0 +1,73 @@
+<?xml version="1.0"?>
+<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 1.0.4//EN" "http://www.gnustep.org/gsdoc-1_0_4.dtd">
+<gsdoc base="DBDuchess" stylesheeturl="default-styles.css">
+  <head>
+    <title>Duchess workstation and raw disks</title>
+    <author name="Daybreak contributors">
+    </author>
+    <date>Generated at 2026-09-21 UTC</date>
+  </head>
+  <body>
+    <front><contents /></front>
+    <chapter>
+      <heading>
+        Software documentation for the DBDuchess class
+      </heading>
+      <class name="DBDuchess" super="DBMachine">
+        <declared>DBDuchess.h</declared>
+        <desc>
+          Guam agent workstation using the post-4.0 Mesa
+          instruction set.
+        </desc>
+        <method type="void">
+          <sel>bootWithGerm:</sel>
+          <arg type="NSString*">path</arg>
+          <sel>switches:</sel>
+          <arg type="NSString*">switches</arg>
+          <desc>
+            Load a page-aligned post-4.0 germ, install boot
+            <var>switches</var> and enter sBoot. Invalid files
+            raise DBDeviceError before execution starts.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>callAgent:</sel>
+          <arg type="unsigned int">index</arg>
+          <desc>
+            Invoke a Guam agent by its published device
+            <var>index</var>.
+          </desc>
+        </method>
+        <method type="id">
+          <sel>initWithDisk:</sel>
+          <arg type="NSString*">path</arg>
+          <sel>width:</sel>
+          <arg type="unsigned int">width</arg>
+          <sel>height:</sel>
+          <arg type="unsigned int">height</arg>
+          <sel>color:</sel>
+          <arg type="BOOL">color</arg>
+          <sel>workingCopy:</sel>
+          <arg type="BOOL">working</arg>
+          <desc>
+            Configure the machine and raw disk before loading
+            a germ. Width must be a multiple of sixteen; dimensions
+            are bounded to 2048 by 1536.
+          </desc>
+        </method>
+      </class>
+    </chapter>
+    <chapter>
+      <heading>
+        Software documentation for the DBGuamDisk class
+      </heading>
+      <class name="DBGuamDisk" super="DBDisk">
+        <declared>DBDuchess.h</declared>
+        <desc>
+          Raw two-head, sixteen-sector Pilot disk, with private
+          Library copies.
+        </desc>
+      </class>
+    </chapter>
+  </body>
+</gsdoc>

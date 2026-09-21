@@ -6,7 +6,7 @@ else
 include $(GNUSTEP_MAKEFILES)/common.make
 TOOL_NAME = daybreak
 daybreak_OBJC_FILES = Source/DBMemory.m Source/DBProcessor.m \
-  Source/DBInstructions.m Source/DBControl.m Source/DBProcesses.m Source/DBDisk.m Source/DBMachine.m Source/DBBlocks.m Source/DBNetwork.m Source/DBFloppy.m Source/DBDevices.m Source/main.m
+  Source/DBInstructions.m Source/DBControl.m Source/DBProcesses.m Source/DBDisk.m Source/DBMachine.m Source/DBDuchess.m Source/DBBlocks.m Source/DBNetwork.m Source/DBFloppy.m Source/DBFlux.m Source/DBDevices.m Source/main.m
 ADDITIONAL_INCLUDE_DIRS = -ISource
 ADDITIONAL_OBJCFLAGS = -Wall -Wextra -std=gnu99
 ADDITIONAL_TOOL_LIBS += -lz

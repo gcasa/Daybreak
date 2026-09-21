@@ -50,10 +50,13 @@
           <sel>port:</sel>
           <arg type="unsigned int">port</arg>
           <desc>
-            Resolve <var>host</var> and start connecting.
-            Invalid endpoints raise DBNetworkError. Connection
-            failures are reported by status and retried every
-            two seconds.
+            Use <var>host</var> "local" for built-in XNS time/echo,
+            "tap:NAME" for a Linux TAP interface, or
+            "tap:/dev/tapN" for an existing macOS TAP
+            device. Otherwise resolve <var>host</var> and start
+            connecting. Invalid endpoints raise
+            DBNetworkError. Connection failures are
+            reported by status and retried every two seconds.
           </desc>
         </method>
         <method type="void">
@@ -61,6 +64,15 @@
           <desc>
             Service bounded nonblocking reads/writes and
             connection progress.
+          </desc>
+        </method>
+        <method type="BOOL">
+          <sel>receiveLoopbackPacket:</sel>
+          <arg type="NSData*">packet</arg>
+          <desc>
+            Queue a private copy of a transmitted frame for the
+            guest hear-self option. Return <code>NO</code> for
+            malformed frames or a full receive queue.
           </desc>
         </method>
         <method type="NSData*">

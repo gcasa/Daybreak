@@ -18,9 +18,23 @@
         <declared>DBMachine.h</declared>
         <desc>
           A single-threaded Draco machine with 4 MB RAM, disk,
-          keyboard and an 832 by 633 monochrome display. Owns
-          a private, writable disk image.
+          keyboard and an 832 by 633 or 1152 by 861 monochrome
+          display. Owns a private, writable disk image.
         </desc>
+        <method type="uint32_t">
+          <sel>beepSerial</sel>
+          <desc>
+            Return a serial incremented by each guest sound
+            request.
+          </desc>
+        </method>
+        <method type="NSData*">
+          <sel>cursorData</sel>
+          <desc>
+            Return the current sixteen-word cursor bitmap in
+            host word order.
+          </desc>
+        </method>
         <method type="DBDisk*">
           <sel>disk</sel>
           <desc>
@@ -53,6 +67,25 @@
             refresh.
           </desc>
         </method>
+        <method type="unsigned int">
+          <sel>displayHeight</sel>
+          <desc>
+            Return the configured display height in pixels.
+          </desc>
+        </method>
+        <method type="NSData*">
+          <sel>displayRGB</sel>
+          <desc>
+            Return display pixels as packed RGB bytes for host
+            rendering.
+          </desc>
+        </method>
+        <method type="unsigned int">
+          <sel>displayWidth</sel>
+          <desc>
+            Return the configured display width in pixels.
+          </desc>
+        </method>
         <method type="BOOL">
           <sel>halted</sel>
           <desc>
@@ -82,6 +115,20 @@
             Boot a private Library disk when workingCopy is
             <code>YES</code>; otherwise use an in-memory image
             suitable for isolated tests.
+          </desc>
+        </method>
+        <method type="id">
+          <sel>initWithDisk:</sel>
+          <arg type="NSString*">path</arg>
+          <sel>switches:</sel>
+          <arg type="NSString*">switches</arg>
+          <sel>workingCopy:</sel>
+          <arg type="BOOL">working</arg>
+          <sel>largeScreen:</sel>
+          <arg type="BOOL">large</arg>
+          <desc>
+            Configure a Draco small (832x633) or
+            <var>large</var> (1152x861) display before boot.
           </desc>
         </method>
         <method type="void">

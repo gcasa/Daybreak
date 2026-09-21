@@ -11,8 +11,9 @@ db_swap (uint16_t value)
 }
 
 @interface DBMachine (Initialization)
-- (void) configureDisk: (NSString *)path switches: (NSString *)switches
-           workingCopy: (BOOL)working;
+- (void) configureDisk: (NSString *)path
+             switches: (NSString *)switches
+          workingCopy: (BOOL)working;
 @end
 
 @implementation DBMachine
@@ -20,8 +21,19 @@ db_swap (uint16_t value)
 {
   return [self initWithDisk: path switches: switches workingCopy: NO];
 }
-- (id) initWithDisk: (NSString *)path switches: (NSString *)switches
+- (id) initWithDisk: (NSString *)path
+          switches: (NSString *)switches
        workingCopy: (BOOL)working
+{
+  return [self initWithDisk: path
+                   switches: switches
+                workingCopy: working
+                largeScreen: NO];
+}
+- (id) initWithDisk: (NSString *)path
+          switches: (NSString *)switches
+       workingCopy: (BOOL)working
+       largeScreen: (BOOL)large
 {
   DBMemory *memory = [[DBMemory alloc] initWithRealPages: 8192
                                             virtualPages: 65536];
@@ -29,12 +41,17 @@ db_swap (uint16_t value)
   [memory release];
   if (self != nil)
     {
+      _displayWidth = large ? 1152 : 832;
+      _displayHeight = large ? 861 : 633;
+      _displayStride = _displayWidth / 16;
+      _displayBase = 7936 * 256;
       [self configureDisk: path switches: switches workingCopy: working];
     }
   return self;
 }
-- (void) configureDisk: (NSString *)path switches: (NSString *)switches
-           workingCopy: (BOOL)working
+- (void) configureDisk: (NSString *)path
+             switches: (NSString *)switches
+          workingCopy: (BOOL)working
 {
   id volatile initializedSelf = self;
   NS_DURING
@@ -65,6 +82,8 @@ db_swap (uint16_t value)
     }
   for (i = 0; i < sizeof (db_io_initial) / sizeof (db_io_initial[0]); i++)
     [_memory writePhysicalWord: db_io_initial[i][0] value: db_io_initial[i][1]];
+  [_memory writePhysicalWord: 0x21da value: db_swap (_displayWidth)];
+  [_memory writePhysicalWord: 0x21db value: db_swap (_displayHeight)];
   [_memory writePhysicalWord: 0x224c value: 0x4130];
   [_memory writePhysicalWord: 0x224d value: 64];
   [_memory writePhysicalWord: 0x224e value: 0x1000 | [_disk heads]];
@@ -141,14 +160,51 @@ db_swap (uint16_t value)
 {
   return _displayEnabled;
 }
+- (unsigned int) displayWidth
+{
+  return _displayWidth;
+}
+- (unsigned int) displayHeight
+{
+  return _displayHeight;
+}
+- (uint32_t) beepSerial
+{
+  return _beepSerial;
+}
+- (NSData *) cursorData
+{
+  return [NSData dataWithBytes: _cursor length: sizeof (_cursor)];
+}
+- (NSData *) displayRGB
+{
+  NSData *packed = [self displayData];
+  const unsigned char *source = [packed bytes];
+  NSMutableData *result =
+      [NSMutableData dataWithLength: _displayWidth * _displayHeight * 3];
+  unsigned char *pixels = [result mutableBytes];
+  unsigned int x, y;
+  for (y = 0; y < _displayHeight; y++)
+    for (x = 0; x < _displayWidth; x++)
+      {
+        unsigned char value
+            = (source[y * _displayStride * 2 + x / 8] & (0x80 >> (x & 7)))
+                  ? 0
+                  : 255;
+        unsigned int index = (y * _displayWidth + x) * 3;
+        pixels[index] = pixels[index + 1] = pixels[index + 2] = value;
+      }
+  return result;
+}
 - (NSData *) displayData
 {
-  NSMutableData *data = [NSMutableData dataWithLength: 104 * 633];
+  NSMutableData *data =
+      [NSMutableData dataWithLength: _displayStride * 2 * _displayHeight];
   unsigned char *bytes = [data mutableBytes];
   unsigned int i;
-  for (i = 0; i < 52 * 633; i++)
+  for (i = 0; i < _displayStride * _displayHeight; i++)
     {
-      uint16_t word = [_memory physicalWord: 7936 * 256 + i];
+      uint16_t word = [_memory physicalWord: _displayBase + i];
       bytes[i * 2] = word >> 8;
       bytes[i * 2 + 1] = word;
     }
@@ -238,7 +294,7 @@ db_swap (uint16_t value)
           c = 7648;
           break;
         case 6:
-          a = 1;
+          a = _displayWidth == 1152 ? 5 : 1;
           b = 7936;
           c = 256;
           break;
@@ -286,7 +342,10 @@ db_swap (uint16_t value)
       return;
     }
   if (mask == [_memory physicalWord: 0x2112])
-    return;
+    {
+      _beepSerial++;
+      return;
+    }
   [NSException raise: @"DBDeviceError"
               format: @"Unimplemented IOP notification %04x", mask];
 }
@@ -338,13 +397,33 @@ db_swap (uint16_t value)
       if ([_memory physicalWord: 0x2229] != 0)
         error = 0x8c;
       if (operation != 0
-          && (operation < 2 || operation > 7 ||
+          && (operation < 1 || operation > 7 ||
               [_memory readWord: pointer + 32] != 0))
         error = 0x8a;
       for (i = 10; i <= 13; i++)
         [_memory writeWord: dob + i value: 0];
       [_memory writeWord: pointer + 8 value: 0x4100];
       [_memory writeWord: pointer + 9 value: 0];
+      if (operation == 1 && error == 0)
+        {
+          unsigned int tracks
+              = (uint16_t) -db_swap ([_memory readWord: dob + 22]);
+          uint32_t at = cylinder * [_disk heads] * 16;
+          while (tracks && at + 16 <= [_disk sectorCount])
+            {
+              unsigned int sectorIndex, word;
+              for (sectorIndex = 0; sectorIndex < 16; sectorIndex++)
+                for (word = 0; word < 266; word++)
+                  [_disk writeSector: at + sectorIndex offset: word value: 0];
+              at += 16;
+              tracks--;
+              _diskWrites += 16;
+            }
+          [_memory writeWord: dob + 22 value: db_swap ((uint16_t) -tracks)];
+          if (tracks)
+            error = 0x81;
+          count = 0;
+        }
       while (count != 0 && operation != 0 && error == 0)
         {
           if (sector >= [_disk sectorCount])
@@ -498,6 +577,12 @@ db_swap (uint16_t value)
       [_memory writePhysicalWord: address value: value];
       if (mask == [_memory physicalWord: 0x21c1])
         {
+          if (value & 0x40)
+            {
+              unsigned int row;
+              for (row = 0; row < 16; row++)
+                _cursor[row] = [_memory physicalWord: 0x21c9 + row];
+            }
           if (value == 0x00f8)
             _displayEnabled = YES;
           else if (value & 8)

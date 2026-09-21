@@ -14,14 +14,17 @@
   unsigned int _port, _addressIndex;
   NSArray *_addresses;
   int _socket;
-  BOOL _connecting, _closed;
+  BOOL _connecting, _closed, _localServices, _tap;
   double _retryAt, _connectUntil;
   NSMutableData *_input;
   NSMutableArray *_incoming, *_outgoing;
   NSUInteger _sent;
 }
-/** Resolve host and start connecting. Invalid endpoints raise DBNetworkError.
-    Connection failures are reported by status and retried every two seconds.
+/** Use host "local" for built-in XNS time/echo, "tap:NAME" for a Linux
+    TAP interface, or "tap:/dev/tapN" for an existing macOS TAP device.
+    Otherwise resolve host and start connecting. Invalid endpoints raise
+   DBNetworkError. Connection failures are reported by status and retried every
+   two seconds.
  */
 - (id) initWithHost: (NSString *)host port: (unsigned int)port;
 /** Service bounded nonblocking reads/writes and connection progress. */
@@ -29,6 +32,9 @@
 /** Queue an Ethernet frame. Return NO when disconnected, full or malformed.
     YES means queued locally, not acknowledged by the remote guest. */
 - (BOOL) sendPacket: (NSData *)packet;
+/** Queue a private copy of a transmitted frame for the guest hear-self option.
+    Return NO for malformed frames or a full receive queue. */
+- (BOOL) receiveLoopbackPacket: (NSData *)packet;
 /** Return an autoreleased received frame, or nil if none is waiting. */
 - (NSData *) receivePacket;
 /** Drop buffered input packets without interrupting TCP framing. */

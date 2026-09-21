@@ -305,7 +305,8 @@ disk_tests (void)
     NSString *workingPath;
     NSData *original = [NSData dataWithContentsOfFile: input];
     volatile BOOL caught = NO;
-    workingTestDirectory = [directory stringByAppendingPathComponent: @"Library"];
+    workingTestDirectory =
+        [directory stringByAppendingPathComponent: @"Library"];
     disk = [[DBTestWorkingDisk alloc] initWithWorkingCopyOfPath: input];
     workingPath = [[disk path] copy];
     CHECK (![workingPath isEqual: input]);
@@ -318,6 +319,13 @@ disk_tests (void)
     NS_ENDHANDLER CHECK (caught);
     [disk saveWorkingCopy];
     CHECK (![disk changed]);
+    {
+      NSString *backup = [[workingPath stringByDeletingPathExtension]
+          stringByAppendingString: @".previous.zdisk"];
+      DBDisk *previous = [[DBDisk alloc] initWithPath: backup];
+      CHECK ([previous wordAtSector: 123 offset: 10] == 123);
+      [previous release];
+    }
     [disk release];
     disk = [[DBTestWorkingDisk alloc] initWithWorkingCopyOfPath: workingPath];
     CHECK ([[disk path] isEqual: workingPath]);
@@ -328,11 +336,12 @@ disk_tests (void)
     CHECK ([disk wordAtSector: 123 offset: 10] == 123);
     CHECK ([[NSData dataWithContentsOfFile: input] isEqual: original]);
     /* A failed save must retain pending changes for retry. */
-    [[NSFileManager defaultManager] removeItemAtPath:
-        [[disk path] stringByDeletingLastPathComponent] error: NULL];
+    [[NSFileManager defaultManager]
+        removeItemAtPath: [[disk path] stringByDeletingLastPathComponent]
+                   error: NULL];
     [disk writeSector: 123 offset: 10 value: 1];
     caught = NO;
-    NS_DURING [disk saveWorkingCopy];
+    NS_DURING[disk saveWorkingCopy];
     NS_HANDLER caught = [[localException name] isEqual: @"DBDiskError"];
     NS_ENDHANDLER CHECK (caught && [disk changed]);
     [disk release];
@@ -341,17 +350,19 @@ disk_tests (void)
     length = compressBound ([raw length]);
     [compressed setLength: length];
     CHECK (compress2 ([compressed mutableBytes], &length, [raw bytes],
-                      [raw length], 1) == Z_OK);
+                      [raw length], 1)
+           == Z_OK);
     [compressed setLength: length];
     CHECK ([compressed writeToFile: [input stringByAppendingString: @".zdelta"]
-                         atomically: YES]);
+                        atomically: YES]);
     disk = [[DBTestWorkingDisk alloc] initWithWorkingCopyOfPath: input];
     CHECK ([disk wordAtSector: 123 offset: 10] == 0x5678);
     [disk writeSector: 123 offset: 10 value: 0x9abc];
     [disk saveWorkingCopy];
     CHECK ([[NSData dataWithContentsOfFile: input] isEqual: original]);
-    CHECK ([[NSData dataWithContentsOfFile:
-        [input stringByAppendingString: @".zdelta"]] isEqual: compressed]);
+    CHECK ([[NSData
+        dataWithContentsOfFile: [input stringByAppendingString: @".zdelta"]]
+        isEqual: compressed]);
     [disk release];
     [workingPath release];
   }

@@ -89,11 +89,22 @@
         </p>
         <hr class="section-separator">
 <div class="method">
+        <h3><a name="method$DBApplication-application$openFile$">application:&nbsp;openFile:&nbsp;</a></h3>
+        - (BOOL) <b>application:</b> (NSApplication*)application<b> openFile:</b> (NSString*)path;<br />
+        <div class="desc">
+
+            Queue Finder/GNUstep file-open events until the
+            workstation UI is ready.
+
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
         <h3><a name="method$DBApplication-applicationDidFinishLaunching$">applicationDidFinishLaunching:&nbsp;</a></h3>
         - (void) <b>applicationDidFinishLaunching:</b> (NSNotification*)notification;<br />
         <div class="desc">
 
-            Create the window and menus, then open the
+            Create the window and menus, then open the queued,
             command-line or last working disk.
 
         </div>
@@ -202,6 +213,17 @@
 
             Check floppy changes before ejecting or replacing
             media.
+
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBApplication-openConfiguration$">openConfiguration:&nbsp;</a></h3>
+        - (void) <b>openConfiguration:</b> (id)sender;<br />
+        <div class="desc">
+
+            Select a property-list machine profile with model,
+            disk, germ and display.
 
         </div>
         <hr class="method-separator">
@@ -358,12 +380,55 @@
         </p>
         <hr class="section-separator">
 <div class="method">
+        <h3><a name="method$DBDisplayView-copy$">copy:&nbsp;</a></h3>
+        - (void) <b>copy:</b> (id)sender;<br />
+        <div class="desc">
+
+            Export the display to the host clipboard as TIFF.
+
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
         <h3><a name="method$DBDisplayView-keyEvent$pressed$">keyEvent:&nbsp;pressed:&nbsp;</a></h3>
         - (void) <b>keyEvent:</b> (NSEvent*)event<b> pressed:</b> (BOOL)pressed;<br />
         <div class="desc">
 
             Convert a host keyboard <var>event</var> into a
             guest key press or release.
+
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBDisplayView-paste$">paste:&nbsp;</a></h3>
+        - (void) <b>paste:</b> (id)sender;<br />
+        <div class="desc">
+
+            Type supported clipboard characters through the guest
+            keyboard.
+
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBDisplayView-pasteNext$">pasteNext:&nbsp;</a></h3>
+        - (void) <b>pasteNext:</b> (id)sender;<br />
+        <div class="desc">
+
+            Send the next queued clipboard character with a
+            bounded key pulse.
+
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBDisplayView-print$">print:&nbsp;</a></h3>
+        - (void) <b>print:</b> (id)sender;<br />
+        <div class="desc">
+
+            Print the current emulated display using the native
+            print panel.
 
         </div>
         <hr class="method-separator">

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Disk</key>
+	<string>../disks-6085/vp2.0.5.zdisk</string>
+	<key>LargeScreen</key>
+	<true/>
+	<key>Model</key>
+	<string>Draco</string>
+</dict>
+</plist>

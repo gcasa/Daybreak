@@ -20,11 +20,21 @@
           slices on the UI thread, avoiding races between
           emulation, display refresh and device input.
         </desc>
+        <method type="BOOL">
+          <sel>application:</sel>
+          <arg type="NSApplication*">application</arg>
+          <sel>openFile:</sel>
+          <arg type="NSString*">path</arg>
+          <desc>
+            Queue Finder/GNUstep file-open events until the
+            workstation UI is ready.
+          </desc>
+        </method>
         <method type="void">
           <sel>applicationDidFinishLaunching:</sel>
           <arg type="NSNotification*">notification</arg>
           <desc>
-            Create the window and menus, then open the
+            Create the window and menus, then open the queued,
             command-line or last working disk.
           </desc>
         </method>
@@ -101,6 +111,14 @@
           <desc>
             Check floppy changes before ejecting or replacing
             media.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>openConfiguration:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+            Select a property-list machine profile with model,
+            disk, germ and display.
           </desc>
         </method>
         <method type="void">
@@ -191,6 +209,13 @@
           lost. All access occurs on the application thread.
         </desc>
         <method type="void">
+          <sel>copy:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+            Export the display to the host clipboard as TIFF.
+          </desc>
+        </method>
+        <method type="void">
           <sel>keyEvent:</sel>
           <arg type="NSEvent*">event</arg>
           <sel>pressed:</sel>
@@ -198,6 +223,30 @@
           <desc>
             Convert a host keyboard <var>event</var> into a
             guest key press or release.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>paste:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+            Type supported clipboard characters through the guest
+            keyboard.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>pasteNext:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+            Send the next queued clipboard character with a
+            bounded key pulse.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>print:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+            Print the current emulated display using the native
+            print panel.
           </desc>
         </method>
         <method type="void">

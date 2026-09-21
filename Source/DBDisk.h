@@ -6,7 +6,8 @@
 #import <Foundation/Foundation.h>
 #include <stdint.h>
 /** A validated zlib-compressed Draco disk. Ordinary inputs remain read-only;
-    managed Library copies can persist guest writes without altering the seed. */
+    managed Library copies can persist guest writes without altering the seed.
+ */
 @interface DBDisk : NSObject
 {
   NSMutableData *_sectors;

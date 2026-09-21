@@ -1,6 +1,18 @@
 /* IMD/DMK media decoding derived from Dwarf HFloppy. See COPYING. */
 #import "DBFloppy.h"
 #include <string.h>
+static uint16_t
+db_floppy_crc (uint16_t crc, unsigned char byte)
+{
+  unsigned int i;
+  crc ^= (uint16_t) byte << 8;
+  for (i = 0; i < 8; i++)
+    {
+      uint16_t polynomial = (crc & 0x8000) ? 0x1021 : 0;
+      crc = (crc << 1) ^ polynomial;
+    }
+  return crc;
+}
 static NSNumber *
 db_sector_key (unsigned int c, unsigned int h, unsigned int s)
 {
@@ -31,6 +43,9 @@ db_floppy_path (NSString *path)
 - (void) loadPath: (NSString *)path;
 - (void) loadIMD: (NSData *)data;
 - (void) loadDMK: (NSData *)data;
+- (void) loadRaw: (NSData *)data;
+- (void) loadSCP: (NSData *)data;
+- (void) exportRaw: (NSString *)path dmk: (BOOL)dmk;
 - (void) addCylinder: (unsigned int)c
                head: (unsigned int)h
              sector: (unsigned int)s
@@ -58,17 +73,22 @@ db_floppy_path (NSString *path)
   _sectors = [NSMutableDictionary new];
   _kinds = [NSMutableDictionary new];
   _modes = [NSMutableDictionary new];
-  if (data == nil || [data length] > 16 * 1024 * 1024)
+  if (data == nil || [data length] > 128 * 1024 * 1024)
     db_floppy_error ();
   if ([[[path pathExtension] lowercaseString] isEqual: @"imd"])
     [self loadIMD: data];
+  else if ([[[path pathExtension] lowercaseString] isEqual: @"scp"])
+    [self loadSCP: data];
   else if ([[[path pathExtension] lowercaseString] isEqual: @"dmk"])
     {
-      _readOnly = YES;
       [self loadDMK: data];
     }
+  else if ([[NSArray arrayWithObjects: @"img", @"raw", nil]
+               containsObject: [[path pathExtension] lowercaseString]])
+    [self loadRaw: data];
   else
-    [NSException raise: @"DBFloppyError" format: @"Expected .imd or .dmk media"];
+    [NSException raise: @"DBFloppyError"
+                format: @"Expected .imd, .dmk, .img or .raw media"];
   if ([_sectors count] == 0)
     db_floppy_error ();
   NS_HANDLER
@@ -180,6 +200,30 @@ db_floppy_path (NSString *path)
         }
     }
 }
+- (void) loadRaw: (NSData *)data
+{
+  static const unsigned int geometries[][3]
+      = { { 40, 1, 8 }, { 40, 1, 9 },  { 40, 2, 8 },  { 40, 2, 9 },
+          { 80, 2, 9 }, { 80, 2, 15 }, { 80, 2, 18 }, { 80, 2, 36 } };
+  unsigned int i, c, h, sector;
+  NSUInteger offset = 0;
+  for (i = 0; i < sizeof (geometries) / sizeof (geometries[0]); i++)
+    if ([data length]
+        == geometries[i][0] * geometries[i][1] * geometries[i][2] * 512)
+      break;
+  if (i == sizeof (geometries) / sizeof (geometries[0]))
+    [NSException raise: @"DBFloppyError"
+                format: @"Unrecognized raw floppy geometry"];
+  for (c = 0; c < geometries[i][0]; c++)
+    for (h = 0; h < geometries[i][1]; h++)
+      for (sector = 1; sector <= geometries[i][2]; sector++, offset += 512)
+        [self addCylinder: c
+                     head: h
+                   sector: sector
+                     data: [data subdataWithRange: NSMakeRange (offset, 512)]
+                     kind: 1
+                     mode: 5];
+}
 - (void) loadDMK: (NSData *)data
 {
   const unsigned char *bytes = [data bytes];
@@ -187,6 +231,7 @@ db_floppy_path (NSString *path)
   unsigned int tracks, size, heads, c, h, i;
   if (length < 16)
     db_floppy_error ();
+  _readOnly |= bytes[0] == 255;
   tracks = bytes[1];
   size = bytes[2] | (bytes[3] << 8);
   heads = (bytes[4] & 0x10) ? 1 : 2;
@@ -205,6 +250,9 @@ db_floppy_path (NSString *path)
             unsigned int stride
                 = (!(entry & 0x8000) && !(bytes[4] & 0x40)) ? 2 : 1;
             unsigned int sc, sh, id, code, j, mark = 0, limit, count;
+            BOOL badCRC = NO;
+            uint16_t crc;
+            unsigned int crcAt;
             NSMutableData *sector;
             unsigned char *out;
             if (!at)
@@ -217,6 +265,10 @@ db_floppy_path (NSString *path)
             code = track[at + 4 * stride];
             if (code > 6)
               db_floppy_error ();
+            crc = (entry & 0x8000) ? 0xcdb4 : 0xffff;
+            for (crcAt = 0; crcAt < 7; crcAt++)
+              crc = db_floppy_crc (crc, track[at + crcAt * stride]);
+            badCRC = crc != 0;
             at += 7 * stride;
             limit = MIN (size, at + 50 * stride);
             while (at < limit)
@@ -229,17 +281,23 @@ db_floppy_path (NSString *path)
             if (mark < 0xf8 || mark > 0xfb)
               db_floppy_error ();
             count = 128U << code;
-            if (count * stride > size - at)
+            if ((count + 2) * stride > size - at)
               db_floppy_error ();
             sector = [NSMutableData dataWithLength: count];
             out = [sector mutableBytes];
             for (j = 0; j < count; j++)
               out[j] = track[at + j * stride];
+            crc = (entry & 0x8000) ? 0xcdb4 : 0xffff;
+            crc = db_floppy_crc (crc, mark);
+            for (crcAt = 0; crcAt < count + 2; crcAt++)
+              crc = db_floppy_crc (crc, track[at + crcAt * stride]);
+            badCRC |= crc != 0;
             [self addCylinder: sc
                          head: sh
                        sector: id
                          data: sector
-                         kind: (mark == 0xf8 || mark == 0xf9) ? 3 : 1
+                         kind: (badCRC ? 4 : 0)
+                              + ((mark == 0xf8 || mark == 0xf9) ? 3 : 1)
                          mode: (entry & 0x8000) ? 5 : 2];
           }
       }
@@ -340,6 +398,17 @@ db_floppy_path (NSString *path)
 }
 - (void) saveCopyToPath: (NSString *)path
 {
+  if ([[[path pathExtension] lowercaseString] isEqual: @"dmk"])
+    {
+      [self exportRaw: path dmk: YES];
+      return;
+    }
+  if ([[[path pathExtension] lowercaseString] isEqual: @"img"] ||
+      [[[path pathExtension] lowercaseString] isEqual: @"raw"])
+    {
+      [self exportRaw: path dmk: NO];
+      return;
+    }
   NSMutableData *output =
       [NSMutableData dataWithBytes: "IMD Daybreak floppy copy\r\n\x1a"
                             length: 27];
@@ -396,6 +465,114 @@ db_floppy_path (NSString *path)
   if (![output writeToFile: path atomically: YES])
     [NSException raise: @"DBFloppyError"
                 format: @"Cannot export floppy %@", path];
+  _changed = NO;
+}
+- (void) exportRaw: (NSString *)path dmk: (BOOL)dmk
+{
+  NSMutableData *output;
+  unsigned int c, h, trackSize = 128,
+                     sectors = [self sectorsAtCylinder: 0 head: 0];
+  if ([db_floppy_path (path) isEqual: _path])
+    [NSException raise: @"DBFloppyError"
+                format: @"Choose a separate output file"];
+  if (dmk)
+    {
+      for (c = 0; c < _cylinders; c++)
+        for (h = 0; h < _heads; h++)
+          {
+            NSArray *ids = [self sectorIDsAtCylinder: c head: h];
+            unsigned int i, needed = 128;
+            if ([ids count] > 64)
+              db_floppy_error ();
+            for (i = 0; i < [ids count]; i++)
+              needed += 64 +
+                        [[self sectorAtCylinder: c
+                                           head: h
+                                         sector: [[ids objectAtIndex: i]
+                                                    unsignedIntValue]] length];
+            trackSize = MAX (trackSize, needed);
+          }
+      if (trackSize > 16384)
+        db_floppy_error ();
+      output =
+          [NSMutableData dataWithLength: 16 + _cylinders * _heads * trackSize];
+      {
+        unsigned char *header = [output mutableBytes];
+        header[0] = _readOnly ? 255 : 0;
+        header[1] = _cylinders;
+        header[2] = trackSize;
+        header[3] = trackSize >> 8;
+        header[4] = _heads == 1 ? 0x10 : 0;
+      }
+    }
+  else
+    output = [NSMutableData data];
+  for (c = 0; c < _cylinders; c++)
+    for (h = 0; h < _heads; h++)
+      {
+        NSArray *ids = [self sectorIDsAtCylinder: c head: h];
+        unsigned int i, at = 128;
+        unsigned char *track = dmk ? (unsigned char *) [output mutableBytes]
+                                         + 16 + (c * _heads + h) * trackSize
+                                   : NULL;
+        if (!dmk && [ids count] != sectors)
+          db_floppy_error ();
+        for (i = 0; i < [ids count]; i++)
+          {
+            unsigned int id = [[ids objectAtIndex: i] unsignedIntValue];
+            NSData *sector = [self sectorAtCylinder: c head: h sector: id];
+            unsigned int status = [self statusAtCylinder: c head: h sector: id];
+            if (dmk)
+              {
+                unsigned int n = 0, start, j;
+                uint16_t crc;
+                while ((128U << n) < [sector length])
+                  n++;
+                at += 12;
+                track[at++] = 0xa1;
+                track[at++] = 0xa1;
+                track[at++] = 0xa1;
+                track[i * 2] = at;
+                track[i * 2 + 1] = (at >> 8) | 0x80;
+                start = at;
+                track[at++] = 0xfe;
+                track[at++] = c;
+                track[at++] = h;
+                track[at++] = id;
+                track[at++] = n;
+                crc = 0xcdb4;
+                for (j = start; j < at; j++)
+                  crc = db_floppy_crc (crc, track[j]);
+                track[at++] = crc >> 8;
+                track[at++] = crc;
+                at += 12;
+                track[at++] = 0xa1;
+                track[at++] = 0xa1;
+                track[at++] = 0xa1;
+                start = at;
+                track[at++] = status == 5 ? 0xf8 : 0xfb;
+                memcpy (track + at, [sector bytes], [sector length]);
+                at += [sector length];
+                crc = 0xcdb4;
+                for (j = start; j < at; j++)
+                  crc = db_floppy_crc (crc, track[j]);
+                if (status == 8 || status == 6)
+                  crc ^= 1;
+                track[at++] = crc >> 8;
+                track[at++] = crc;
+              }
+            else
+              {
+                if (id != i + 1 || [sector length] != 512 || status != 1)
+                  [NSException raise: @"DBFloppyError"
+                              format: @"Raw export requires contiguous, good "
+                                     @"512-byte sectors"];
+                [output appendData: sector];
+              }
+          }
+      }
+  if (![output writeToFile: path atomically: YES])
+    [NSException raise: @"DBFloppyError" format: @"Cannot export %@", path];
   _changed = NO;
 }
 @end

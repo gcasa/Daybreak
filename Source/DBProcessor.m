@@ -227,6 +227,37 @@
 }
 - (BOOL) dispatch: (uint8_t)opcode escape: (BOOL)escape execute: (BOOL)execute
 {
+  if (!escape && opcode == 0xbf)
+    {
+      if (execute)
+        {
+          unsigned int top = (uint16_t) [self pop];
+          uint32_t base = [self popLong], page = [self popLong];
+          unsigned int low = 1, high = top / 14, run;
+          BOOL found = NO;
+          if (page >= [_memory virtualPages] || high < 1)
+            [self hardwareError: @"Invalid VMFIND search"];
+          while (low <= high)
+            {
+              unsigned int middle = (low + high) / 2;
+              uint32_t start = [_memory readDoubleWord: base + middle * 14];
+              if (start > page)
+                high = middle - 1;
+              else
+                low = middle + 1;
+            }
+          run = high * 14;
+          if (high != 0)
+            {
+              uint32_t start = [_memory readDoubleWord: base + run];
+              uint32_t count = [_memory readDoubleWord: base + run + 2];
+              found = page == start || (page - start < count);
+            }
+          [self push: found];
+          [self push: found ? run : run + 14];
+        }
+      return YES;
+    }
   if ([self controlOpcode: opcode escape: escape execute: execute] ||
       [self blockOpcode: opcode escape: escape execute: execute] ||
       [self processOpcode: opcode escape: escape execute: execute])
