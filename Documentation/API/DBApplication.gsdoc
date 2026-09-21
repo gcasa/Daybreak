@@ -52,6 +52,36 @@
           </desc>
         </method>
         <method type="void">
+          <sel>configureNetwork:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+            Configure the NetHub TCP endpoint or disconnect.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>ejectFloppy:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+            Eject media, checking unsaved changes.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>finishNetworkPanel:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+            Finish the modal NetHub configuration panel using
+            the <var>sender</var> tag.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>insertFloppy:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+            Choose and insert IMD/DMK media, with an optional
+            write-protect switch.
+          </desc>
+        </method>
+        <method type="void">
           <sel>loadDisk:</sel>
           <arg type="NSString*">path</arg>
           <desc>
@@ -64,6 +94,13 @@
           <desc>
             Check unsaved disk changes before replacing or
             quitting the machine.
+          </desc>
+        </method>
+        <method type="BOOL">
+          <sel>mayDiscardFloppy</sel>
+          <desc>
+            Check floppy changes before ejecting or replacing
+            media.
           </desc>
         </method>
         <method type="void">
@@ -100,6 +137,13 @@
           <arg type="id">sender</arg>
           <desc>
             Export the working disk to a separate.zdisk image.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>saveFloppy:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+            Export a modified floppy as a separate IMD image.
           </desc>
         </method>
         <method type="void">

@@ -132,6 +132,48 @@
         <hr class="method-separator">
 </div>
 <div class="method">
+        <h3><a name="method$DBApplication-configureNetwork$">configureNetwork:&nbsp;</a></h3>
+        - (void) <b>configureNetwork:</b> (id)sender;<br />
+        <div class="desc">
+
+            Configure the NetHub TCP endpoint or disconnect.
+
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBApplication-ejectFloppy$">ejectFloppy:&nbsp;</a></h3>
+        - (void) <b>ejectFloppy:</b> (id)sender;<br />
+        <div class="desc">
+
+            Eject media, checking unsaved changes.
+
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBApplication-finishNetworkPanel$">finishNetworkPanel:&nbsp;</a></h3>
+        - (void) <b>finishNetworkPanel:</b> (id)sender;<br />
+        <div class="desc">
+
+            Finish the modal NetHub configuration panel using
+            the <var>sender</var> tag.
+
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBApplication-insertFloppy$">insertFloppy:&nbsp;</a></h3>
+        - (void) <b>insertFloppy:</b> (id)sender;<br />
+        <div class="desc">
+
+            Choose and insert IMD/DMK media, with an optional
+            write-protect switch.
+
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
         <h3><a name="method$DBApplication-loadDisk$">loadDisk:&nbsp;</a></h3>
         - (void) <b>loadDisk:</b> (NSString*)path;<br />
         <div class="desc">
@@ -149,6 +191,17 @@
 
             Check unsaved disk changes before replacing or
             quitting the machine.
+
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBApplication-mayDiscardFloppy">mayDiscardFloppy&nbsp;</a></h3>
+        - (BOOL) <b>mayDiscardFloppy</b>;<br />
+        <div class="desc">
+
+            Check floppy changes before ejecting or replacing
+            media.
 
         </div>
         <hr class="method-separator">
@@ -201,6 +254,16 @@
         <div class="desc">
 
             Export the working disk to a separate.zdisk image.
+
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBApplication-saveFloppy$">saveFloppy:&nbsp;</a></h3>
+        - (void) <b>saveFloppy:</b> (id)sender;<br />
+        <div class="desc">
+
+            Export a modified floppy as a separate IMD image.
 
         </div>
         <hr class="method-separator">

@@ -30,7 +30,9 @@
 {
   NSWindow *_window;
   DBDisplayView *_display;
-  NSTextField *_status;
+  NSTextField *_status, *_mediaStatus;
+  NSString *_hubHost;
+  unsigned int _hubPort;
   NSButton *_pauseButton;
   NSTimer *_timer;
   DBMachine *_machine;
@@ -52,6 +54,18 @@
 /** Load a disk, replacing the current machine only after successful loading.
  */
 - (void) loadDisk: (NSString *)path;
+/** Choose and insert IMD/DMK media, with an optional write-protect switch. */
+- (void) insertFloppy: (id)sender;
+/** Eject media, checking unsaved changes. */
+- (void) ejectFloppy: (id)sender;
+/** Export a modified floppy as a separate IMD image. */
+- (void) saveFloppy: (id)sender;
+/** Configure the NetHub TCP endpoint or disconnect. */
+- (void) configureNetwork: (id)sender;
+/** Finish the modal NetHub configuration panel using the sender tag. */
+- (void) finishNetworkPanel: (id)sender;
+/** Check floppy changes before ejecting or replacing media. */
+- (BOOL) mayDiscardFloppy;
 /** Toggle instruction execution. */
 - (void) pause: (id)sender;
 /** Execute one instruction while paused. */

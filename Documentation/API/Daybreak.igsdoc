@@ -12,6 +12,9 @@
 	"Source/DBDisk.h" = (
 	    "DBDisk.gsdoc"
 	);
+	"Source/DBFloppy.h" = (
+	    "DBFloppy.gsdoc"
+	);
 	"Source/DBInstructions.h" = (
 	    "DBInstructions.gsdoc"
 	);
@@ -20,6 +23,9 @@
 	);
 	"Source/DBMemory.h" = (
 	    "DBMemory.gsdoc"
+	);
+	"Source/DBNetwork.h" = (
+	    "DBNetwork.gsdoc"
 	);
 	"Source/DBProcesses.h" = (
 	    "DBProcesses.gsdoc"
@@ -44,6 +50,9 @@
 	"Source/DBDisk.h" = (
 	    "Source/DBDisk.m"
 	);
+	"Source/DBFloppy.h" = (
+	    "Source/DBFloppy.m"
+	);
 	"Source/DBInstructions.h" = (
 	    "Source/DBInstructions.m"
 	);
@@ -52,6 +61,9 @@
 	);
 	"Source/DBMemory.h" = (
 	    "Source/DBMemory.m"
+	);
+	"Source/DBNetwork.h" = (
+	    "Source/DBNetwork.m"
 	);
 	"Source/DBProcesses.h" = (
 	    "Source/DBProcesses.m"

@@ -34,6 +34,10 @@ db_swap (uint16_t value)
   NSData *germ;
   const unsigned char *bytes;
   unsigned int i, page, pages, target;
+  _hostID[0] = 0x1000;
+  _hostID[1] = 0xfe31;
+  _hostID[2] = 0xab21;
+  _receiveStopped = YES;
   _disk = [[DBDisk alloc] initWithPath: path];
   germ = [_disk germ];
   bytes = [germ bytes];
@@ -103,6 +107,10 @@ db_swap (uint16_t value)
 - (void) dealloc
 {
   [_disk release];
+  [_floppy release];
+  [_pendingFloppy release];
+  [_network release];
+  [_receiveIOCBs release];
   [super dealloc];
 }
 - (DBDisk *) disk
@@ -165,9 +173,15 @@ db_swap (uint16_t value)
 - (void) runForInstructions: (uint32_t)count
 {
   unsigned int i;
+  [self pollDevices];
   for (i = 0; i < count && !_halted; i++)
     {
       uint32_t now = [self intervalTimer];
+      if ((i & 255) == 0 && (uint32_t) (now - _lastDevicePoll) >= 625)
+        {
+          _lastDevicePoll = now;
+          [self pollDevices];
+        }
       if (_displayEnabled && (uint32_t) (now - _lastRetrace) >= 1563)
         {
           _lastRetrace = now;
@@ -202,9 +216,9 @@ db_swap (uint16_t value)
                  - gmt;
           break;
         case 3:
-          a = db_swap (0x1000);
-          b = db_swap (0xfe31);
-          c = db_swap (0xab21);
+          a = db_swap (_hostID[0]);
+          b = db_swap (_hostID[1]);
+          c = db_swap (_hostID[2]);
           break;
         case 4:
           a = 7680;
@@ -255,49 +269,12 @@ db_swap (uint16_t value)
   if (mask == [_memory physicalWord: 0x22fe]
       || mask == [_memory physicalWord: 0x22fd])
     {
-      uint16_t on = [_memory physicalWord: 0x22f4] != 0;
-      uint32_t pointer
-          = db_swap ([_memory physicalWord: 0x22e8])
-            | ((uint32_t) ([_memory physicalWord: 0x22e9] >> 8) << 16);
-      unsigned int remaining = 65536;
-      [_memory writePhysicalWord: 0x2300 value: on];
-      [_memory writePhysicalWord: 0x2301 value: on];
-      if (!on || mask == [_memory physicalWord: 0x22fe])
-        return;
-      while (pointer)
-        {
-          uint16_t status = [_memory readWord: pointer + 6];
-          unsigned int type = (status >> 4) & 15;
-          if (remaining-- == 0)
-            [self hardwareError: @"Cyclic Ethernet queue"];
-          if (!(status & 8))
-            {
-              status |= 0xc000;
-              if (type == 1)
-                {
-                  status &= ~0x2000;
-                  [_memory writeWord: pointer + 5 value: 0x20];
-                }
-              else
-                status |= 0x2000;
-              [_memory writeWord: pointer + 6 value: status];
-              if (type == 2)
-                {
-                  [_memory writePhysicalWord: 0x2300 value: 0];
-                  [_memory writePhysicalWord: 0x2301 value: 0];
-                }
-            }
-          pointer = db_swap ([_memory readWord: pointer])
-                    | ((uint32_t) ([_memory readWord: pointer + 1] >> 8) << 16);
-        }
+      [self serviceNetwork: mask == [_memory physicalWord: 0x22fe]];
       return;
     }
   if (mask == [_memory physicalWord: 0x228a])
     {
-      uint16_t stopped = [_memory physicalWord: 0x2282] & 0xff00;
-      [_memory writePhysicalWord: 0x2283 value: stopped];
-      if ([_memory physicalWord: 0x2295] != 0)
-        [NSException raise: @"DBDeviceError" format: @"Floppy medium is absent"];
+      [self serviceFloppy];
       return;
     }
   if (mask == [_memory physicalWord: 0x2112])
@@ -526,6 +503,8 @@ db_swap (uint16_t value)
           if (address == 0x2305)
             [_memory writePhysicalWord: 0x2304 value: 0];
         }
+      if (mask == [_memory physicalWord: 0x228c] && address == 0x2299)
+        [_memory writePhysicalWord: 0x22e3 value: 0];
       [self push: a];
       break;
     case 0x8b:

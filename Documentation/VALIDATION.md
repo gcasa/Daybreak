@@ -9,6 +9,12 @@ Validated on 2026-09-20 against Dwarf commit
   traps, priority queues, condition wakeup, preempted state vectors,
   restartable word/bitmap transfers, compressed disk loading, safe export,
   preservation of input images and rejection of truncated data.
+* 153 device checks cover mixed-size/compressed IMD, FM DMK, media export
+  and preservation of originals, format validation, guest read/write/deleted
+  data/read-ID operations, no-media/write-protect/DMA errors and interrupts.
+  A local TCP peer exercises split/coalesced NetHub framing, guest transmit
+  and receive queues, odd-byte buffers, truncation, reset, queue bounds,
+  malformed frames, disconnect and reconnect. Fixtures contain no Xerox code.
 * The Java differential harness compares 5,837 successful arithmetic/jump
   executions, including PC and all stack slots. It does not prove equivalence
   of every opcode or guest trap path.
@@ -21,11 +27,13 @@ Validated on 2026-09-20 against Dwarf commit
   exercising the transition from its logged-out screen to the login form.
 * The Apple AppKit GUI was visually checked with ViewPoint: upright display,
   login form after keyboard input, and native window controls. No ViewPoint
-  user login or network session is claimed.
-* AddressSanitizer and UndefinedBehaviorSanitizer pass the 418 engine and
-  system checks and both OS boot tests with Homebrew LLVM and Apple
-  Foundation, ARC disabled.
-* Autogsdoc generates all ten header documents; their XML validates against
+  user login is claimed. The updated XDE GUI was also checked connecting to
+  a local NetHub-protocol test listener, emitting guest Ethernet frames, and
+  inserting/ejecting a synthetic IMD floppy.
+* AddressSanitizer and UndefinedBehaviorSanitizer pass the 571 engine, system
+  and device checks with Homebrew LLVM and Apple Foundation, ARC disabled.
+  The previous OS boot tests also passed sanitizers.
+* Autogsdoc generates all twelve header documents; their XML validates against
   the GSDoc 1.0.4 DTD. The Objective-C 1.0 syntax guard passes.
 * Both disks also boot with GNUstep Base. The native GNUstep GUI application
   compiles and links against GNUstep GUI 0.32.0.
@@ -36,6 +44,8 @@ that temporary dependency build. The Ubuntu/GCC workflow is included but
 has not been executed here. GUI behavior on a GNUstep display backend still
 needs testing; the interactive run used Apple's AppKit fallback.
 
-The tests establish boot and the exercised paths, not complete Xerox OS or
-peripheral compatibility. Networking, floppy media, Duchess hardware, and
-color display remain outside the validated scope.
+Both OS boot tests pass after the device additions. No real Xerox floppy
+image was available for validation: media and IOCB tests use generated
+fixtures. Full XNS filer/login interoperability has not been exercised against
+an external service installation. Duchess and color displays remain outside
+this implementation.

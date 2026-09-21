@@ -13,6 +13,8 @@ the reference checkout. It is a native implementation, not a Java wrapper.
 | Transfers/graphics | DBBlocks: restartable word/byte transfers, comparisons/checksum, monochrome BITBLT/COLORBLT/BITBLTX |
 | Boot | DBMachine: Draco memory map, germ extraction, boot request, processor IOP commands |
 | Disk | DBDisk and DBMachine: compressed disk/delta loading, labels/data, asynchronous guest completion protocol, export |
+| Networking | DBNetwork and DBDevices: nonblocking NetHub TCP framing, queued receive buffers, send/receive completion and interrupts, reset/reconnect |
+| Floppy | DBFloppy and DBDevices: IMD/DMK parsing, media changes, read/write/deleted data, read-ID and track format, write protection, DMA errors and export |
 | Display/input | DBMachine and DBApplication: framebuffer, retrace, keyboard/mouse, native AppKit window and controls |
 
 ## Execution and ownership
@@ -49,9 +51,17 @@ host wall clock used for the guest calendar.
   complete compressed image atomically, refuses the input path, and refuses
   destinations with a conflicting delta file. Hardware formatting is not
   implemented. Guest label/data verification reports device errors.
-* Networking reports an offline interface; there is no host network bridge.
-  Floppy hardware reports no medium; queued floppy media operations are not
-  implemented. Beep notifications produce no host audio.
+* Networking connects to an explicitly configured Dwarf NetHub. A separate
+  XNS service environment is required for network applications. There is no
+  direct host Ethernet/TAP bridge, internal time responder or XNS server.
+  Socket polling is nonblocking; initial endpoint DNS resolution is synchronous.
+* IMD floppies use private writable copies and explicit export; DMK media
+  are protected and may be exported as IMD. Sector-level controller requests
+  include read/write, deleted marks, read-ID and formatting. No raw/flux images,
+  rotational timing or low-level FDC scan commands are implemented. IMD error
+  flags are retained; DMK raw CRC bytes are not verified. Replacing media
+  exposes a 500 ms door-open interval to Pilot.
+* Beep notifications produce no host audio.
 * The GUI uses a host cursor and a basic US keyboard map. Guest cursor shapes,
   configurable key mappings, clipboard, printing and full Dwarf UI features
   remain outside this implementation.

@@ -6,7 +6,7 @@ SANITIZERS ?= address,undefined
 CPPFLAGS += -ISource
 CFLAGS ?= -O2 -g
 OBJCFLAGS += -Wall -Wextra -Werror -std=gnu99
-CORE = Source/DBMemory.m Source/DBProcessor.m Source/DBInstructions.m Source/DBControl.m Source/DBProcesses.m Source/DBDisk.m Source/DBMachine.m Source/DBBlocks.m
+CORE = Source/DBMemory.m Source/DBProcessor.m Source/DBInstructions.m Source/DBControl.m Source/DBProcesses.m Source/DBDisk.m Source/DBMachine.m Source/DBBlocks.m Source/DBNetwork.m Source/DBFloppy.m Source/DBDevices.m
 LDLIBS += -lz
 HEADERS = $(wildcard Source/*.h) Source/DBInstructionDispatch.inc Source/DBIOInitial.inc
 HAVE_GNUSTEP := $(shell command -v $(GNUSTEP_CONFIG) 2>/dev/null)
@@ -30,9 +30,12 @@ build/tests: $(CORE) Tests/EngineTests.m $(HEADERS) | build
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(OBJCFLAGS) $(CORE) Tests/EngineTests.m -o $@ $(LDLIBS)
 build/system-tests: $(CORE) Tests/SystemTests.m $(HEADERS) | build
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(OBJCFLAGS) $(CORE) Tests/SystemTests.m -o $@ $(LDLIBS)
-check: build/tests build/system-tests build/daybreak
+build/device-tests: $(CORE) Tests/DeviceTests.m $(HEADERS) | build
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(OBJCFLAGS) $(CORE) Tests/DeviceTests.m -o $@ $(LDLIBS)
+check: build/tests build/system-tests build/device-tests build/daybreak
 	./build/tests
 	./build/system-tests
+	./build/device-tests
 	./build/daybreak --demo
 	python3 Tools/check-objc1.py
 sanitize:

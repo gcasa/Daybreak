@@ -9,7 +9,8 @@ The included Dwarf **XDE 5.0 and ViewPoint 2.0.5 disk images boot**: XDE to its
 desktop (MP 990), ViewPoint to its logged-out screen and login form (MP 8000).
 Control transfers, guest traps and faults, priority scheduling, synchronization,
 interrupts, restartable block transfers, and monochrome graphics are implemented.
-Networking remains offline; floppy media and Duchess agents are not implemented.
+NetHub networking and IMD/DMK floppy media are supported. Duchess agents are
+not implemented.
 See [port status](Documentation/PORTING.md) for the precise scope.
 
 ## Build and run
@@ -26,7 +27,7 @@ openapp ./Daybreak.app ../dwarf/disks-6085/xde5.0.zdisk
 
 The GUI also has an Open Disk button. It provides an 832 × 633 monochrome
 screen, keyboard and three-button mouse input, Pause/Resume, single Step,
-and Save Copy. Disk changes stay in memory until explicitly exported to a
+Save Copy, floppy insert/eject, and a NetHub connection panel. Disk changes stay in memory until explicitly exported to a
 new `.zdisk`; the input disk and its optional `.zdelta` are never overwritten.
 Booting the OS itself changes its working disk, so save a copy before closing
 if you want those changes. Export while paused for a consistent emulator state;
@@ -60,6 +61,39 @@ execution units. The raw bytecode runner remains available:
 `./build/daybreak --steps 5 --base 0x30000 --pc 0 program.bin`.
 `--post40` selects changed-chapters instructions for raw images. Raw files are
 big-endian words, not compressed disks or standalone boot germs.
+
+## Networking and floppy media
+
+Use **Network…** to connect to a Dwarf-compatible NetHub (TCP port 3333 by
+convention), or configure it at launch in the command-line runner:
+
+```sh
+./build/daybreak --disk ../dwarf/disks-6085/xde5.0.zdisk --seconds 60 \
+  --hub localhost --hub-port 3333 --floppy /path/to/disk.imd
+```
+
+Networking is disabled until an endpoint is supplied. The transport handles
+partial TCP frames, bounded queues, disconnects and automatic reconnects;
+the status line shows connection state and packet counts. This carries the
+guest's Ethernet/XNS traffic to NetHub. XNS servers and the hub run separately;
+Daybreak does not provide a filer, Internet gateway, or internal time server.
+For multiple workstations, assign distinct unicast IDs before boot with
+`--host-id 1000FE31AB22`. The default `1000FE31AB21` preserves the supplied
+ViewPoint configuration; changing it can affect guest software configuration.
+
+Use **Floppy…** to insert `.imd` or `.dmk` media and **Eject** to remove it.
+The file chooser's options include write protection. DMK is always protected;
+IMD can be read, written, and formatted by the guest. **Daybreak → Save Floppy
+Copy…** exports a complete `.imd` copy without changing the input file.
+The application checks unsaved floppy changes before replacement or exit.
+For the command-line runner, use `--floppy-read-only` and
+`--save-floppy /path/to/copy.imd` as needed. Floppy selection and hub settings
+apply to the current application session.
+
+The media reader handles mixed track sizes, ImageDisk compression, logical
+sector maps, deleted/error sector flags, and DMK FM/MFM records. Malformed
+images are rejected. This is sector-level emulation, not a flux/timing model;
+raw `.img` files and writing DMK images in place are not supported.
 
 ## Documentation and validation
 

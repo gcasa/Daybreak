@@ -5,7 +5,7 @@ include $(GNUSTEP_MAKEFILES)/common.make
 APP_NAME = Daybreak
 Daybreak_OBJC_FILES = Source/DBMemory.m Source/DBProcessor.m \
   Source/DBInstructions.m Source/DBControl.m Source/DBProcesses.m \
-  Source/DBDisk.m Source/DBMachine.m Source/DBBlocks.m \
+  Source/DBDisk.m Source/DBMachine.m Source/DBBlocks.m Source/DBNetwork.m Source/DBFloppy.m Source/DBDevices.m \
   GUI/DBApplication.m GUI/main.m
 Daybreak_APPLICATION_ICON =
 ADDITIONAL_INCLUDE_DIRS = -ISource -IGUI

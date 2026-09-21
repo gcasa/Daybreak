@@ -275,7 +275,7 @@ static NSButton *
 db_button (NSView *parent, NSString *title, id target, SEL action, CGFloat x)
 {
   NSButton *button = [[[NSButton alloc]
-      initWithFrame: NSMakeRect (x, 668, 108, 28)] autorelease];
+      initWithFrame: NSMakeRect (x, 691, 108, 28)] autorelease];
   [button setTitle: title];
   [button setTarget: target];
   [button setAction: action];
@@ -289,7 +289,7 @@ db_button (NSView *parent, NSString *title, id target, SEL action, CGFloat x)
 - (void) applicationDidFinishLaunching: (NSNotification *)notification
 {
   NSView *content;
-  NSMenu *menu, *applicationMenu;
+  NSMenu *menu, *applicationMenu, *editMenu;
   NSMenuItem *item;
   NSArray *arguments = [[NSProcessInfo processInfo] arguments];
   (void) notification;
@@ -308,13 +308,47 @@ db_button (NSView *parent, NSString *title, id target, SEL action, CGFloat x)
                                     action: @selector (saveDisk: )
                              keyEquivalent: @"s"];
   [item setTarget: self];
+  item = [applicationMenu addItemWithTitle: @"Insert Floppy…"
+                                    action: @selector (insertFloppy: )
+                             keyEquivalent: @"i"];
+  [item setTarget: self];
+  item = [applicationMenu addItemWithTitle: @"Eject Floppy"
+                                    action: @selector (ejectFloppy: )
+                             keyEquivalent: @"e"];
+  [item setTarget: self];
+  item = [applicationMenu addItemWithTitle: @"Save Floppy Copy…"
+                                    action: @selector (saveFloppy: )
+                             keyEquivalent: @""];
+  [item setTarget: self];
+  item = [applicationMenu addItemWithTitle: @"Network…"
+                                    action: @selector (configureNetwork: )
+                             keyEquivalent: @"n"];
+  [item setTarget: self];
   [applicationMenu addItem: [NSMenuItem separatorItem]];
   [applicationMenu addItemWithTitle: @"Quit Daybreak"
                              action: @selector (terminate: )
                       keyEquivalent: @"q"];
+  editMenu = [[[NSMenu alloc] initWithTitle: @"Edit"] autorelease];
+  item = [[[NSMenuItem alloc] initWithTitle: @"Edit"
+                                     action: NULL
+                              keyEquivalent: @""] autorelease];
+  [menu addItem: item];
+  [menu setSubmenu: editMenu forItem: item];
+  [editMenu addItemWithTitle: @"Cut"
+                      action: @selector (cut: )
+               keyEquivalent: @"x"];
+  [editMenu addItemWithTitle: @"Copy"
+                      action: @selector (copy: )
+               keyEquivalent: @"c"];
+  [editMenu addItemWithTitle: @"Paste"
+                      action: @selector (paste: )
+               keyEquivalent: @"v"];
+  [editMenu addItemWithTitle: @"Select All"
+                      action: @selector (selectAll: )
+               keyEquivalent: @"a"];
   [NSApp setMainMenu: menu];
   _window = [[NSWindow alloc]
-      initWithContentRect: NSMakeRect (80, 60, 856, 708)
+      initWithContentRect: NSMakeRect (80, 60, 856, 731)
                 styleMask: NSTitledWindowMask | NSClosableWindowMask
                           | NSMiniaturizableWindowMask
                   backing: NSBackingStoreBuffered
@@ -325,18 +359,28 @@ db_button (NSView *parent, NSString *title, id target, SEL action, CGFloat x)
   [_window setAcceptsMouseMovedEvents: YES];
   content = [_window contentView];
   _display =
-      [[DBDisplayView alloc] initWithFrame: NSMakeRect (12, 30, 832, 633)];
+      [[DBDisplayView alloc] initWithFrame: NSMakeRect (12, 53, 832, 633)];
   [content addSubview: _display];
   db_button (content, @"Open Disk…", self, @selector (openDisk: ), 12);
   _pauseButton = db_button (content, @"Pause", self, @selector (pause: ), 126);
   db_button (content, @"Step", self, @selector (step: ), 240);
   db_button (content, @"Save Copy…", self, @selector (saveDisk: ), 354);
-  _status = [[NSTextField alloc] initWithFrame: NSMakeRect (12, 5, 832, 21)];
+  _status = [[NSTextField alloc] initWithFrame: NSMakeRect (12, 28, 832, 21)];
   [_status setEditable: NO];
   [_status setBezeled: NO];
   [_status setDrawsBackground: NO];
   [_status setStringValue: @"Open an XDE or ViewPoint .zdisk image to boot."];
   [content addSubview: _status];
+  _mediaStatus =
+      [[NSTextField alloc] initWithFrame: NSMakeRect (12, 5, 832, 21)];
+  [_mediaStatus setEditable: NO];
+  [_mediaStatus setBezeled: NO];
+  [_mediaStatus setDrawsBackground: NO];
+  [_mediaStatus setStringValue: @"Floppy empty   •   Network offline"];
+  [content addSubview: _mediaStatus];
+  db_button (content, @"Floppy…", self, @selector (insertFloppy: ), 468);
+  db_button (content, @"Eject", self, @selector (ejectFloppy: ), 582);
+  db_button (content, @"Network…", self, @selector (configureNetwork: ), 696);
   [_window makeKeyAndOrderFront: nil];
   [_window makeFirstResponder: _display];
   _timer = [[NSTimer scheduledTimerWithTimeInterval: 0.01
@@ -354,6 +398,8 @@ db_button (NSView *parent, NSString *title, id target, SEL action, CGFloat x)
   [_machine release];
   [_display release];
   [_status release];
+  [_mediaStatus release];
+  [_hubHost release];
   [_window release];
   [super dealloc];
 }
@@ -381,6 +427,8 @@ db_button (NSView *parent, NSString *title, id target, SEL action, CGFloat x)
 }
 - (BOOL) mayDiscardDisk
 {
+  if (![self mayDiscardFloppy])
+    return NO;
   if (_machine == nil || ![[_machine disk] changed])
     return YES;
   return NSRunAlertPanel (@"Unsaved disk changes",
@@ -411,6 +459,8 @@ db_button (NSView *parent, NSString *title, id target, SEL action, CGFloat x)
   [_display setMachine: machine];
   [_machine release];
   _machine = machine;
+  if (_hubHost != nil)
+    [_machine setNetworkHost: _hubHost port: _hubPort];
   _paused = NO;
   [_window setTitle: [NSString stringWithFormat: @"Daybreak — %@",
                                                [path lastPathComponent]]];
@@ -421,6 +471,164 @@ db_button (NSView *parent, NSString *title, id target, SEL action, CGFloat x)
   [self reportException: localException];
   NS_ENDHANDLER
 }
+
+- (BOOL) mayDiscardFloppy
+{
+  if (![[_machine floppy] changed])
+    return YES;
+  return NSRunAlertPanel (
+             @"Unsaved floppy changes",
+             @"Save a floppy copy to keep changes before ejecting or closing.",
+             @"Cancel", @"Discard Changes", nil)
+         == NSAlertAlternateReturn;
+}
+- (void) insertFloppy: (id)sender
+{
+  NSOpenPanel *panel;
+  NSButton *protect;
+  (void) sender;
+  if (_machine == nil)
+    return;
+  panel = [NSOpenPanel openPanel];
+  protect = [[[NSButton alloc] initWithFrame: NSMakeRect (0, 0, 300, 28)]
+      autorelease];
+  [protect setButtonType: NSSwitchButton];
+  [protect setTitle: @"Write protect (DMK is always protected)"];
+  [panel setAccessoryView: protect];
+  [panel setAllowsMultipleSelection: NO];
+  if ([panel runModalForTypes: [NSArray arrayWithObjects: @"imd", @"dmk", nil]]
+          != NSOKButton
+      || ![self mayDiscardFloppy])
+    return;
+  NS_DURING
+  /* Validate before discarding any previous session changes. */
+  DBFloppy *probe =
+      [[DBFloppy alloc] initWithPath: [panel filename]
+                            readOnly: [protect state] == NSOnState];
+  [probe release];
+  if ([[_machine floppy] changed])
+    [_machine ejectFloppyDiscardingChanges: YES];
+  [_machine insertFloppy: [panel filename]
+                readOnly: [protect state] == NSOnState];
+  [self refresh];
+  NS_HANDLER
+  NSRunAlertPanel (@"Cannot insert floppy", @"%@", @"OK", nil, nil,
+                   [localException reason]);
+  NS_ENDHANDLER
+}
+- (void) ejectFloppy: (id)sender
+{
+  (void) sender;
+  if (![self mayDiscardFloppy])
+    return;
+  [_machine ejectFloppyDiscardingChanges: YES];
+  [self refresh];
+}
+- (void) saveFloppy: (id)sender
+{
+  NSSavePanel *panel;
+  (void) sender;
+  if ([_machine floppy] == nil)
+    return;
+  panel = [NSSavePanel savePanel];
+  [panel setRequiredFileType: @"imd"];
+  if ([panel runModalForDirectory: nil file: @"Floppy-copy.imd"] != NSOKButton)
+    return;
+  NS_DURING
+  [[_machine floppy] saveCopyToPath: [panel filename]];
+  [self refresh];
+  NS_HANDLER
+  NSRunAlertPanel (@"Cannot save floppy", @"%@", @"OK", nil, nil,
+                   [localException reason]);
+  NS_ENDHANDLER
+}
+- (void) finishNetworkPanel: (id)sender
+{
+  [NSApp stopModalWithCode: [sender tag]];
+}
+- (void) configureNetwork: (id)sender
+{
+  NSPanel *panel;
+  NSTextField *host, *port, *label;
+  NSButton *button;
+  NSView *content;
+  int answer;
+  unsigned int i;
+  (void) sender;
+  panel = [[NSPanel alloc] initWithContentRect: NSMakeRect (150, 180, 460, 180)
+                                     styleMask: NSTitledWindowMask
+                                       backing: NSBackingStoreBuffered
+                                         defer: NO];
+  [panel setTitle: @"NetHub connection"];
+  [panel setHidesOnDeactivate: NO];
+  content = [panel contentView];
+  label = [[[NSTextField alloc] initWithFrame: NSMakeRect (16, 140, 425, 22)]
+      autorelease];
+  [label setStringValue: @"NetHub host and TCP port (default 3333)"];
+  [label setEditable: NO];
+  [label setBezeled: NO];
+  [label setDrawsBackground: NO];
+  [content addSubview: label];
+  host = [[[NSTextField alloc] initWithFrame: NSMakeRect (16, 103, 315, 24)]
+      autorelease];
+  port = [[[NSTextField alloc] initWithFrame: NSMakeRect (345, 103, 95, 24)]
+      autorelease];
+  [host setStringValue: _hubHost ? _hubHost : @"localhost"];
+  [port setStringValue: [NSString stringWithFormat: @"%u",
+                                                  _hubPort ? _hubPort : 3333]];
+  [content addSubview: host];
+  [content addSubview: port];
+  for (i = 0; i < 3; i++)
+    {
+      button = [[[NSButton alloc]
+          initWithFrame: NSMakeRect (16 + i * 145, 24, 135, 32)] autorelease];
+      [button setTitle: i == 0   ? @"Cancel"
+                       : i == 1 ? @"Disconnect"
+                                : @"Connect"];
+      [button setTag: i];
+      [button setTarget: self];
+      [button setAction: @selector (finishNetworkPanel: )];
+      [button setBezelStyle: NSRoundedBezelStyle];
+      [content addSubview: button];
+    }
+  [panel makeFirstResponder: host];
+  [panel center];
+  answer = (int) [NSApp runModalForWindow: panel];
+  [panel orderOut: nil];
+  if (answer == 1)
+    {
+      [_machine setNetworkHost: nil port: 0];
+      [_hubHost release];
+      _hubHost = nil;
+    }
+  else if (answer == 2)
+    {
+      NS_DURING
+      NSString *name = [[host stringValue]
+          stringByTrimmingCharactersInSet:
+              [NSCharacterSet whitespaceAndNewlineCharacterSet]];
+      NSScanner *scanner = [NSScanner scannerWithString: [port stringValue]];
+      int number;
+      if (![scanner scanInt: &number] || ![scanner isAtEnd] || number < 1
+          || number > 65535 || [name length] == 0)
+        [NSException raise: @"DBNetworkError"
+                    format: @"Enter a host and port 1..65535"];
+      if (_machine == nil)
+        [NSException raise: @"DBNetworkError"
+                    format: @"Open a workstation disk before connecting"];
+      [_machine setNetworkHost: name port: number];
+      [_hubHost release];
+      _hubHost = [name copy];
+      _hubPort = number;
+      NS_HANDLER
+      NSRunAlertPanel (@"Cannot configure network", @"%@", @"OK", nil, nil,
+                       [localException reason]);
+      NS_ENDHANDLER
+    }
+  [panel release];
+  [self refresh];
+}
+
 - (void) pause: (id)sender
 {
   (void) sender;
@@ -463,6 +671,8 @@ db_button (NSView *parent, NSString *title, id target, SEL action, CGFloat x)
   NS_DURING
   if (!_paused)
     [_machine runForInstructions: 50000];
+  else
+    [_machine pollDevices];
   if (_machine != nil)
     [self refresh];
   NS_HANDLER
@@ -491,7 +701,21 @@ db_button (NSView *parent, NSString *title, id target, SEL action, CGFloat x)
                                               [_machine diskReads],
                                           (unsigned long long)
                                               [_machine diskWrites],
-                                          @"Network offline"]];
+                                          @""]];
+  [_mediaStatus
+      setStringValue:
+          [NSString stringWithFormat:
+                        @"Floppy: %@%@   •   Network: %@   TX %llu / RX %llu",
+                        [_machine floppy]
+                            ? [[[_machine floppy] path] lastPathComponent]
+                            : @"empty",
+                        [[_machine floppy] readOnly]  ? @" (protected)"
+                        : [[_machine floppy] changed] ? @" (modified)"
+                                                      : @"",
+                        [_machine network] ? [[_machine network] status]
+                                           : @"offline",
+                        (unsigned long long) [_machine packetsSent],
+                        (unsigned long long) [_machine packetsReceived]]];
   [_display setNeedsDisplay: YES];
 }
 - (void) reportException: (NSException *)exception

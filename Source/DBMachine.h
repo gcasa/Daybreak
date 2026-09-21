@@ -5,11 +5,20 @@
 #define DAYBREAK_MACHINE_H
 #import "DBProcessor.h"
 #import "DBDisk.h"
+#import "DBNetwork.h"
+#import "DBFloppy.h"
 /** A single-threaded Draco machine with 4 MB RAM, disk, keyboard and an
     832 by 633 monochrome display. Owns a private, writable disk image. */
 @interface DBMachine : DBProcessor
 {
   DBDisk *_disk;
+  DBFloppy *_floppy, *_pendingFloppy;
+  DBNetwork *_network;
+  NSMutableArray *_receiveIOCBs;
+  BOOL _receiveStopped;
+  uint32_t _lastDevicePoll, _insertFloppyAt;
+  uint16_t _hostID[3];
+  uint64_t _packetsSent, _packetsReceived;
   BOOL _displayEnabled, _halted;
   uint32_t _lastRetrace;
   uint64_t _diskReads, _diskWrites;
@@ -43,5 +52,37 @@
 - (void) notifyDevice: (uint16_t)mask;
 /** Service pending rigid disk requests. */
 - (void) serviceDisk;
+@end
+
+/** Draco removable media and NetHub Ethernet IOP services. */
+@interface DBMachine (Devices)
+/** Return the borrowed current floppy, or nil while the drive is empty. */
+- (DBFloppy *) floppy;
+/** Insert IMD/DMK media. Replacement preserves a 500 ms door-open interval.
+    Raises DBFloppyError if changed media would be discarded; export or eject
+    explicitly first. Loading failure leaves the old medium in place. */
+- (void) insertFloppy: (NSString *)path readOnly: (BOOL)readOnly;
+/** Eject media, refusing unsaved changes unless discard is YES. */
+- (void) ejectFloppyDiscardingChanges: (BOOL)discard;
+/** Connect/reconnect to NetHub; nil host disconnects. No default connection.
+ */
+- (void) setNetworkHost: (NSString *)host port: (unsigned int)port;
+/** Set a six-byte unicast Ethernet ID before boot. Twelve hexadecimal digits,
+    optionally separated by colons or hyphens; invalid IDs raise an exception.
+    The default ID preserves the reference ViewPoint configuration. */
+- (void) setHostID: (NSString *)identifier;
+/** Return the borrowed transport or nil when networking is disabled. */
+- (DBNetwork *) network;
+/** Return accepted outgoing frame count. */
+- (uint64_t) packetsSent;
+/** Return frames delivered to guest receive buffers. */
+- (uint64_t) packetsReceived;
+/** Poll transport, waiting receive IOCBs and delayed media changes. Runs even
+    when the CPU is idle; caller must serialize with instruction execution. */
+- (void) pollDevices;
+/** Process the specified Ethernet input/output notification queue. */
+- (void) serviceNetwork: (BOOL)input;
+/** Complete queued floppy controller requests and raise client interrupts. */
+- (void) serviceFloppy;
 @end
 #endif

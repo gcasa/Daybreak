@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Draco floppy media</title>
+<meta http-equiv="Content-Style-Type" content="text/css"/>
+<link rel="stylesheet" type="text/css" href="default-styles.css" media="screen" title="Normal" />
+  </head>
+  <body>
+    <div class="content-bar">
+      <div class="content-bar-top">
+        <div class="content-bar-top-body">
+          <div class="content-bar-top-body-title">Daybreak</div><br />
+        </div>
+      </div>
+      <div class="content-bar-bottom">
+        <div class="content-bar-bottom-body">
+        </div>
+      </div>
+    </div>
+    <div class="content-pane">
+      <div class="content-pane-body">
+        <h1><a name="title$DBFloppy">Draco floppy media</a></h1>
+        <h3>Authors</h3>
+        <dl>
+          <dt>Daybreak contributors</dt>
+          <dd>
+          </dd>
+        </dl>
+        <p><b>Date:</b> Generated at 2026-09-21 UTC</p>
+
+            <div>
+        </div>
+
+              <h1><a name="001000000000">
+        Software documentation for the DBFloppy class
+      </a></h1>
+        <h2 class="class"><a name="class$DBFloppy">DBFloppy</a> : NSObject</h2>
+<svg width="109pt" height="116pt"
+ viewBox="0.00 0.00 109.00 116.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 112)">
+<title>class_DBFloppy</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-112 105.25,-112 105.25,4 -4,4"/>
+<!-- NSObject -->
+<g id="node1" class="node figure_super">
+<title>NSObject</title>
+<polygon fill="lightgrey" stroke="black" points="97.88,-108 3.38,-108 3.38,-72 97.88,-72 97.88,-108"/>
+<text xml:space="preserve" text-anchor="middle" x="50.62" y="-80.7" font-family="Times,serif" font-size="24.00">NSObject</text>
+</g>
+<!-- DBFloppy -->
+<g id="node2" class="node figure_class">
+<title>DBFloppy</title>
+<polygon fill="lightgrey" stroke="black" points="101.25,-36 0,-36 0,0 101.25,0 101.25,-36"/>
+<text xml:space="preserve" text-anchor="middle" x="50.62" y="-8.7" font-family="Times,serif" font-size="24.00">DBFloppy</text>
+</g>
+<!-- NSObject&#45;&gt;DBFloppy -->
+<g id="edge1" class="edge">
+<title>NSObject&#45;&gt;DBFloppy</title>
+<path fill="none" stroke="black" d="M50.62,-71.7C50.62,-64.41 50.62,-55.73 50.62,-47.54"/>
+<polygon fill="black" stroke="black" points="54.13,-47.62 50.63,-37.62 47.13,-47.62 54.13,-47.62"/>
+</g>
+</g>
+</svg>
+        <blockquote class="declared">
+          <dl>
+            <dt><b>Declared in:</b></dt>
+            <dd>DBFloppy.h</dd>
+          </dl>
+        </blockquote>
+        <div class="desc">
+
+          A private floppy working copy with cylinder/head/sector
+          addressing. Loads ImageDisk (.imd) and DMK
+          (.dmk), including mixed sector sizes and
+          nonsequential sector numbering. DMK is always
+          write-protected; writable IMD changes are
+          exported explicitly and never overwrite the input
+          file. All methods require serialization by the caller.
+
+        </div>
+        <p class="global_method_index">
+        </p>
+        <hr class="section-separator">
+<div class="method">
+        <h3><a name="method$DBFloppy-changed">changed&nbsp;</a></h3>
+        - (BOOL) <b>changed</b>;<br />
+        <div class="desc">
+
+            Return <code>YES</code> after a write/format until
+            successful export.
+
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBFloppy-cylinders">cylinders&nbsp;</a></h3>
+        - (unsigned int) <b>cylinders</b>;<br />
+        <div class="desc">
+
+            Return the number of cylinders represented by the
+            image.
+
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBFloppy-formatCylinder$head$descriptors$fill$">formatCylinder:&nbsp;head:&nbsp;descriptors:&nbsp;fill:&nbsp;</a></h3>
+        - (unsigned int) <b>formatCylinder:</b> (unsigned int)cylinder<b> head:</b> (unsigned int)head<b> descriptors:</b> (NSData*)descriptors<b> fill:</b> (unsigned char)fill;<br />
+        <div class="desc">
+
+            Format an existing track from four-byte C/H/R/N
+            records and a <var>fill</var> byte. Return Pilot
+            status; validates all records before modifying any
+            sector.
+
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBFloppy-heads">heads&nbsp;</a></h3>
+        - (unsigned int) <b>heads</b>;<br />
+        <div class="desc">
+
+            Return one or two heads.
+
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBFloppy-initWithPath$readOnly$">initWithPath:&nbsp;readOnly:&nbsp;</a></h3>
+        - (id) <b>initWithPath:</b> (NSString*)path<b> readOnly:</b> (BOOL)readOnly;<br />
+        <div class="desc">
+
+            Load and validate an image; malformed/truncated files
+            raise DBFloppyError. <var>readOnly</var> additionally
+            protects IMD media from guest writes.
+
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBFloppy-path">path&nbsp;</a></h3>
+        - (NSString*) <b>path</b>;<br />
+        <div class="desc">
+
+            Return the borrowed original image path.
+
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBFloppy-readOnly">readOnly&nbsp;</a></h3>
+        - (BOOL) <b>readOnly</b>;<br />
+        <div class="desc">
+
+            Return <code>YES</code> when guest writes are
+            prohibited.
+
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBFloppy-saveCopyToPath$">saveCopyToPath:&nbsp;</a></h3>
+        - (void) <b>saveCopyToPath:</b> (NSString*)path;<br />
+        <div class="desc">
+
+            Atomically export complete IMD media to a
+            separate <var>path</var> and clear changed. DMK
+            input may also be exported as IMD. Raises
+            DBFloppyError on failure.
+
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBFloppy-sectorAtCylinder$head$sector$">sectorAtCylinder:&nbsp;head:&nbsp;sector:&nbsp;</a></h3>
+        - (NSData*) <b>sectorAtCylinder:</b> (unsigned int)cylinder<b> head:</b> (unsigned int)head<b> sector:</b> (unsigned int)sector;<br />
+        <div class="desc">
+
+            Return borrowed immutable bytes, or <code>nil</code>
+            if the <var>sector</var> is missing. Cylinder/head are
+            zero-based, <var>sector</var> IDs are
+            one-based.
+
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBFloppy-sectorIDsAtCylinder$head$">sectorIDsAtCylinder:&nbsp;head:&nbsp;</a></h3>
+        - (NSArray*) <b>sectorIDsAtCylinder:</b> (unsigned int)cylinder<b> head:</b> (unsigned int)head;<br />
+        <div class="desc">
+
+            Return ascending sector IDs on a track, in an
+            autoreleased array.
+
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBFloppy-sectorsAtCylinder$head$">sectorsAtCylinder:&nbsp;head:&nbsp;</a></h3>
+        - (unsigned int) <b>sectorsAtCylinder:</b> (unsigned int)cylinder<b> head:</b> (unsigned int)head;<br />
+        <div class="desc">
+
+            Return the number of sectors on a track (zero for
+            absent tracks).
+
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBFloppy-statusAtCylinder$head$sector$">statusAtCylinder:&nbsp;head:&nbsp;sector:&nbsp;</a></h3>
+        - (unsigned int) <b>statusAtCylinder:</b> (unsigned int)cylinder<b> head:</b> (unsigned int)head<b> sector:</b> (unsigned int)sector;<br />
+        <div class="desc">
+
+            Return Pilot status: 1 good, 5 deleted data, 6
+            unavailable, 8 CRC error.
+
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBFloppy-writeCylinder$head$sector$data$deleted$">writeCylinder:&nbsp;head:&nbsp;sector:&nbsp;data:&nbsp;deleted:&nbsp;</a></h3>
+        - (unsigned int) <b>writeCylinder:</b> (unsigned int)cylinder<b> head:</b> (unsigned int)head<b> sector:</b> (unsigned int)sector<b> data:</b> (NSData*)data<b> deleted:</b> (BOOL)deleted;<br />
+        <div class="desc">
+
+            Replace an existing <var>sector</var> with equally
+            sized <var>data</var> and its <var>deleted</var>
+            mark. Return Pilot status, including 10 for
+            write-protected media.
+
+        </div>
+        <hr class="method-separator">
+</div>
+        <br />
+    </div>
+  </div>
+  </body>
+</html>

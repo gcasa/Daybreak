@@ -7,6 +7,12 @@
 	"-applicationShouldTerminateAfterLastWindowClosed:",
 	"-openDisk:",
 	"-loadDisk:",
+	"-insertFloppy:",
+	"-ejectFloppy:",
+	"-saveFloppy:",
+	"-configureNetwork:",
+	"-finishNetworkPanel:",
+	"-mayDiscardFloppy",
 	"-pause:",
 	"-step:",
 	"-saveDisk:",
@@ -35,6 +41,21 @@
 	"-releaseKey:",
 	"-updateMouse:"
     );
+    DBFloppy = (
+	"-initWithPath:readOnly:",
+	"-path",
+	"-cylinders",
+	"-heads",
+	"-sectorsAtCylinder:head:",
+	"-sectorIDsAtCylinder:head:",
+	"-sectorAtCylinder:head:sector:",
+	"-statusAtCylinder:head:sector:",
+	"-writeCylinder:head:sector:data:deleted:",
+	"-formatCylinder:head:descriptors:fill:",
+	"-readOnly",
+	"-changed",
+	"-saveCopyToPath:"
+    );
     DBMachine = (
 	"-initWithDisk:switches:",
 	"-disk",
@@ -49,6 +70,19 @@
 	"-runForInstructions:",
 	"-notifyDevice:",
 	"-serviceDisk"
+    );
+    "DBMachine(Devices)" = (
+	"-floppy",
+	"-insertFloppy:readOnly:",
+	"-ejectFloppyDiscardingChanges:",
+	"-setNetworkHost:port:",
+	"-setHostID:",
+	"-network",
+	"-packetsSent",
+	"-packetsReceived",
+	"-pollDevices",
+	"-serviceNetwork:",
+	"-serviceFloppy"
     );
     DBMemory = (
 	"+isVacant:",
@@ -69,6 +103,16 @@
 	"-loadData:atRealAddress:",
 	"+fieldFromWord:specification:",
 	"+word:specification:withField:"
+    );
+    DBNetwork = (
+	"-initWithHost:port:",
+	"-poll",
+	"-sendPacket:",
+	"-receivePacket",
+	"-discardReceivedPackets",
+	"-close",
+	"-connected",
+	"-status"
     );
     DBProcessor = (
 	"-initWithMemory:post40:",

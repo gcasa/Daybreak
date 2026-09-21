@@ -120,5 +120,109 @@
         </method>
       </class>
     </chapter>
+    <chapter>
+      <heading>
+        Software documentation for the DBMachine(Devices)
+        category
+      </heading>
+      <category name="Devices" class="DBMachine">
+        <declared>DBMachine.h</declared>
+        <desc>
+          Draco removable media and NetHub Ethernet IOP services.
+        </desc>
+        <method type="void">
+          <sel>ejectFloppyDiscardingChanges:</sel>
+          <arg type="BOOL">discard</arg>
+          <desc>
+            Eject media, refusing unsaved changes unless
+            <var>discard</var> is <code>YES</code>.
+          </desc>
+        </method>
+        <method type="DBFloppy*">
+          <sel>floppy</sel>
+          <desc>
+            Return the borrowed current floppy, or
+            <code>nil</code> while the drive is empty.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>insertFloppy:</sel>
+          <arg type="NSString*">path</arg>
+          <sel>readOnly:</sel>
+          <arg type="BOOL">readOnly</arg>
+          <desc>
+            Insert IMD/DMK media. Replacement preserves a 500 ms
+            door-open interval. Raises DBFloppyError if
+            changed media would be discarded; export or eject
+            explicitly first. Loading failure leaves the old
+            medium in place.
+          </desc>
+        </method>
+        <method type="DBNetwork*">
+          <sel>network</sel>
+          <desc>
+            Return the borrowed transport or <code>nil</code>
+            when networking is disabled.
+          </desc>
+        </method>
+        <method type="uint64_t">
+          <sel>packetsReceived</sel>
+          <desc>
+            Return frames delivered to guest receive buffers.
+          </desc>
+        </method>
+        <method type="uint64_t">
+          <sel>packetsSent</sel>
+          <desc>
+            Return accepted outgoing frame count.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>pollDevices</sel>
+          <desc>
+            Poll transport, waiting receive IOCBs and delayed
+            media changes. Runs even when the CPU is idle; caller
+            must serialize with instruction execution.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>serviceFloppy</sel>
+          <desc>
+            Complete queued floppy controller requests and
+            raise client interrupts.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>serviceNetwork:</sel>
+          <arg type="BOOL">input</arg>
+          <desc>
+            Process the specified Ethernet input/output
+            notification queue.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>setHostID:</sel>
+          <arg type="NSString*">identifier</arg>
+          <desc>
+            Set a six-byte unicast Ethernet ID before boot. Twelve
+            hexadecimal digits, optionally separated by
+            colons or hyphens; invalid IDs raise an exception.
+            The default ID preserves the reference ViewPoint
+            configuration.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>setNetworkHost:</sel>
+          <arg type="NSString*">host</arg>
+          <sel>port:</sel>
+          <arg type="unsigned int">port</arg>
+          <desc>
+            Connect/reconnect to NetHub;
+            <code>nil</code> <var>host</var> disconnects. No
+            default connection.
+          </desc>
+        </method>
+      </category>
+    </chapter>
   </body>
 </gsdoc>

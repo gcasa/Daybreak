@@ -31,6 +31,18 @@
         <p><b>Copyright:</b> (C) 2017, Dr. Hans-Walter Latz. See COPYING.</p>
 
             <div>
+          <hr class="section-separator">
+          <h3>Contents -</h3>
+          <ol>
+            <li>
+              <a href="#001000000000">Software documentation for the DBMachine class</a>
+            </li>
+            <li>
+              <a href="#002000000000">Software documentation for the DBMachine(Devices)
+        category</a>
+            </li>
+          </ol>
+          <hr class="section-separator">
         </div>
 
               <h1><a name="001000000000">
@@ -212,6 +224,153 @@
         <div class="desc">
 
             Update guest mouse coordinates in display pixels.
+
+        </div>
+        <hr class="method-separator">
+</div>
+
+              <h1><a name="002000000000">
+        Software documentation for the DBMachine(Devices)
+        category
+      </a></h1>
+        <h2><a rel="gsdoc" href="#class$DBMachine">DBMachine</a>(<a name="category$DBMachine(Devices)">Devices</a>)</h2>
+        <blockquote class="declared">
+          <dl>
+            <dt><b>Declared in:</b></dt>
+            <dd>DBMachine.h</dd>
+          </dl>
+        </blockquote>
+        <div class="desc">
+
+          Draco removable media and NetHub Ethernet IOP services.
+
+        </div>
+        <p class="global_method_index">
+        </p>
+        <hr class="section-separator">
+<div class="method">
+        <h3><a name="method$DBMachine(Devices)-ejectFloppyDiscardingChanges$">ejectFloppyDiscardingChanges:&nbsp;</a></h3>
+        - (void) <b>ejectFloppyDiscardingChanges:</b> (BOOL)discard;<br />
+        <div class="desc">
+
+            Eject media, refusing unsaved changes unless
+            <var>discard</var> is <code>YES</code>.
+
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBMachine(Devices)-floppy">floppy&nbsp;</a></h3>
+        - (DBFloppy*) <b>floppy</b>;<br />
+        <div class="desc">
+
+            Return the borrowed current floppy, or
+            <code>nil</code> while the drive is empty.
+
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBMachine(Devices)-insertFloppy$readOnly$">insertFloppy:&nbsp;readOnly:&nbsp;</a></h3>
+        - (void) <b>insertFloppy:</b> (NSString*)path<b> readOnly:</b> (BOOL)readOnly;<br />
+        <div class="desc">
+
+            Insert IMD/DMK media. Replacement preserves a 500 ms
+            door-open interval. Raises DBFloppyError if
+            changed media would be discarded; export or eject
+            explicitly first. Loading failure leaves the old
+            medium in place.
+
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBMachine(Devices)-network">network&nbsp;</a></h3>
+        - (DBNetwork*) <b>network</b>;<br />
+        <div class="desc">
+
+            Return the borrowed transport or <code>nil</code>
+            when networking is disabled.
+
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBMachine(Devices)-packetsReceived">packetsReceived&nbsp;</a></h3>
+        - (uint64_t) <b>packetsReceived</b>;<br />
+        <div class="desc">
+
+            Return frames delivered to guest receive buffers.
+
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBMachine(Devices)-packetsSent">packetsSent&nbsp;</a></h3>
+        - (uint64_t) <b>packetsSent</b>;<br />
+        <div class="desc">
+
+            Return accepted outgoing frame count.
+
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBMachine(Devices)-pollDevices">pollDevices&nbsp;</a></h3>
+        - (void) <b>pollDevices</b>;<br />
+        <div class="desc">
+
+            Poll transport, waiting receive IOCBs and delayed
+            media changes. Runs even when the CPU is idle; caller
+            must serialize with instruction execution.
+
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBMachine(Devices)-serviceFloppy">serviceFloppy&nbsp;</a></h3>
+        - (void) <b>serviceFloppy</b>;<br />
+        <div class="desc">
+
+            Complete queued floppy controller requests and
+            raise client interrupts.
+
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBMachine(Devices)-serviceNetwork$">serviceNetwork:&nbsp;</a></h3>
+        - (void) <b>serviceNetwork:</b> (BOOL)input;<br />
+        <div class="desc">
+
+            Process the specified Ethernet input/output
+            notification queue.
+
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBMachine(Devices)-setHostID$">setHostID:&nbsp;</a></h3>
+        - (void) <b>setHostID:</b> (NSString*)identifier;<br />
+        <div class="desc">
+
+            Set a six-byte unicast Ethernet ID before boot. Twelve
+            hexadecimal digits, optionally separated by
+            colons or hyphens; invalid IDs raise an exception.
+            The default ID preserves the reference ViewPoint
+            configuration.
+
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBMachine(Devices)-setNetworkHost$port$">setNetworkHost:&nbsp;port:&nbsp;</a></h3>
+        - (void) <b>setNetworkHost:</b> (NSString*)host<b> port:</b> (unsigned int)port;<br />
+        <div class="desc">
+
+            Connect/reconnect to NetHub;
+            <code>nil</code> <var>host</var> disconnects. No
+            default connection.
 
         </div>
         <hr class="method-separator">

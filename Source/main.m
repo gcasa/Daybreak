@@ -32,7 +32,11 @@ db_usage (FILE *stream)
       "       daybreak --disk [--seconds N | --steps N] [--snapshot "
       "FILE.pbm]\n"
       "                [--save-copy FILE.zdisk] [--switches STRING] "
-      "DISK.zdisk\n\n"
+      "DISK.zdisk\n"
+      "                [--floppy FILE.imd|FILE.dmk] [--floppy-read-only]\n"
+      "                [--save-floppy COPY.imd] [--hub HOST] [--hub-port "
+      "PORT]\n"
+      "                [--host-id 1000FE31AB21]\n\n"
       "Disk mode loads the embedded Draco germ and boots for 30 seconds.\n"
       "Disk changes stay in memory unless --save-copy is specified.\n"
       "Raw mode defaults to 100 instructions, PC 0, word base 0x30000.\n");
@@ -51,7 +55,10 @@ main (int argc, char **argv)
   DBProcessor *volatile cpu = nil;
   NSData *data = nil;
   const char *file = NULL, *snapshot = NULL, *saveCopy = NULL,
-             *switches = NULL;
+             *switches = NULL, *floppy = NULL, *floppyCopy = NULL, *hub = NULL,
+             *hostID = NULL;
+  BOOL floppyReadOnly = NO, explicitHubPort = NO;
+  uint32_t hubPort = 3333;
   uint32_t steps = 100, pc = 0, base = 0x30000, seconds = 30;
   BOOL explicitSteps = NO, explicitSeconds = NO;
   BOOL post40 = NO, demo = NO, disk = NO;
@@ -68,11 +75,27 @@ main (int argc, char **argv)
         demo = YES;
       else if (strcmp (argv[i], "--disk") == 0)
         disk = YES;
+      else if (strcmp (argv[i], "--floppy-read-only") == 0)
+        floppyReadOnly = YES;
+      else if (strcmp (argv[i], "--hub-port") == 0)
+        {
+          explicitHubPort = YES;
+          if (++i >= argc || !db_number (argv[i], 65535, &hubPort)
+              || hubPort == 0)
+            {
+              status = 2;
+              break;
+            }
+        }
       else if (strcmp (argv[i], "--post40") == 0)
         post40 = YES;
       else if (strcmp (argv[i], "--snapshot") == 0
                || strcmp (argv[i], "--save-copy") == 0
-               || strcmp (argv[i], "--switches") == 0)
+               || strcmp (argv[i], "--switches") == 0
+               || strcmp (argv[i], "--floppy") == 0
+               || strcmp (argv[i], "--save-floppy") == 0
+               || strcmp (argv[i], "--hub") == 0
+               || strcmp (argv[i], "--host-id") == 0)
         {
           const char *option = argv[i];
           if (++i >= argc)
@@ -84,8 +107,16 @@ main (int argc, char **argv)
             snapshot = argv[i];
           else if (strcmp (option, "--save-copy") == 0)
             saveCopy = argv[i];
-          else
+          else if (strcmp (option, "--switches") == 0)
             switches = argv[i];
+          else if (strcmp (option, "--floppy") == 0)
+            floppy = argv[i];
+          else if (strcmp (option, "--save-floppy") == 0)
+            floppyCopy = argv[i];
+          else if (strcmp (option, "--hub") == 0)
+            hub = argv[i];
+          else
+            hostID = argv[i];
         }
       else if (strcmp (argv[i], "--seconds") == 0)
         {
@@ -125,8 +156,11 @@ main (int argc, char **argv)
         file = argv[i];
     }
   if (status || (demo && (disk || file != NULL)) || (!demo && file == NULL)
-      || (explicitSteps && explicitSeconds)
-      || (!disk && (snapshot || saveCopy || switches || explicitSeconds)))
+      || (explicitSteps && explicitSeconds) || (floppyCopy && !floppy)
+      || (floppyReadOnly && !floppy) || (explicitHubPort && !hub)
+      || (!disk
+          && (snapshot || saveCopy || switches || explicitSeconds || floppy
+              || hub || hostID)))
     {
       db_usage (stderr);
       [pool release];
@@ -139,6 +173,14 @@ main (int argc, char **argv)
           initWithDisk: [NSString stringWithUTF8String: file]
               switches: switches ? [NSString stringWithUTF8String: switches]
                                 : nil];
+      if (hostID)
+        [(DBMachine *) cpu setHostID: [NSString stringWithUTF8String: hostID]];
+      if (floppy)
+        [(DBMachine *) cpu insertFloppy: [NSString stringWithUTF8String: floppy]
+                               readOnly: floppyReadOnly];
+      if (hub)
+        [(DBMachine *) cpu setNetworkHost: [NSString stringWithUTF8String: hub]
+                                     port: hubPort];
       if (explicitSteps)
         [cpu runForInstructions: steps];
       else
@@ -173,6 +215,14 @@ main (int argc, char **argv)
             [NSException raise: @"DBOutputError"
                         format: @"Cannot write framebuffer"];
         }
+      if (floppyCopy)
+        [[(DBMachine *) cpu floppy]
+            saveCopyToPath: [NSString stringWithUTF8String: floppyCopy]];
+      if (hub)
+        printf ("Network: %s sent=%llu received=%llu\n",
+                [[[(DBMachine *) cpu network] status] UTF8String],
+                (unsigned long long) [(DBMachine *) cpu packetsSent],
+                (unsigned long long) [(DBMachine *) cpu packetsReceived]);
       if (saveCopy != NULL)
         [[(DBMachine *) cpu disk]
             saveCopyToPath: [NSString stringWithUTF8String: saveCopy]];

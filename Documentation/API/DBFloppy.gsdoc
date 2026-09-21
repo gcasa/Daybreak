@@ -1,0 +1,164 @@
+<?xml version="1.0"?>
+<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 1.0.4//EN" "http://www.gnustep.org/gsdoc-1_0_4.dtd">
+<gsdoc base="DBFloppy" stylesheeturl="default-styles.css">
+  <head>
+    <title>Draco floppy media</title>
+    <author name="Daybreak contributors">
+    </author>
+    <date>Generated at 2026-09-21 UTC</date>
+  </head>
+  <body>
+    <front><contents /></front>
+    <chapter>
+      <heading>
+        Software documentation for the DBFloppy class
+      </heading>
+      <class name="DBFloppy" super="NSObject">
+        <declared>DBFloppy.h</declared>
+        <desc>
+          A private floppy working copy with cylinder/head/sector
+          addressing. Loads ImageDisk (.imd) and DMK
+          (.dmk), including mixed sector sizes and
+          nonsequential sector numbering. DMK is always
+          write-protected; writable IMD changes are
+          exported explicitly and never overwrite the input
+          file. All methods require serialization by the caller.
+        </desc>
+        <method type="BOOL">
+          <sel>changed</sel>
+          <desc>
+            Return <code>YES</code> after a write/format until
+            successful export.
+          </desc>
+        </method>
+        <method type="unsigned int">
+          <sel>cylinders</sel>
+          <desc>
+            Return the number of cylinders represented by the
+            image.
+          </desc>
+        </method>
+        <method type="unsigned int">
+          <sel>formatCylinder:</sel>
+          <arg type="unsigned int">cylinder</arg>
+          <sel>head:</sel>
+          <arg type="unsigned int">head</arg>
+          <sel>descriptors:</sel>
+          <arg type="NSData*">descriptors</arg>
+          <sel>fill:</sel>
+          <arg type="unsigned char">fill</arg>
+          <desc>
+            Format an existing track from four-byte C/H/R/N
+            records and a <var>fill</var> byte. Return Pilot
+            status; validates all records before modifying any
+            sector.
+          </desc>
+        </method>
+        <method type="unsigned int">
+          <sel>heads</sel>
+          <desc>
+            Return one or two heads.
+          </desc>
+        </method>
+        <method type="id">
+          <sel>initWithPath:</sel>
+          <arg type="NSString*">path</arg>
+          <sel>readOnly:</sel>
+          <arg type="BOOL">readOnly</arg>
+          <desc>
+            Load and validate an image; malformed/truncated files
+            raise DBFloppyError. <var>readOnly</var> additionally
+            protects IMD media from guest writes.
+          </desc>
+        </method>
+        <method type="NSString*">
+          <sel>path</sel>
+          <desc>
+            Return the borrowed original image path.
+          </desc>
+        </method>
+        <method type="BOOL">
+          <sel>readOnly</sel>
+          <desc>
+            Return <code>YES</code> when guest writes are
+            prohibited.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>saveCopyToPath:</sel>
+          <arg type="NSString*">path</arg>
+          <desc>
+            Atomically export complete IMD media to a
+            separate <var>path</var> and clear changed. DMK
+            input may also be exported as IMD. Raises
+            DBFloppyError on failure.
+          </desc>
+        </method>
+        <method type="NSData*">
+          <sel>sectorAtCylinder:</sel>
+          <arg type="unsigned int">cylinder</arg>
+          <sel>head:</sel>
+          <arg type="unsigned int">head</arg>
+          <sel>sector:</sel>
+          <arg type="unsigned int">sector</arg>
+          <desc>
+            Return borrowed immutable bytes, or <code>nil</code>
+            if the <var>sector</var> is missing. Cylinder/head are
+            zero-based, <var>sector</var> IDs are
+            one-based.
+          </desc>
+        </method>
+        <method type="NSArray*">
+          <sel>sectorIDsAtCylinder:</sel>
+          <arg type="unsigned int">cylinder</arg>
+          <sel>head:</sel>
+          <arg type="unsigned int">head</arg>
+          <desc>
+            Return ascending sector IDs on a track, in an
+            autoreleased array.
+          </desc>
+        </method>
+        <method type="unsigned int">
+          <sel>sectorsAtCylinder:</sel>
+          <arg type="unsigned int">cylinder</arg>
+          <sel>head:</sel>
+          <arg type="unsigned int">head</arg>
+          <desc>
+            Return the number of sectors on a track (zero for
+            absent tracks).
+          </desc>
+        </method>
+        <method type="unsigned int">
+          <sel>statusAtCylinder:</sel>
+          <arg type="unsigned int">cylinder</arg>
+          <sel>head:</sel>
+          <arg type="unsigned int">head</arg>
+          <sel>sector:</sel>
+          <arg type="unsigned int">sector</arg>
+          <desc>
+            Return Pilot status: 1 good, 5 deleted data, 6
+            unavailable, 8 CRC error.
+          </desc>
+        </method>
+        <method type="unsigned int">
+          <sel>writeCylinder:</sel>
+          <arg type="unsigned int">cylinder</arg>
+          <sel>head:</sel>
+          <arg type="unsigned int">head</arg>
+          <sel>sector:</sel>
+          <arg type="unsigned int">sector</arg>
+          <sel>data:</sel>
+          <arg type="NSData*">data</arg>
+          <sel>deleted:</sel>
+          <arg type="BOOL">deleted</arg>
+          <desc>
+            Replace an existing <var>sector</var> with equally
+            sized <var>data</var> and its <var>deleted</var>
+            mark. Return Pilot status, including 10 for
+            write-protected media.
+          </desc>
+        </method>
+      </class>
+    </chapter>
+  </body>
+</gsdoc>
