@@ -59,12 +59,19 @@ ifneq ($(HAVE_GNUSTEP),)
 gui:
 	$(MAKE) -f GNUmakefile.gui
 else
-gui: build/Daybreak.app/Contents/MacOS/Daybreak
+gui: build/Daybreak.app/Contents/MacOS/Daybreak build/Daybreak.app/Contents/Info.plist build/Daybreak.app/Contents/Resources/Daybreak.icns
 endif
 build/Daybreak.app/Contents/MacOS/Daybreak: $(CORE) GUI/DBApplication.m GUI/main.m GUI/DBApplication.h $(HEADERS)
 	mkdir -p build/Daybreak.app/Contents/MacOS
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(OBJCFLAGS) -Wno-deprecated-declarations $(CORE) GUI/DBApplication.m GUI/main.m -o $@ $(LDLIBS) $(GUI_LIBS)
-	cp GUI/Info.plist build/Daybreak.app/Contents/Info.plist
+
+build/Daybreak.app/Contents/Info.plist: GUI/Info.plist
+	mkdir -p $(@D)
+	cp $< $@
+
+build/Daybreak.app/Contents/Resources/Daybreak.icns: GUI/Resources/Daybreak.icns
+	mkdir -p $(@D)
+	cp $< $@
 
 build/boot-tests: $(CORE) Tests/BootTests.m $(HEADERS) | build
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(OBJCFLAGS) $(CORE) Tests/BootTests.m -o $@ $(LDLIBS)

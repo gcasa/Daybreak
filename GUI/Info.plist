@@ -4,6 +4,7 @@
 <key>CFBundleExecutable</key><string>Daybreak</string>
 <key>CFBundleIdentifier</key><string>org.gnustep.Daybreak</string>
 <key>CFBundleName</key><string>Daybreak</string>
+<key>CFBundleIconFile</key><string>Daybreak.icns</string>
 <key>CFBundlePackageType</key><string>APPL</string>
 <key>NSHighResolutionCapable</key><true/>
 </dict></plist>
