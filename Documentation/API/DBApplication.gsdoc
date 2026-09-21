@@ -62,6 +62,14 @@
           </desc>
         </method>
         <method type="void">
+          <sel>applyScreenScale</sel>
+          <desc>
+            Resize the document to the guest resolution times
+            the selected scale. Fit the window on the host screen
+            and allow scrolling larger displays.
+          </desc>
+        </method>
+        <method type="void">
           <sel>configureNetwork:</sel>
           <arg type="id">sender</arg>
           <desc>
@@ -162,6 +170,15 @@
           <arg type="id">sender</arg>
           <desc>
             Export a modified floppy as a separate IMD image.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>setScreenScale:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+            Select 100, 150 or 200 percent display scale from
+            the <var>sender</var> tag and remember it across
+            launches. 100 percent is the guest's native size.
           </desc>
         </method>
         <method type="void">

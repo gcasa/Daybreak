@@ -179,11 +179,15 @@ db_key (unichar character)
   image = [[NSImage alloc] initWithSize: NSMakeSize ([_machine displayWidth],
                                                     [_machine displayHeight])];
   [image addRepresentation: bitmap];
+  [NSGraphicsContext saveGraphicsState];
+  [[NSGraphicsContext currentContext]
+      setImageInterpolation: NSImageInterpolationNone];
   [image drawInRect: [self bounds]
            fromRect: NSMakeRect (0, 0, [_machine displayWidth],
                                 [_machine displayHeight])
           operation: NSCompositeCopy
            fraction: 1.0];
+  [NSGraphicsContext restoreGraphicsState];
   [image release];
   [bitmap release];
 }
@@ -478,6 +482,30 @@ db_button (NSView *parent, NSString *title, id target, SEL action, CGFloat x)
   [editMenu addItemWithTitle: @"Select All"
                       action: @selector (selectAll: )
                keyEquivalent: @"a"];
+  _scaleMenu = [[NSMenu alloc] initWithTitle: @"View"];
+  item = [[[NSMenuItem alloc] initWithTitle: @"View"
+                                     action: NULL
+                              keyEquivalent: @""] autorelease];
+  [menu addItem: item];
+  [menu setSubmenu: _scaleMenu forItem: item];
+  {
+    unsigned int i;
+    static const unsigned int scales[] = { 100, 150, 200 };
+    _screenScale =
+        [[NSUserDefaults standardUserDefaults] integerForKey: @"ScreenScale"];
+    if (_screenScale != 100 && _screenScale != 150 && _screenScale != 200)
+      _screenScale = 100;
+    for (i = 0; i < 3; i++)
+      {
+        item = [_scaleMenu
+            addItemWithTitle: [NSString stringWithFormat: @"Screen Size %u%%",
+                                                        scales[i]]
+                      action: @selector (setScreenScale: )
+               keyEquivalent: @""];
+        [item setTarget: self];
+        [item setTag: scales[i]];
+      }
+  }
   [NSApp setMainMenu: menu];
   _window = [[NSWindow alloc]
       initWithContentRect: NSMakeRect (80, 60, 856, 731)
@@ -490,9 +518,15 @@ db_button (NSView *parent, NSString *title, id target, SEL action, CGFloat x)
   [_window setDelegate: (id) self];
   [_window setAcceptsMouseMovedEvents: YES];
   content = [_window contentView];
-  _display =
-      [[DBDisplayView alloc] initWithFrame: NSMakeRect (12, 53, 832, 633)];
-  [content addSubview: _display];
+  _display = [[DBDisplayView alloc] initWithFrame: NSMakeRect (0, 0, 832, 633)];
+  _displayScroll =
+      [[NSScrollView alloc] initWithFrame: NSMakeRect (12, 53, 832, 633)];
+  [_displayScroll setHasHorizontalScroller: YES];
+  [_displayScroll setHasVerticalScroller: YES];
+  [_displayScroll setAutohidesScrollers: YES];
+  [_displayScroll setBorderType: NSNoBorder];
+  [_displayScroll setDocumentView: _display];
+  [content addSubview: _displayScroll];
   db_button (content, @"Open Disk…", self, @selector (openDisk: ), 12);
   _pauseButton = db_button (content, @"Pause", self, @selector (pause: ), 126);
   db_button (content, @"Step", self, @selector (step: ), 240);
@@ -513,6 +547,7 @@ db_button (NSView *parent, NSString *title, id target, SEL action, CGFloat x)
   db_button (content, @"Floppy…", self, @selector (insertFloppy: ), 468);
   db_button (content, @"Eject", self, @selector (ejectFloppy: ), 582);
   db_button (content, @"Network…", self, @selector (configureNetwork: ), 696);
+  [self applyScreenScale];
   [_window makeKeyAndOrderFront: nil];
   [_window makeFirstResponder: _display];
   _timer = [[NSTimer scheduledTimerWithTimeInterval: 0.01
@@ -549,6 +584,8 @@ db_button (NSView *parent, NSString *title, id target, SEL action, CGFloat x)
   [_timer release];
   [_machine release];
   [_display release];
+  [_displayScroll release];
+  [_scaleMenu release];
   [_status release];
   [_mediaStatus release];
   [_hubHost release];
@@ -715,6 +752,7 @@ db_button (NSView *parent, NSString *title, id target, SEL action, CGFloat x)
   [_display setMachine: machine];
   [_machine release];
   _machine = machine;
+  [self applyScreenScale];
   if (_hubHost != nil)
     [_machine setNetworkHost: _hubHost port: _hubPort];
   {
@@ -977,6 +1015,58 @@ db_button (NSView *parent, NSString *title, id target, SEL action, CGFloat x)
   [self reportException: localException];
   NS_ENDHANDLER
   [pool release];
+}
+- (void) setScreenScale: (id)sender
+{
+  unsigned int scale = [sender tag];
+  if (scale != 100 && scale != 150 && scale != 200)
+    return;
+  _screenScale = scale;
+  [[NSUserDefaults standardUserDefaults] setInteger: scale
+                                             forKey: @"ScreenScale"];
+  [self applyScreenScale];
+}
+- (void) applyScreenScale
+{
+  NSSize size = NSMakeSize (
+      (_machine ? [_machine displayWidth] : 832) * _screenScale / 100.0,
+      (_machine ? [_machine displayHeight] : 633) * _screenScale / 100.0);
+  NSScreen *screen = [_window screen];
+  NSRect oldFrame = [_window frame], frame, visible;
+  NSSize contentSize;
+  unsigned int i;
+  if (screen == nil)
+    screen = [NSScreen mainScreen];
+  visible = [screen visibleFrame];
+  frame = [_window
+      frameRectForContentRect: NSMakeRect (0, 0, MAX (856, size.width + 24),
+                                          size.height + 98)];
+  frame.size.width = MIN (frame.size.width, visible.size.width);
+  frame.size.height = MIN (frame.size.height, visible.size.height);
+  frame.origin.x
+      = MAX (NSMinX (visible),
+             MIN (oldFrame.origin.x, NSMaxX (visible) - frame.size.width));
+  frame.origin.y
+      = MAX (NSMinY (visible), MIN (NSMaxY (oldFrame) - frame.size.height,
+                                    NSMaxY (visible) - frame.size.height));
+  [_window setFrame: frame display: YES];
+  contentSize = [[_window contentView] bounds].size;
+  [_display setFrameSize: size];
+  [_displayScroll setFrame: NSMakeRect (12, 53, MAX (1, contentSize.width - 24),
+                                       MAX (1, contentSize.height - 98))];
+  /* Begin at the top left even when a scaled document exceeds the viewport. */
+  [_display
+      scrollPoint: NSMakePoint (
+                      0, MAX (0, size.height -
+                                     [[_displayScroll contentView] bounds]
+                                         .size.height))];
+  for (i = 0; i < [_scaleMenu numberOfItems]; i++)
+    {
+      NSMenuItem *item = [_scaleMenu itemAtIndex: i];
+      [item setState: [item tag] == _screenScale ? NSOnState : NSOffState];
+    }
+  [[_display window] invalidateCursorRectsForView: _display];
+  [_display setNeedsDisplay: YES];
 }
 - (void) refresh
 {

@@ -1,10 +1,12 @@
 {
     DBApplication = (
 	"-windowShouldClose:",
+	"-application:openFile:",
 	"-applicationDidFinishLaunching:",
 	"-applicationDidResignActive:",
 	"-windowDidResignKey:",
 	"-applicationShouldTerminateAfterLastWindowClosed:",
+	"-openConfiguration:",
 	"-openDisk:",
 	"-loadDisk:",
 	"-insertFloppy:",
@@ -17,6 +19,8 @@
 	"-step:",
 	"-saveDisk:",
 	"-tick:",
+	"-setScreenScale:",
+	"-applyScreenScale",
 	"-refresh",
 	"-reportException:",
 	"-mayDiscardDisk",
@@ -38,11 +42,20 @@
 	"-saveCopyToPath:"
     );
     DBDisplayView = (
+	"-copy:",
+	"-paste:",
+	"-pasteNext:",
+	"-print:",
 	"-setMachine:",
 	"-releaseInput",
 	"-keyEvent:pressed:",
 	"-releaseKey:",
 	"-updateMouse:"
+    );
+    DBDuchess = (
+	"-initWithDisk:width:height:color:workingCopy:",
+	"-bootWithGerm:switches:",
+	"-callAgent:"
     );
     DBFloppy = (
 	"-initWithPath:readOnly:",
@@ -67,6 +80,12 @@
 	"-diskWrites",
 	"-halted",
 	"-displayEnabled",
+	"-initWithDisk:switches:workingCopy:largeScreen:",
+	"-displayWidth",
+	"-displayHeight",
+	"-displayRGB",
+	"-cursorData",
+	"-beepSerial",
 	"-displayData",
 	"-setKey:pressed:",
 	"-releaseKeys",
@@ -112,6 +131,7 @@
 	"-initWithHost:port:",
 	"-poll",
 	"-sendPacket:",
+	"-receiveLoopbackPacket:",
 	"-receivePacket",
 	"-discardReceivedPackets",
 	"-close",
@@ -135,6 +155,7 @@
     );
     "DBProcessor(Blocks)" = (
 	"-blockOpcode:escape:execute:",
+	"-trapZBlt",
 	"-bitBlt:"
     );
     "DBProcessor(Control)" = (

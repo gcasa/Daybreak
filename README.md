@@ -37,8 +37,10 @@ not Duchess boot media.
 
 Duchess dimensions must be multiples of 16 horizontally, up to 2048 × 1536.
 The color mode is 8-bit indexed color. `Duchess-Color.plist` uses 1152 × 900;
-Draco supports 832 × 633 and 1152 × 861 monochrome. Large screens are scaled
-into the application display view.
+Draco supports 832 × 633 and 1152 × 861 monochrome. Use **View → Screen Size 100%, 150%, or 200%** to select native size,
+1.5×, or 2× magnification. The selection is remembered. The window grows to
+fit the display where possible; scrollbars provide access when the enlarged
+screen exceeds the host display. Mouse input follows the selected scale.
 
 The three original disk images are included in `disks-6085/` and in application
 bundle resources, along with Dwarf's original image notes. Opening an original

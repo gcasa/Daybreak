@@ -41,6 +41,9 @@
 {
   NSWindow *_window;
   DBDisplayView *_display;
+  NSScrollView *_displayScroll;
+  NSMenu *_scaleMenu;
+  unsigned int _screenScale;
   NSTextField *_status, *_mediaStatus;
   NSString *_hubHost, *_pendingOpenPath;
   unsigned int _hubPort;
@@ -94,6 +97,12 @@
 - (void) saveDisk: (id)sender;
 /** Run one bounded instruction slice and update the display/status. */
 - (void) tick: (NSTimer *)timer;
+/** Select 100, 150 or 200 percent display scale from the sender tag and
+    remember it across launches. 100 percent is the guest's native size. */
+- (void) setScreenScale: (id)sender;
+/** Resize the document to the guest resolution times the selected scale.
+    Fit the window on the host screen and allow scrolling larger displays. */
+- (void) applyScreenScale;
 /** Refresh the processor status and framebuffer. */
 - (void) refresh;
 /** Stop execution and show the actual exception. */
