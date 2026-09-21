@@ -1,0 +1,1672 @@
+<?xml version="1.0"?>
+<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 1.0.4//EN" "http://www.gnustep.org/gsdoc-1_0_4.dtd">
+<gsdoc base="DBInstructions" stylesheeturl="default-styles.css">
+  <head>
+    <title>Internal opcode methods</title>
+    <author name="Daybreak contributors">
+    </author>
+    <date>Generated at 2026-09-20 UTC</date>
+    <copy>2017, Dr. Hans-Walter Latz. See COPYING.</copy>
+  </head>
+  <body>
+    <front><contents /></front>
+    <chapter>
+      <heading>
+        Software documentation for the
+        DBProcessor(Instructions) category
+      </heading>
+      <category name="Instructions" class="DBProcessor">
+        <declared>DBInstructions.h</declared>
+        <desc>
+          Internal methods corresponding to Dwarf opcode
+          implementations.
+        </desc>
+        <method type="void">
+          <sel>ESC_x07_SM</sel>
+          <desc>
+            Execute the reference ESC_x07_SM instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>ESC_x08_SMF</sel>
+          <desc>
+            Execute the reference ESC_x08_SMF instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>ESC_x09_GMF</sel>
+          <desc>
+            Execute the reference ESC_x09_GMF instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>ESC_x12_XOR</sel>
+          <desc>
+            Execute the reference ESC_x12_XOR instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>ESC_x13_DAND</sel>
+          <desc>
+            Execute the reference ESC_x13_DAND instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>ESC_x14_DIOR</sel>
+          <desc>
+            Execute the reference ESC_x14_DIOR instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>ESC_x15_DXOR</sel>
+          <desc>
+            Execute the reference ESC_x15_DXOR instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>ESC_x16_ROTATE</sel>
+          <desc>
+            Execute the reference ESC_x16_ROTATE instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>ESC_x17_DSHIFT</sel>
+          <desc>
+            Execute the reference ESC_x17_DSHIFT instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>ESC_x18_LINT</sel>
+          <desc>
+            Execute the reference ESC_x18_LINT instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>ESC_x19_JS</sel>
+          <desc>
+            Execute the reference ESC_x19_JS instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>ESC_x1A_RCFS</sel>
+          <desc>
+            Execute the reference ESC_x1A_RCFS instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>ESC_x1B_RC_alpha</sel>
+          <desc>
+            Execute the reference ESC_x1B_RC_alpha instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>ESC_x1C_UDIV</sel>
+          <desc>
+            Execute the reference ESC_x1C_UDIV instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>ESC_x1D_LUDIV</sel>
+          <desc>
+            Execute the reference ESC_x1D_LUDIV instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>ESC_x1E_ROB_alpha</sel>
+          <desc>
+            Execute the reference ESC_x1E_ROB_alpha
+            instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>ESC_x1F_WOB_alpha</sel>
+          <desc>
+            Execute the reference ESC_x1F_WOB_alpha
+            instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>ESC_x24_BNDCKL</sel>
+          <desc>
+            Execute the reference ESC_x24_BNDCKL instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>ESC_x25_NILCK</sel>
+          <desc>
+            Execute the reference ESC_x25_NILCK instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>ESC_x26_NILCKL</sel>
+          <desc>
+            Execute the reference ESC_x26_NILCKL instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>ESC_x30_DMUL</sel>
+          <desc>
+            Execute the reference ESC_x30_DMUL instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>ESC_x31_SDIV</sel>
+          <desc>
+            Execute the reference ESC_x31_SDIV instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>ESC_x32_SDDIV</sel>
+          <desc>
+            Execute the reference ESC_x32_SDDIV instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>ESC_x33_UDDIV</sel>
+          <desc>
+            Execute the reference ESC_x33_UDDIV instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>ESC_x40_FADD</sel>
+          <desc>
+            Execute the reference ESC_x40_FADD instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>ESC_x41_FSUB</sel>
+          <desc>
+            Execute the reference ESC_x41_FSUB instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>ESC_x42_FMUL</sel>
+          <desc>
+            Execute the reference ESC_x42_FMUL instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>ESC_x43_FDIV</sel>
+          <desc>
+            Execute the reference ESC_x43_FDIV instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>ESC_x44_FCOMP</sel>
+          <desc>
+            Execute the reference ESC_x44_FCOMP instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>ESC_x46_FLOAT</sel>
+          <desc>
+            Execute the reference ESC_x46_FLOAT instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>ESC_x71_WRMDS</sel>
+          <desc>
+            Execute the reference ESC_x71_WRMDS instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>ESC_x79_RRMDS</sel>
+          <desc>
+            Execute the reference ESC_x79_RRMDS instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x01_LL0</sel>
+          <desc>
+            Execute the reference OPC_x01_LL0 instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x02_LL1</sel>
+          <desc>
+            Execute the reference OPC_x02_LL1 instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x03_LL2</sel>
+          <desc>
+            Execute the reference OPC_x03_LL2 instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x04_LL3</sel>
+          <desc>
+            Execute the reference OPC_x04_LL3 instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x05_LL4</sel>
+          <desc>
+            Execute the reference OPC_x05_LL4 instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x06_LL5</sel>
+          <desc>
+            Execute the reference OPC_x06_LL5 instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x07_LL6</sel>
+          <desc>
+            Execute the reference OPC_x07_LL6 instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x08_LL7</sel>
+          <desc>
+            Execute the reference OPC_x08_LL7 instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x09_LL8</sel>
+          <desc>
+            Execute the reference OPC_x09_LL8 instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x0A_LL9</sel>
+          <desc>
+            Execute the reference OPC_x0A_LL9 instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x0B_LL10</sel>
+          <desc>
+            Execute the reference OPC_x0B_LL10 instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x0C_LL11</sel>
+          <desc>
+            Execute the reference OPC_x0C_LL11 instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x0D_LLB_alpha</sel>
+          <desc>
+            Execute the reference OPC_x0D_LLB_alpha
+            instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x0E_LLD0</sel>
+          <desc>
+            Execute the reference OPC_x0E_LLD0 instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x0F_LLD1</sel>
+          <desc>
+            Execute the reference OPC_x0F_LLD1 instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x10_LLD2</sel>
+          <desc>
+            Execute the reference OPC_x10_LLD2 instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x11_LLD3</sel>
+          <desc>
+            Execute the reference OPC_x11_LLD3 instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x12_LLD4</sel>
+          <desc>
+            Execute the reference OPC_x12_LLD4 instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x13_LLD5</sel>
+          <desc>
+            Execute the reference OPC_x13_LLD5 instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x14_LLD6</sel>
+          <desc>
+            Execute the reference OPC_x14_LLD6 instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x15_LLD7</sel>
+          <desc>
+            Execute the reference OPC_x15_LLD7 instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x16_LLD8</sel>
+          <desc>
+            Execute the reference OPC_x16_LLD8 instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x17_LLD10</sel>
+          <desc>
+            Execute the reference OPC_x17_LLD10 instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x18_LLDB_alpha</sel>
+          <desc>
+            Execute the reference OPC_x18_LLDB_alpha
+            instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x19_SL0</sel>
+          <desc>
+            Execute the reference OPC_x19_SL0 instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x1A_SL1</sel>
+          <desc>
+            Execute the reference OPC_x1A_SL1 instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x1B_SL2</sel>
+          <desc>
+            Execute the reference OPC_x1B_SL2 instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x1C_SL3</sel>
+          <desc>
+            Execute the reference OPC_x1C_SL3 instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x1D_SL4</sel>
+          <desc>
+            Execute the reference OPC_x1D_SL4 instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x1E_SL5</sel>
+          <desc>
+            Execute the reference OPC_x1E_SL5 instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x1F_SL6</sel>
+          <desc>
+            Execute the reference OPC_x1F_SL6 instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x20_SL7</sel>
+          <desc>
+            Execute the reference OPC_x20_SL7 instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x21_SL8</sel>
+          <desc>
+            Execute the reference OPC_x21_SL8 instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x22_SL9</sel>
+          <desc>
+            Execute the reference OPC_x22_SL9 instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x23_SL10</sel>
+          <desc>
+            Execute the reference OPC_x23_SL10 instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x24_SLB_alpha</sel>
+          <desc>
+            Execute the reference OPC_x24_SLB_alpha
+            instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x25_SLD0</sel>
+          <desc>
+            Execute the reference OPC_x25_SLD0 instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x26_SLD1</sel>
+          <desc>
+            Execute the reference OPC_x26_SLD1 instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x27_SLD2</sel>
+          <desc>
+            Execute the reference OPC_x27_SLD2 instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x28_SLD3</sel>
+          <desc>
+            Execute the reference OPC_x28_SLD3 instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x29_SLD4</sel>
+          <desc>
+            Execute the reference OPC_x29_SLD4 instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x2A_SLD5</sel>
+          <desc>
+            Execute the reference OPC_x2A_SLD5 instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x2B_SLD6</sel>
+          <desc>
+            Execute the reference OPC_x2B_SLD6 instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x2C_SLD8</sel>
+          <desc>
+            Execute the reference OPC_x2C_SLD8 instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x2D_PL0</sel>
+          <desc>
+            Execute the reference OPC_x2D_PL0 instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x2E_PL1</sel>
+          <desc>
+            Execute the reference OPC_x2E_PL1 instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x2F_PL2</sel>
+          <desc>
+            Execute the reference OPC_x2F_PL2 instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x30_PL3</sel>
+          <desc>
+            Execute the reference OPC_x30_PL3 instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x31_PLB_alpha</sel>
+          <desc>
+            Execute the reference OPC_x31_PLB_alpha
+            instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x32_PLD0</sel>
+          <desc>
+            Execute the reference OPC_x32_PLD0 instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x33_PLDB_alpha</sel>
+          <desc>
+            Execute the reference OPC_x33_PLDB_alpha
+            instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x3C_BNDCK</sel>
+          <desc>
+            Execute the reference OPC_x3C_BNDCK instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x40_R0</sel>
+          <desc>
+            Execute the reference OPC_x40_R0 instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x41_R1</sel>
+          <desc>
+            Execute the reference OPC_x41_R1 instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x42_RB_alpha</sel>
+          <desc>
+            Execute the reference OPC_x42_RB_alpha instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x43_RL0</sel>
+          <desc>
+            Execute the reference OPC_x43_RL0 instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x44_RLB_alpha</sel>
+          <desc>
+            Execute the reference OPC_x44_RLB_alpha
+            instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x45_RD0</sel>
+          <desc>
+            Execute the reference OPC_x45_RD0 instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x46_RDB_alpha</sel>
+          <desc>
+            Execute the reference OPC_x46_RDB_alpha
+            instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x47_RDL0</sel>
+          <desc>
+            Execute the reference OPC_x47_RDL0 instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x48_RDLB_alpha</sel>
+          <desc>
+            Execute the reference OPC_x48_RDLB_alpha
+            instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x49_W0</sel>
+          <desc>
+            Execute the reference OPC_x49_W0 instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x4A_WB_alpha</sel>
+          <desc>
+            Execute the reference OPC_x4A_WB_alpha instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x4B_PSB_alpha</sel>
+          <desc>
+            Execute the reference OPC_x4B_PSB_alpha
+            instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x4C_WLB_alpha</sel>
+          <desc>
+            Execute the reference OPC_x4C_WLB_alpha
+            instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x4D_PSLB_alpha</sel>
+          <desc>
+            Execute the reference OPC_x4D_PSLB_alpha
+            instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x4E_WDB_alpha</sel>
+          <desc>
+            Execute the reference OPC_x4E_WDB_alpha
+            instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x4F_PSD0</sel>
+          <desc>
+            Execute the reference OPC_x4F_PSD0 instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x50_PSDB_alpha</sel>
+          <desc>
+            Execute the reference OPC_x50_PSDB_alpha
+            instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x51_WDLB_alpha</sel>
+          <desc>
+            Execute the reference OPC_x51_WDLB_alpha
+            instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x52_PSDLB_alpha</sel>
+          <desc>
+            Execute the reference OPC_x52_PSDLB_alpha
+            instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x53_RLI00</sel>
+          <desc>
+            Execute the reference OPC_x53_RLI00 instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x54_RLI01</sel>
+          <desc>
+            Execute the reference OPC_x54_RLI01 instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x55_RLI02</sel>
+          <desc>
+            Execute the reference OPC_x55_RLI02 instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x56_RLI03</sel>
+          <desc>
+            Execute the reference OPC_x56_RLI03 instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x57_RLIP_pair</sel>
+          <desc>
+            Execute the reference OPC_x57_RLIP_pair
+            instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x58_RLILP_pair</sel>
+          <desc>
+            Execute the reference OPC_x58_RLILP_pair
+            instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x59_RLDI00</sel>
+          <desc>
+            Execute the reference OPC_x59_RLDI00 instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x5A_RLDIP_pair</sel>
+          <desc>
+            Execute the reference OPC_x5A_RLDIP_pair
+            instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x5B_RLDILP_pair</sel>
+          <desc>
+            Execute the reference OPC_x5B_RLDILP_pair
+            instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x5E_WLIP_pair</sel>
+          <desc>
+            Execute the reference OPC_x5E_WLIP_pair
+            instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x5F_WLILP_pair</sel>
+          <desc>
+            Execute the reference OPC_x5F_WLILP_pair
+            instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x60_WLDILP_pair</sel>
+          <desc>
+            Execute the reference OPC_x60_WLDILP_pair
+            instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x61_RS_alpha</sel>
+          <desc>
+            Execute the reference OPC_x61_RS_alpha instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x62_RLS_alpha</sel>
+          <desc>
+            Execute the reference OPC_x62_RLS_alpha
+            instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x63_WS_alpha</sel>
+          <desc>
+            Execute the reference OPC_x63_WS_alpha instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x64_WLS_alpha</sel>
+          <desc>
+            Execute the reference OPC_x64_WLS_alpha
+            instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x65_R0F_alpha</sel>
+          <desc>
+            Execute the reference OPC_x65_R0F_alpha
+            instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x66_RF_word</sel>
+          <desc>
+            Execute the reference OPC_x66_RF_word instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x67_RL0F_alpha</sel>
+          <desc>
+            Execute the reference OPC_x67_RL0F_alpha
+            instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x68_RLF_word</sel>
+          <desc>
+            Execute the reference OPC_x68_RLF_word instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x69_RLFS</sel>
+          <desc>
+            Execute the reference OPC_x69_RLFS instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x6A_RLIPF_alphabeta</sel>
+          <desc>
+            Execute the reference OPC_x6A_RLIPF_alphabeta
+            instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x6B_RLILPF_alphabeta</sel>
+          <desc>
+            Execute the reference OPC_x6B_RLILPF_alphabeta
+            instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x6C_W0F_alpha</sel>
+          <desc>
+            Execute the reference OPC_x6C_W0F_alpha
+            instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x6D_WF_word</sel>
+          <desc>
+            Execute the reference OPC_x6D_WF_word instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x6E_PSF_word</sel>
+          <desc>
+            Execute the reference OPC_x6E_PSF_word instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x6F_PS0F</sel>
+          <desc>
+            Execute the reference OPC_x6F_PS0F instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x70_WS0F_alpha</sel>
+          <desc>
+            Execute the reference OPC_x70_WS0F_alpha
+            instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x71_WL0F_alpha</sel>
+          <desc>
+            Execute the reference OPC_x71_WL0F_alpha
+            instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x72_WLF_word</sel>
+          <desc>
+            Execute the reference OPC_x72_WLF_word instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x73_PSLF_word</sel>
+          <desc>
+            Execute the reference OPC_x73_PSLF_word
+            instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x74_WLFS</sel>
+          <desc>
+            Execute the reference OPC_x74_WLFS instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x75_SLDB_alpha</sel>
+          <desc>
+            Execute the reference OPC_x75_SLDB_alpha
+            instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x7B_SHIFT</sel>
+          <desc>
+            Execute the reference OPC_x7B_SHIFT instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x7C_SHIFTSB_alpha</sel>
+          <desc>
+            Execute the reference OPC_x7C_SHIFTSB_alpha
+            instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x80_CATCH_alpha</sel>
+          <desc>
+            Execute the reference OPC_x80_CATCH_alpha
+            instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x81_J2</sel>
+          <desc>
+            Execute the reference OPC_x81_J2 instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x82_J3</sel>
+          <desc>
+            Execute the reference OPC_x82_J3 instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x83_J4</sel>
+          <desc>
+            Execute the reference OPC_x83_J4 instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x84_J5</sel>
+          <desc>
+            Execute the reference OPC_x84_J5 instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x85_J6</sel>
+          <desc>
+            Execute the reference OPC_x85_J6 instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x86_J7</sel>
+          <desc>
+            Execute the reference OPC_x86_J7 instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x87_J8</sel>
+          <desc>
+            Execute the reference OPC_x87_J8 instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x88_JB_salpha</sel>
+          <desc>
+            Execute the reference OPC_x88_JB_salpha
+            instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x89_JW_sword</sel>
+          <desc>
+            Execute the reference OPC_x89_JW_sword instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x8A_JEP_pair</sel>
+          <desc>
+            Execute the reference OPC_x8A_JEP_pair instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x8B_JEB_salpha</sel>
+          <desc>
+            Execute the reference OPC_x8B_JEB_salpha
+            instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x8C_JEBB_alphasbeta</sel>
+          <desc>
+            Execute the reference OPC_x8C_JEBB_alphasbeta
+            instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x8D_JNEP_pair</sel>
+          <desc>
+            Execute the reference OPC_x8D_JNEP_pair
+            instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x8E_JNEB_salpha</sel>
+          <desc>
+            Execute the reference OPC_x8E_JNEB_salpha
+            instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x8F_JNEBB_alphasbeta</sel>
+          <desc>
+            Execute the reference OPC_x8F_JNEBB_alphasbeta
+            instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x90_JLB_salpha</sel>
+          <desc>
+            Execute the reference OPC_x90_JLB_salpha
+            instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x91_JGEB_salpha</sel>
+          <desc>
+            Execute the reference OPC_x91_JGEB_salpha
+            instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x92_JGB_salpha</sel>
+          <desc>
+            Execute the reference OPC_x92_JGB_salpha
+            instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x93_JLEB_salpha</sel>
+          <desc>
+            Execute the reference OPC_x93_JLEB_salpha
+            instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x94_JULB_salpha</sel>
+          <desc>
+            Execute the reference OPC_x94_JULB_salpha
+            instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x95_JUGEB_salpha</sel>
+          <desc>
+            Execute the reference OPC_x95_JUGEB_salpha
+            instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x96_JUGB_salpha</sel>
+          <desc>
+            Execute the reference OPC_x96_JUGB_salpha
+            instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x97_JULEB_salpha</sel>
+          <desc>
+            Execute the reference OPC_x97_JULEB_salpha
+            instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x98_JZ3</sel>
+          <desc>
+            Execute the reference OPC_x98_JZ3 instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x99_JZ4</sel>
+          <desc>
+            Execute the reference OPC_x99_JZ4 instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x9A_JZB_salpha</sel>
+          <desc>
+            Execute the reference OPC_x9A_JZB_salpha
+            instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x9B_JNZ3</sel>
+          <desc>
+            Execute the reference OPC_x9B_JNZ3 instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x9C_JNZ4</sel>
+          <desc>
+            Execute the reference OPC_x9C_JNZ4 instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x9D_JNZB_salpha</sel>
+          <desc>
+            Execute the reference OPC_x9D_JNZB_salpha
+            instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x9E_JDEB_salpha</sel>
+          <desc>
+            Execute the reference OPC_x9E_JDEB_salpha
+            instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_x9F_JDNEB_salpha</sel>
+          <desc>
+            Execute the reference OPC_x9F_JDNEB_salpha
+            instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_xA0_JIB_word</sel>
+          <desc>
+            Execute the reference OPC_xA0_JIB_word instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_xA1_JIW_word</sel>
+          <desc>
+            Execute the reference OPC_xA1_JIW_word instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_xA2_REC</sel>
+          <desc>
+            Execute the reference OPC_xA2_REC instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_xA3_REC2</sel>
+          <desc>
+            Execute the reference OPC_xA3_REC2 instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_xA4_DIS</sel>
+          <desc>
+            Execute the reference OPC_xA4_DIS instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_xA5_DIS2</sel>
+          <desc>
+            Execute the reference OPC_xA5_DIS2 instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_xA6_EXCH</sel>
+          <desc>
+            Execute the reference OPC_xA6_EXCH instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_xA7_DEXCH</sel>
+          <desc>
+            Execute the reference OPC_xA7_DEXCH instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_xA8_DUP</sel>
+          <desc>
+            Execute the reference OPC_xA8_DUP instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_xA9_DDUP</sel>
+          <desc>
+            Execute the reference OPC_xA9_DDUP instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_xAA_EXDIS</sel>
+          <desc>
+            Execute the reference OPC_xAA_EXDIS instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_xAB_NEG</sel>
+          <desc>
+            Execute the reference OPC_xAB_NEG instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_xAC_INC</sel>
+          <desc>
+            Execute the reference OPC_xAC_INC instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_xAD_DEC</sel>
+          <desc>
+            Execute the reference OPC_xAD_DEC instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_xAE_DINC</sel>
+          <desc>
+            Execute the reference OPC_xAE_DINC instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_xAF_DBL</sel>
+          <desc>
+            Execute the reference OPC_xAF_DBL instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_xB0_DDBL</sel>
+          <desc>
+            Execute the reference OPC_xB0_DDBL instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_xB1_TRPL</sel>
+          <desc>
+            Execute the reference OPC_xB1_TRPL instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_xB2_AND</sel>
+          <desc>
+            Execute the reference OPC_xB2_AND instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_xB3_IOR</sel>
+          <desc>
+            Execute the reference OPC_xB3_IOR instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_xB4_ADDSB_alpha</sel>
+          <desc>
+            Execute the reference OPC_xB4_ADDSB_alpha
+            instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_xB5_ADD</sel>
+          <desc>
+            Execute the reference OPC_xB5_ADD instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_xB6_SUB</sel>
+          <desc>
+            Execute the reference OPC_xB6_SUB instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_xB7_DADD</sel>
+          <desc>
+            Execute the reference OPC_xB7_DADD instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_xB8_DSUB</sel>
+          <desc>
+            Execute the reference OPC_xB8_DSUB instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_xB9_ADC</sel>
+          <desc>
+            Execute the reference OPC_xB9_ADC instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_xBA_ACD</sel>
+          <desc>
+            Execute the reference OPC_xBA_ACD instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_xBB_AL0IB_alpha</sel>
+          <desc>
+            Execute the reference OPC_xBB_AL0IB_alpha
+            instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_xBC_MUL</sel>
+          <desc>
+            Execute the reference OPC_xBC_MUL instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_xBD_DCMP</sel>
+          <desc>
+            Execute the reference OPC_xBD_DCMP instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_xBE_UDCMP</sel>
+          <desc>
+            Execute the reference OPC_xBE_UDCMP instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_xC0_LI0</sel>
+          <desc>
+            Execute the reference OPC_xC0_LI0 instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_xC1_LI1</sel>
+          <desc>
+            Execute the reference OPC_xC1_LI1 instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_xC2_LI2</sel>
+          <desc>
+            Execute the reference OPC_xC2_LI2 instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_xC3_LI3</sel>
+          <desc>
+            Execute the reference OPC_xC3_LI3 instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_xC4_LI4</sel>
+          <desc>
+            Execute the reference OPC_xC4_LI4 instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_xC5_LI5</sel>
+          <desc>
+            Execute the reference OPC_xC5_LI5 instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_xC6_LI6</sel>
+          <desc>
+            Execute the reference OPC_xC6_LI6 instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_xC7_LI7</sel>
+          <desc>
+            Execute the reference OPC_xC7_LI7 instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_xC8_LI8</sel>
+          <desc>
+            Execute the reference OPC_xC8_LI8 instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_xC9_LI9</sel>
+          <desc>
+            Execute the reference OPC_xC9_LI9 instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_xCA_LI10</sel>
+          <desc>
+            Execute the reference OPC_xCA_LI10 instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_xCB_LIN1</sel>
+          <desc>
+            Execute the reference OPC_xCB_LIN1 instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_xCC_LINI</sel>
+          <desc>
+            Execute the reference OPC_xCC_LINI instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_xCD_LIB_alpha</sel>
+          <desc>
+            Execute the reference OPC_xCD_LIB_alpha
+            instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_xCE_LIW_word</sel>
+          <desc>
+            Execute the reference OPC_xCE_LIW_word instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_xCF_LINB_alpha</sel>
+          <desc>
+            Execute the reference OPC_xCF_LINB_alpha
+            instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_xD0_LIHB_alpha</sel>
+          <desc>
+            Execute the reference OPC_xD0_LIHB_alpha
+            instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_xD1_LID0</sel>
+          <desc>
+            Execute the reference OPC_xD1_LID0 instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_xD2_LA0</sel>
+          <desc>
+            Execute the reference OPC_xD2_LA0 instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_xD3_LA1</sel>
+          <desc>
+            Execute the reference OPC_xD3_LA1 instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_xD4_LA2</sel>
+          <desc>
+            Execute the reference OPC_xD4_LA2 instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_xD5_LA3</sel>
+          <desc>
+            Execute the reference OPC_xD5_LA3 instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_xD6_LA6</sel>
+          <desc>
+            Execute the reference OPC_xD6_LA6 instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_xD7_LA8</sel>
+          <desc>
+            Execute the reference OPC_xD7_LA8 instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_xD8_LAB_alpha</sel>
+          <desc>
+            Execute the reference OPC_xD8_LAB_alpha
+            instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_xD9_LAW_word</sel>
+          <desc>
+            Execute the reference OPC_xD9_LAW_word instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPC_xF7_LP</sel>
+          <desc>
+            Execute the reference OPC_xF7_LP instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPCn_x34_LG0</sel>
+          <desc>
+            Execute the reference OPCn_x34_LG0 instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPCn_x35_LG1</sel>
+          <desc>
+            Execute the reference OPCn_x35_LG1 instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPCn_x36_LG2</sel>
+          <desc>
+            Execute the reference OPCn_x36_LG2 instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPCn_x37_LGB_alpha</sel>
+          <desc>
+            Execute the reference OPCn_x37_LGB_alpha
+            instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPCn_x38_LGD0</sel>
+          <desc>
+            Execute the reference OPCn_x38_LGD0 instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPCn_x39_LGD2</sel>
+          <desc>
+            Execute the reference OPCn_x39_LGD2 instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPCn_x3A_LGDB_alpha</sel>
+          <desc>
+            Execute the reference OPCn_x3A_LGDB_alpha
+            instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPCn_x3B_SGB_alpha</sel>
+          <desc>
+            Execute the reference OPCn_x3B_SGB_alpha
+            instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPCn_x5C_RGIP_pair</sel>
+          <desc>
+            Execute the reference OPCn_x5C_RGIP_pair
+            instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPCn_x5D_RGILP_pair</sel>
+          <desc>
+            Execute the reference OPCn_x5D_RGILP_pair
+            instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPCn_x76_SGDB_alpha</sel>
+          <desc>
+            Execute the reference OPCn_x76_SGDB_alpha
+            instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPCn_xDA_GA0</sel>
+          <desc>
+            Execute the reference OPCn_xDA_GA0 instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPCn_xDB_GA1</sel>
+          <desc>
+            Execute the reference OPCn_xDB_GA1 instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPCn_xDC_GAB_alpha</sel>
+          <desc>
+            Execute the reference OPCn_xDC_GAB_alpha
+            instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPCn_xDD_GAW_word</sel>
+          <desc>
+            Execute the reference OPCn_xDD_GAW_word
+            instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPCn_xFA_LGA0</sel>
+          <desc>
+            Execute the reference OPCn_xFA_LGA0 instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPCn_xFB_LGAB_alpha</sel>
+          <desc>
+            Execute the reference OPCn_xFB_LGAB_alpha
+            instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPCn_xFC_LGAW_word</sel>
+          <desc>
+            Execute the reference OPCn_xFC_LGAW_word
+            instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPCo_x34_LG0</sel>
+          <desc>
+            Execute the reference OPCo_x34_LG0 instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPCo_x35_LG1</sel>
+          <desc>
+            Execute the reference OPCo_x35_LG1 instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPCo_x36_LG2</sel>
+          <desc>
+            Execute the reference OPCo_x36_LG2 instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPCo_x37_LGB_alpha</sel>
+          <desc>
+            Execute the reference OPCo_x37_LGB_alpha
+            instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPCo_x38_LGD0</sel>
+          <desc>
+            Execute the reference OPCo_x38_LGD0 instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPCo_x39_LGD2</sel>
+          <desc>
+            Execute the reference OPCo_x39_LGD2 instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPCo_x3A_LGDB_alpha</sel>
+          <desc>
+            Execute the reference OPCo_x3A_LGDB_alpha
+            instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPCo_x3B_SGB_alpha</sel>
+          <desc>
+            Execute the reference OPCo_x3B_SGB_alpha
+            instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPCo_x5C_RGIP_pair</sel>
+          <desc>
+            Execute the reference OPCo_x5C_RGIP_pair
+            instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPCo_x5D_RGILP_pair</sel>
+          <desc>
+            Execute the reference OPCo_x5D_RGILP_pair
+            instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPCo_x76_SGDB_alpha</sel>
+          <desc>
+            Execute the reference OPCo_x76_SGDB_alpha
+            instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPCo_xDA_GA0</sel>
+          <desc>
+            Execute the reference OPCo_xDA_GA0 instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPCo_xDB_GA1</sel>
+          <desc>
+            Execute the reference OPCo_xDB_GA1 instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPCo_xDC_GAB_alpha</sel>
+          <desc>
+            Execute the reference OPCo_xDC_GAB_alpha
+            instruction.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>OPCo_xDD_GAW_word</sel>
+          <desc>
+            Execute the reference OPCo_xDD_GAW_word
+            instruction.
+          </desc>
+        </method>
+      </category>
+    </chapter>
+  </body>
+</gsdoc>

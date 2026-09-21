@@ -1,0 +1,19 @@
+name: GNUstep Objective-C 1
+on: [push, pull_request]
+jobs:
+  legacy-runtime:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install GNUstep and GCC Objective-C
+        run: sudo apt-get update && sudo apt-get install -y gobjc gnustep-make libgnustep-base-dev python3
+      - name: Build and test with the GNU runtime
+        run: make -f Makefile CC=gcc check
+      - name: Build with GNUstep make
+        run: make -f GNUmakefile
+      - name: Generate header documentation
+        run: make -f Makefile docs
+      - uses: actions/upload-artifact@v4
+        with:
+          name: daybreak-api
+          path: Documentation/API

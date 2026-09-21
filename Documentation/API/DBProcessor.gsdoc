@@ -1,0 +1,166 @@
+<?xml version="1.0"?>
+<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 1.0.4//EN" "http://www.gnustep.org/gsdoc-1_0_4.dtd">
+<gsdoc base="DBProcessor" stylesheeturl="default-styles.css">
+  <head>
+    <title>Daybreak Mesa processor</title>
+    <author name="Daybreak contributors">
+    </author>
+    <date>Generated at 2026-09-20 UTC</date>
+    <abstract>
+      A manually managed Objective-C Mesa execution engine.
+    </abstract>
+    <copy>2017, Dr. Hans-Walter Latz. See COPYING.</copy>
+  </head>
+  <body>
+    <front><contents /></front>
+    <chapter>
+      <heading>
+        Software documentation for the DBProcessor class
+      </heading>
+      <class name="DBProcessor" super="NSObject">
+        <declared>DBProcessor.h</declared>
+        <desc>
+          A Mesa processor with independent registers, stack and
+          retained memory. Uses explicit retain/release and
+          Objective-C 1.0 syntax. One instance is confined
+          to one thread. The implemented opcode coverage is listed
+          in Documentation/PORTING.md. Unimplemented instructions
+          raise DBOpcodeTrap or DBEscapeOpcodeTrap; no
+          instruction is silently treated as a no-op.
+          Architectural traps currently report host
+          exceptions rather than invoking Pilot trap
+          handlers, so this engine cannot yet boot a
+          workstation OS.
+        </desc>
+        <method type="void">
+          <sel>discard</sel>
+          <desc>
+            Discard the top word without erasing it.
+          </desc>
+        </method>
+        <method type="id">
+          <sel>initWithMemory:</sel>
+          <arg type="DBMemory*">memory</arg>
+          <sel>post40:</sel>
+          <arg type="BOOL">post40</arg>
+          <desc>
+            Retain <var>memory</var> and initialize a processor.
+            <var>post40</var> selects the changed chapters
+            global-frame instructions; <code>NO</code>
+            selects PrincOps 4.0.
+          </desc>
+        </method>
+        <method type="DBMemory*">
+          <sel>memory</sel>
+          <desc>
+            Return retained engine memory as a borrowed
+            reference.
+          </desc>
+        </method>
+        <method type="int16_t">
+          <sel>pop</sel>
+          <desc>
+            Pop a <strong>signed</strong> word or raise
+            DBStackError when empty.
+          </desc>
+        </method>
+        <method type="int32_t">
+          <sel>popLong</sel>
+          <desc>
+            Pop a <strong>signed</strong> <strong>double</strong>
+            word, checking depth before changing the stack.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>push:</sel>
+          <arg type="uint16_t">value</arg>
+          <desc>
+            Push a word or raise DBStackError when full.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>pushLong:</sel>
+          <arg type="uint32_t">value</arg>
+          <desc>
+            Push low then high word, checking space before
+            changing the stack.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>recover</sel>
+          <desc>
+            Make the most recently discarded slot active again, as
+            Mesa REC does. Recover checks capacity, not the
+            historical contents of the slot.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>reset</sel>
+          <desc>
+            Clear registers and stack, preserving memory and the
+            instruction-set mode.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>runForInstructions:</sel>
+          <arg type="uint32_t">count</arg>
+          <desc>
+            Execute exactly <var>count</var> instructions,
+            stopping immediately on an exception. Zero
+            performs no work. The caller controls scheduling
+            and cancellation.
+          </desc>
+        </method>
+        <method type="DBProcessorState*">
+          <sel>state</sel>
+          <desc>
+            Return a borrowed pointer to registers, valid for
+            the instance lifetime.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>step</sel>
+          <desc>
+            Execute one instruction. On exception restore PC
+            and the complete stack to their pre-instruction state.
+            Completed memory writes are not rolled back. The
+            instruction count advances only on successful
+            completion.
+          </desc>
+        </method>
+        <method type="BOOL">
+          <sel>supportsOpcode:</sel>
+          <arg type="uint8_t">opcode</arg>
+          <sel>escape:</sel>
+          <arg type="BOOL">escape</arg>
+          <desc>
+            Return whether a primary or <var>escape</var>
+            <var>opcode</var> has an implementation in this mode.
+          </desc>
+        </method>
+      </class>
+    </chapter>
+    <chapter>
+      <heading>DBProcessor types</heading>
+      <p></p>
+      <type type="struct DBProcessorState" name="DBProcessorState">
+        <desc>
+          Processor state. PC and savedPC are byte offsets
+          within CB; CB, MDS and GF32 are word addresses. GF16
+          and LF are MDS-relative word pointers. Modify only while
+          the processor is stopped.
+        </desc>
+      </type>
+    </chapter>
+    <chapter>
+      <heading>DBProcessor macros</heading>
+      <p></p>
+      <macro name="DB_STACK_LENGTH">
+        <desc>
+          Number of evaluation-stack words specified by Mesa
+          PrincOps.
+        </desc>
+      </macro>
+    </chapter>
+  </body>
+</gsdoc>

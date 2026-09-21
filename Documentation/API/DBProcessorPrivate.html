@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Internal processor operations</title>
+<meta http-equiv="Content-Style-Type" content="text/css"/>
+<link rel="stylesheet" type="text/css" href="default-styles.css" media="screen" title="Normal" />
+  </head>
+  <body>
+    <div class="content-bar">
+      <div class="content-bar-top">
+        <div class="content-bar-top-body">
+          <div class="content-bar-top-body-title">Daybreak</div><br />
+        </div>
+      </div>
+      <div class="content-bar-bottom">
+        <div class="content-bar-bottom-body">
+        </div>
+      </div>
+    </div>
+    <div class="content-pane">
+      <div class="content-pane-body">
+        <h1><a name="title$DBProcessorPrivate">Internal processor operations</a></h1>
+        <h3>Authors</h3>
+        <dl>
+          <dt>Daybreak contributors</dt>
+          <dd>
+          </dd>
+        </dl>
+        <p><b>Date:</b> Generated at 2026-09-20 UTC</p>
+        <p><b>Copyright:</b> (C) 2017, Dr. Hans-Walter Latz. See COPYING.</p>
+
+            <div>
+          <hr class="section-separator">
+          <h3>Contents -</h3>
+          <ol>
+            <li>
+              <a href="#001000000000">Software documentation for the DBProcessor(Private)
+        category</a>
+            </li>
+            <li>
+              <a href="#002000000000">DBProcessorPrivate functions</a>
+            </li>
+          </ol>
+          <hr class="section-separator">
+        </div>
+
+              <h1><a name="001000000000">
+        Software documentation for the DBProcessor(Private)
+        category
+      </a></h1>
+        <h2>DBProcessor(<a name="category$DBProcessor(Private)">Private</a>)</h2>
+        <blockquote class="declared">
+          <dl>
+            <dt><b>Declared in:</b></dt>
+            <dd>DBProcessorPrivate.h</dd>
+          </dl>
+        </blockquote>
+        <div class="desc">
+          
+          <em>Warning</em> this category is <em>private</em>,
+          which means that the methods are for internal use by
+          the package. You should not use them in external code.
+        
+        </div>
+        <p class="global_method_index">
+        </p>
+        <hr class="section-separator">
+<div class="method">
+        <h3><a name="method$DBProcessor(Private)-boundsTrap">boundsTrap&nbsp;</a></h3>
+        - (void) <b>boundsTrap</b>;<br />
+        <div class="desc">
+          
+            Raise a bounds exception.
+          
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBProcessor(Private)-dispatch$escape$execute$">dispatch:&nbsp;escape:&nbsp;execute:&nbsp;</a></h3>
+        - (BOOL) <b>dispatch:</b> (uint8_t)opcode<b> escape:</b> (BOOL)escape<b> execute:</b> (BOOL)execute;<br />
+        <div class="desc">
+          
+            Query or invoke an <var>opcode</var>. Returns
+            <code>NO</code> for an unsupported <var>opcode</var>
+            .
+          
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBProcessor(Private)-divCheckTrap">divCheckTrap&nbsp;</a></h3>
+        - (void) <b>divCheckTrap</b>;<br />
+        <div class="desc">
+          
+            Raise a quotient overflow exception.
+          
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBProcessor(Private)-divZeroTrap">divZeroTrap&nbsp;</a></h3>
+        - (void) <b>divZeroTrap</b>;<br />
+        <div class="desc">
+          
+            Raise a zero divisor exception.
+          
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBProcessor(Private)-hardwareError$">hardwareError:&nbsp;</a></h3>
+        - (void) <b>hardwareError:</b> (NSString*)reason;<br />
+        <div class="desc">
+          
+            Raise an invalid instruction operand exception.
+          
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBProcessor(Private)-lengthenPointer$">lengthenPointer:&nbsp;</a></h3>
+        - (uint32_t) <b>lengthenPointer:</b> (uint32_t)pointer;<br />
+        <div class="desc">
+          
+            Add the low sixteen bits of <var>pointer</var> to MDS.
+          
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBProcessor(Private)-nextCodeByte">nextCodeByte&nbsp;</a></h3>
+        - (uint8_t) <b>nextCodeByte</b>;<br />
+        <div class="desc">
+          
+            Fetch and advance the byte PC modulo 65536.
+          
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBProcessor(Private)-nextCodeWord">nextCodeWord&nbsp;</a></h3>
+        - (uint16_t) <b>nextCodeWord</b>;<br />
+        <div class="desc">
+          
+            Fetch two consecutive code bytes, most significant
+            first.
+          
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBProcessor(Private)-pointerTrap">pointerTrap&nbsp;</a></h3>
+        - (void) <b>pointerTrap</b>;<br />
+        <div class="desc">
+          
+            Raise a <code>nil</code> pointer exception.
+          
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBProcessor(Private)-popFloat">popFloat&nbsp;</a></h3>
+        - (float) <b>popFloat</b>;<br />
+        <div class="desc">
+          
+            Pop an IEEE single precision bit representation.
+          
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBProcessor(Private)-popRecover">popRecover&nbsp;</a></h3>
+        - (int16_t) <b>popRecover</b>;<br />
+        <div class="desc">
+          
+            Peek without discarding, implementing the Java
+            popRecover helper.
+          
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBProcessor(Private)-pushFloat$">pushFloat:&nbsp;</a></h3>
+        - (void) <b>pushFloat:</b> (float)value;<br />
+        <div class="desc">
+          
+            Push an IEEE single precision bit representation.
+          
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBProcessor(Private)-readCode$">readCode:&nbsp;</a></h3>
+        - (uint16_t) <b>readCode:</b> (uint32_t)offset;<br />
+        <div class="desc">
+          
+            Read a word at CB plus the low sixteen bits of
+            <var>offset</var>.
+          
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBProcessor(Private)-readMDSDoubleWord$">readMDSDoubleWord:&nbsp;</a></h3>
+        - (uint32_t) <b>readMDSDoubleWord:</b> (uint32_t)pointer;<br />
+        <div class="desc">
+          
+            Read a <strong>double</strong> word after lengthening
+            the <var>pointer</var>.
+          
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBProcessor(Private)-readMDSDoubleWord$offset$">readMDSDoubleWord:&nbsp;offset:&nbsp;</a></h3>
+        - (uint32_t) <b>readMDSDoubleWord:</b> (uint32_t)pointer<b> offset:</b> (uint32_t)offset;<br />
+        <div class="desc">
+          
+            Read a <strong>double</strong> word after wrapping
+            <var>pointer</var> plus <var>offset</var>.
+          
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBProcessor(Private)-readMDSWord$">readMDSWord:&nbsp;</a></h3>
+        - (uint16_t) <b>readMDSWord:</b> (uint32_t)pointer;<br />
+        <div class="desc">
+          
+            Read a word relative to MDS.
+          
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBProcessor(Private)-readMDSWord$offset$">readMDSWord:&nbsp;offset:&nbsp;</a></h3>
+        - (uint16_t) <b>readMDSWord:</b> (uint32_t)pointer<b> offset:</b> (uint32_t)offset;<br />
+        <div class="desc">
+          
+            Read with sixteen-bit pointer-plus-offset wrapping.
+          
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBProcessor(Private)-writeMDSWord$offset$value$">writeMDSWord:&nbsp;offset:&nbsp;value:&nbsp;</a></h3>
+        - (void) <b>writeMDSWord:</b> (uint32_t)pointer<b> offset:</b> (uint32_t)offset<b> value:</b> (uint16_t)value;<br />
+        <div class="desc">
+          
+            Store with sixteen-bit pointer-plus-offset wrapping.
+          
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBProcessor(Private)-writeMDSWord$value$">writeMDSWord:&nbsp;value:&nbsp;</a></h3>
+        - (void) <b>writeMDSWord:</b> (uint32_t)pointer<b> value:</b> (uint16_t)value;<br />
+        <div class="desc">
+          
+            Store relative to MDS.
+          
+        </div>
+        <hr class="method-separator">
+</div>
+
+              <h1><a name="002000000000">DBProcessorPrivate functions</a></h1>
+        <p>
+        </p>
+        <h3><a name="function$db_rotate_word">db_rotate_word</a></h3>
+        uint16_t db_rotate_word(uint16_t <b>value</b>, int32_t <b>count</b>);<br />
+        <div class="desc">
+          
+          Rotate a word, reducing the <var>count</var> modulo
+          sixteen.
+        
+        </div>
+        <hr class="method-separator">
+        <h3><a name="function$db_shift_long">db_shift_long</a></h3>
+        uint32_t db_shift_long(uint32_t <b>value</b>, int32_t <b>count</b>);<br />
+        <div class="desc">
+          
+          Logical shift with zero result for counts outside the
+          <strong>double</strong> word.
+        
+        </div>
+        <hr class="method-separator">
+        <h3><a name="function$db_shift_word">db_shift_word</a></h3>
+        uint16_t db_shift_word(uint16_t <b>value</b>, int32_t <b>count</b>);<br />
+        <div class="desc">
+          
+          Logical shift with zero result for counts outside the
+          word.
+        
+        </div>
+        <hr class="method-separator">
+        <h3><a name="function$db_sign_byte">db_sign_byte</a></h3>
+        int32_t db_sign_byte(uint32_t <b>value</b>);<br />
+        <div class="desc">
+          
+          Sign extend an eight-bit immediate.
+        
+        </div>
+        <hr class="method-separator">
+        <h3><a name="function$db_sign_word">db_sign_word</a></h3>
+        int32_t db_sign_word(uint32_t <b>value</b>);<br />
+        <div class="desc">
+          
+          Sign extend a sixteen-bit immediate.
+        
+        </div>
+        <hr class="method-separator">
+        <br />
+    </div>
+  </div>
+  </body>
+</html>

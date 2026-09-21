@@ -1,0 +1,214 @@
+<?xml version="1.0"?>
+<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 1.0.4//EN" "http://www.gnustep.org/gsdoc-1_0_4.dtd">
+<gsdoc base="DBProcessorPrivate" stylesheeturl="default-styles.css">
+  <head>
+    <title>Internal processor operations</title>
+    <author name="Daybreak contributors">
+    </author>
+    <date>Generated at 2026-09-20 UTC</date>
+    <copy>2017, Dr. Hans-Walter Latz. See COPYING.</copy>
+  </head>
+  <body>
+    <front><contents /></front>
+    <chapter>
+      <heading>
+        Software documentation for the DBProcessor(Private)
+        category
+      </heading>
+      <category name="Private" class="DBProcessor">
+        <declared>DBProcessorPrivate.h</declared>
+        <desc>
+          <em>Warning</em> this category is <em>private</em>,
+          which means that the methods are for internal use by
+          the package. You should not use them in external code.
+        </desc>
+        <method type="void">
+          <sel>boundsTrap</sel>
+          <desc>
+            Raise a bounds exception.
+          </desc>
+        </method>
+        <method type="BOOL">
+          <sel>dispatch:</sel>
+          <arg type="uint8_t">opcode</arg>
+          <sel>escape:</sel>
+          <arg type="BOOL">escape</arg>
+          <sel>execute:</sel>
+          <arg type="BOOL">execute</arg>
+          <desc>
+            Query or invoke an <var>opcode</var>. Returns
+            <code>NO</code> for an unsupported <var>opcode</var>
+            .
+          </desc>
+        </method>
+        <method type="void">
+          <sel>divCheckTrap</sel>
+          <desc>
+            Raise a quotient overflow exception.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>divZeroTrap</sel>
+          <desc>
+            Raise a zero divisor exception.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>hardwareError:</sel>
+          <arg type="NSString*">reason</arg>
+          <desc>
+            Raise an invalid instruction operand exception.
+          </desc>
+        </method>
+        <method type="uint32_t">
+          <sel>lengthenPointer:</sel>
+          <arg type="uint32_t">pointer</arg>
+          <desc>
+            Add the low sixteen bits of <var>pointer</var> to MDS.
+          </desc>
+        </method>
+        <method type="uint8_t">
+          <sel>nextCodeByte</sel>
+          <desc>
+            Fetch and advance the byte PC modulo 65536.
+          </desc>
+        </method>
+        <method type="uint16_t">
+          <sel>nextCodeWord</sel>
+          <desc>
+            Fetch two consecutive code bytes, most significant
+            first.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>pointerTrap</sel>
+          <desc>
+            Raise a <code>nil</code> pointer exception.
+          </desc>
+        </method>
+        <method type="float">
+          <sel>popFloat</sel>
+          <desc>
+            Pop an IEEE single precision bit representation.
+          </desc>
+        </method>
+        <method type="int16_t">
+          <sel>popRecover</sel>
+          <desc>
+            Peek without discarding, implementing the Java
+            popRecover helper.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>pushFloat:</sel>
+          <arg type="float">value</arg>
+          <desc>
+            Push an IEEE single precision bit representation.
+          </desc>
+        </method>
+        <method type="uint16_t">
+          <sel>readCode:</sel>
+          <arg type="uint32_t">offset</arg>
+          <desc>
+            Read a word at CB plus the low sixteen bits of
+            <var>offset</var>.
+          </desc>
+        </method>
+        <method type="uint32_t">
+          <sel>readMDSDoubleWord:</sel>
+          <arg type="uint32_t">pointer</arg>
+          <desc>
+            Read a <strong>double</strong> word after lengthening
+            the <var>pointer</var>.
+          </desc>
+        </method>
+        <method type="uint32_t">
+          <sel>readMDSDoubleWord:</sel>
+          <arg type="uint32_t">pointer</arg>
+          <sel>offset:</sel>
+          <arg type="uint32_t">offset</arg>
+          <desc>
+            Read a <strong>double</strong> word after wrapping
+            <var>pointer</var> plus <var>offset</var>.
+          </desc>
+        </method>
+        <method type="uint16_t">
+          <sel>readMDSWord:</sel>
+          <arg type="uint32_t">pointer</arg>
+          <desc>
+            Read a word relative to MDS.
+          </desc>
+        </method>
+        <method type="uint16_t">
+          <sel>readMDSWord:</sel>
+          <arg type="uint32_t">pointer</arg>
+          <sel>offset:</sel>
+          <arg type="uint32_t">offset</arg>
+          <desc>
+            Read with sixteen-bit pointer-plus-offset wrapping.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>writeMDSWord:</sel>
+          <arg type="uint32_t">pointer</arg>
+          <sel>offset:</sel>
+          <arg type="uint32_t">offset</arg>
+          <sel>value:</sel>
+          <arg type="uint16_t">value</arg>
+          <desc>
+            Store with sixteen-bit pointer-plus-offset wrapping.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>writeMDSWord:</sel>
+          <arg type="uint32_t">pointer</arg>
+          <sel>value:</sel>
+          <arg type="uint16_t">value</arg>
+          <desc>
+            Store relative to MDS.
+          </desc>
+        </method>
+      </category>
+    </chapter>
+    <chapter>
+      <heading>DBProcessorPrivate functions</heading>
+      <p></p>
+      <function type="uint16_t" name="db_rotate_word">
+        <arg type="uint16_t">value</arg>
+        <arg type="int32_t">count</arg>
+        <desc>
+          Rotate a word, reducing the <var>count</var> modulo
+          sixteen.
+        </desc>
+      </function>
+      <function type="uint32_t" name="db_shift_long">
+        <arg type="uint32_t">value</arg>
+        <arg type="int32_t">count</arg>
+        <desc>
+          Logical shift with zero result for counts outside the
+          <strong>double</strong> word.
+        </desc>
+      </function>
+      <function type="uint16_t" name="db_shift_word">
+        <arg type="uint16_t">value</arg>
+        <arg type="int32_t">count</arg>
+        <desc>
+          Logical shift with zero result for counts outside the
+          word.
+        </desc>
+      </function>
+      <function type="int32_t" name="db_sign_byte">
+        <arg type="uint32_t">value</arg>
+        <desc>
+          Sign extend an eight-bit immediate.
+        </desc>
+      </function>
+      <function type="int32_t" name="db_sign_word">
+        <arg type="uint32_t">value</arg>
+        <desc>
+          Sign extend a sixteen-bit immediate.
+        </desc>
+      </function>
+    </chapter>
+  </body>
+</gsdoc>

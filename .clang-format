@@ -1,0 +1,9 @@
+BasedOnStyle: GNU
+ColumnLimit: 79
+IndentWidth: 2
+UseTab: Never
+SortIncludes: Never
+AllowShortFunctionsOnASingleLine: None
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortLoopsOnASingleLine: false
+SpaceAfterCStyleCast: true

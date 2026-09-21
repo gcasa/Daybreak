@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Daybreak Mesa processor</title>
+<meta http-equiv="Content-Style-Type" content="text/css"/>
+<link rel="stylesheet" type="text/css" href="default-styles.css" media="screen" title="Normal" />
+  </head>
+  <body>
+    <div class="content-bar">
+      <div class="content-bar-top">
+        <div class="content-bar-top-body">
+          <div class="content-bar-top-body-title">Daybreak</div><br />
+        </div>
+      </div>
+      <div class="content-bar-bottom">
+        <div class="content-bar-bottom-body">
+        </div>
+      </div>
+    </div>
+    <div class="content-pane">
+      <div class="content-pane-body">
+        <h1><a name="title$DBProcessor">Daybreak Mesa processor</a></h1>
+        <h3>Authors</h3>
+        <dl>
+          <dt>Daybreak contributors</dt>
+          <dd>
+          </dd>
+        </dl>
+        <p><b>Date:</b> Generated at 2026-09-20 UTC</p>
+        <blockquote>
+          
+      A manually managed Objective-C Mesa execution engine.
+    
+        </blockquote>
+        <p><b>Copyright:</b> (C) 2017, Dr. Hans-Walter Latz. See COPYING.</p>
+
+            <div>
+          <hr class="section-separator">
+          <h3>Contents -</h3>
+          <ol>
+            <li>
+              <a href="#001000000000">Software documentation for the DBProcessor class</a>
+            </li>
+            <li>
+              <a href="#002000000000">DBProcessor types</a>
+            </li>
+            <li>
+              <a href="#003000000000">DBProcessor macros</a>
+            </li>
+          </ol>
+          <hr class="section-separator">
+        </div>
+
+              <h1><a name="001000000000">
+        Software documentation for the DBProcessor class
+      </a></h1>
+        <h2 class="class"><a name="class$DBProcessor">DBProcessor</a> : NSObject</h2>
+<svg width="134pt" height="116pt"
+ viewBox="0.00 0.00 134.00 116.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 112)">
+<title>class_DBProcessor</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-112 130,-112 130,4 -4,4"/>
+<!-- NSObject -->
+<g id="node1" class="node figure_super">
+<title>NSObject</title>
+<polygon fill="lightgrey" stroke="black" points="110.25,-108 15.75,-108 15.75,-72 110.25,-72 110.25,-108"/>
+<text xml:space="preserve" text-anchor="middle" x="63" y="-80.7" font-family="Times,serif" font-size="24.00">NSObject</text>
+</g>
+<!-- DBProcessor -->
+<g id="node2" class="node figure_class">
+<title>DBProcessor</title>
+<polygon fill="lightgrey" stroke="black" points="126,-36 0,-36 0,0 126,0 126,-36"/>
+<text xml:space="preserve" text-anchor="middle" x="63" y="-8.7" font-family="Times,serif" font-size="24.00">DBProcessor</text>
+</g>
+<!-- NSObject&#45;&gt;DBProcessor -->
+<g id="edge1" class="edge">
+<title>NSObject&#45;&gt;DBProcessor</title>
+<path fill="none" stroke="black" d="M63,-71.7C63,-64.41 63,-55.73 63,-47.54"/>
+<polygon fill="black" stroke="black" points="66.5,-47.62 63,-37.62 59.5,-47.62 66.5,-47.62"/>
+</g>
+</g>
+</svg>
+        <blockquote class="declared">
+          <dl>
+            <dt><b>Declared in:</b></dt>
+            <dd>DBProcessor.h</dd>
+          </dl>
+        </blockquote>
+        <div class="desc">
+          
+          A Mesa processor with independent registers, stack and
+          retained memory. Uses explicit retain/release and
+          Objective-C 1.0 syntax. One instance is confined
+          to one thread. The implemented opcode coverage is listed
+          in Documentation/PORTING.md. Unimplemented instructions
+          raise DBOpcodeTrap or DBEscapeOpcodeTrap; no
+          instruction is silently treated as a no-op.
+          Architectural traps currently report host
+          exceptions rather than invoking Pilot trap
+          handlers, so this engine cannot yet boot a
+          workstation OS.
+        
+        </div>
+        <p class="global_method_index">
+        </p>
+        <hr class="section-separator">
+<div class="method">
+        <h3><a name="method$DBProcessor-discard">discard&nbsp;</a></h3>
+        - (void) <b>discard</b>;<br />
+        <div class="desc">
+          
+            Discard the top word without erasing it.
+          
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBProcessor-initWithMemory$post40$">initWithMemory:&nbsp;post40:&nbsp;</a></h3>
+        - (id) <b>initWithMemory:</b> (DBMemory*)memory<b> post40:</b> (BOOL)post40;<br />
+        <div class="desc">
+          
+            Retain <var>memory</var> and initialize a processor.
+            <var>post40</var> selects the changed chapters
+            global-frame instructions; <code>NO</code>
+            selects PrincOps 4.0.
+          
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBProcessor-memory">memory&nbsp;</a></h3>
+        - (DBMemory*) <b>memory</b>;<br />
+        <div class="desc">
+          
+            Return retained engine memory as a borrowed
+            reference.
+          
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBProcessor-pop">pop&nbsp;</a></h3>
+        - (int16_t) <b>pop</b>;<br />
+        <div class="desc">
+          
+            Pop a <strong>signed</strong> word or raise
+            DBStackError when empty.
+          
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBProcessor-popLong">popLong&nbsp;</a></h3>
+        - (int32_t) <b>popLong</b>;<br />
+        <div class="desc">
+          
+            Pop a <strong>signed</strong> <strong>double</strong>
+            word, checking depth before changing the stack.
+          
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBProcessor-push$">push:&nbsp;</a></h3>
+        - (void) <b>push:</b> (uint16_t)value;<br />
+        <div class="desc">
+          
+            Push a word or raise DBStackError when full.
+          
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBProcessor-pushLong$">pushLong:&nbsp;</a></h3>
+        - (void) <b>pushLong:</b> (uint32_t)value;<br />
+        <div class="desc">
+          
+            Push low then high word, checking space before
+            changing the stack.
+          
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBProcessor-recover">recover&nbsp;</a></h3>
+        - (void) <b>recover</b>;<br />
+        <div class="desc">
+          
+            Make the most recently discarded slot active again, as
+            Mesa REC does. Recover checks capacity, not the
+            historical contents of the slot.
+          
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBProcessor-reset">reset&nbsp;</a></h3>
+        - (void) <b>reset</b>;<br />
+        <div class="desc">
+          
+            Clear registers and stack, preserving memory and the
+            instruction-set mode.
+          
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBProcessor-runForInstructions$">runForInstructions:&nbsp;</a></h3>
+        - (void) <b>runForInstructions:</b> (uint32_t)count;<br />
+        <div class="desc">
+          
+            Execute exactly <var>count</var> instructions,
+            stopping immediately on an exception. Zero
+            performs no work. The caller controls scheduling
+            and cancellation.
+          
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBProcessor-state">state&nbsp;</a></h3>
+        - (<a rel="gsdoc" href="#type$DBProcessorState">DBProcessorState</a>*) <b>state</b>;<br />
+        <div class="desc">
+          
+            Return a borrowed pointer to registers, valid for
+            the instance lifetime.
+          
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBProcessor-step">step&nbsp;</a></h3>
+        - (void) <b>step</b>;<br />
+        <div class="desc">
+          
+            Execute one instruction. On exception restore PC
+            and the complete stack to their pre-instruction state.
+            Completed memory writes are not rolled back. The
+            instruction count advances only on successful
+            completion.
+          
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBProcessor-supportsOpcode$escape$">supportsOpcode:&nbsp;escape:&nbsp;</a></h3>
+        - (BOOL) <b>supportsOpcode:</b> (uint8_t)opcode<b> escape:</b> (BOOL)escape;<br />
+        <div class="desc">
+          
+            Return whether a primary or <var>escape</var>
+            <var>opcode</var> has an implementation in this mode.
+          
+        </div>
+        <hr class="method-separator">
+</div>
+
+              <h1><a name="002000000000">DBProcessor types</a></h1>
+        <p>
+        </p>
+        <h3><a name="type$DBProcessorState">DBProcessorState</a></h3>
+        typedef struct <a rel="gsdoc" href="#type$DBProcessorState">DBProcessorState</a> DBProcessorState;<br />
+        <div class="desc">
+          
+          Processor state. PC and savedPC are byte offsets
+          within CB; CB, MDS and GF32 are word addresses. GF16
+          and LF are MDS-relative word pointers. Modify only while
+          the processor is stopped.
+        
+        </div>
+        <hr class="method-separator">
+
+              <h1><a name="003000000000">DBProcessor macros</a></h1>
+        <p>
+        </p>
+        <h3><a name="macro$DB_STACK_LENGTH">DB_STACK_LENGTH</a></h3>
+         DB_STACK_LENGTH<br />
+        <div class="desc">
+          
+          Number of evaluation-stack words specified by Mesa
+          PrincOps.
+        
+        </div>
+        <hr class="method-separator">
+        <br />
+    </div>
+  </div>
+  </body>
+</html>

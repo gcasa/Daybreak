@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Daybreak virtual memory</title>
+<meta http-equiv="Content-Style-Type" content="text/css"/>
+<link rel="stylesheet" type="text/css" href="default-styles.css" media="screen" title="Normal" />
+  </head>
+  <body>
+    <div class="content-bar">
+      <div class="content-bar-top">
+        <div class="content-bar-top-body">
+          <div class="content-bar-top-body-title">Daybreak</div><br />
+        </div>
+      </div>
+      <div class="content-bar-bottom">
+        <div class="content-bar-bottom-body">
+        </div>
+      </div>
+    </div>
+    <div class="content-pane">
+      <div class="content-pane-body">
+        <h1><a name="title$DBMemory">Daybreak virtual memory</a></h1>
+        <h3>Authors</h3>
+        <dl>
+          <dt>Daybreak contributors</dt>
+          <dd>
+          </dd>
+        </dl>
+        <p><b>Date:</b> Generated at 2026-09-20 UTC</p>
+        <blockquote>
+          
+      Word-addressed Mesa memory and page maps.
+    
+        </blockquote>
+        <p><b>Copyright:</b> (C) 2017, Dr. Hans-Walter Latz. See COPYING.</p>
+
+            <div>
+          <hr class="section-separator">
+          <h3>Contents -</h3>
+          <ol>
+            <li>
+              <a href="#001000000000">Software documentation for the DBMemory class</a>
+            </li>
+            <li>
+              <a href="#002000000000">DBMemory macros</a>
+            </li>
+          </ol>
+          <hr class="section-separator">
+        </div>
+
+              <h1><a name="001000000000">
+        Software documentation for the DBMemory class
+      </a></h1>
+        <h2 class="class"><a name="class$DBMemory">DBMemory</a> : NSObject</h2>
+<svg width="124pt" height="116pt"
+ viewBox="0.00 0.00 124.00 116.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 112)">
+<title>class_DBMemory</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-112 119.5,-112 119.5,4 -4,4"/>
+<!-- NSObject -->
+<g id="node1" class="node figure_super">
+<title>NSObject</title>
+<polygon fill="lightgrey" stroke="black" points="105,-108 10.5,-108 10.5,-72 105,-72 105,-108"/>
+<text xml:space="preserve" text-anchor="middle" x="57.75" y="-80.7" font-family="Times,serif" font-size="24.00">NSObject</text>
+</g>
+<!-- DBMemory -->
+<g id="node2" class="node figure_class">
+<title>DBMemory</title>
+<polygon fill="lightgrey" stroke="black" points="115.5,-36 0,-36 0,0 115.5,0 115.5,-36"/>
+<text xml:space="preserve" text-anchor="middle" x="57.75" y="-8.7" font-family="Times,serif" font-size="24.00">DBMemory</text>
+</g>
+<!-- NSObject&#45;&gt;DBMemory -->
+<g id="edge1" class="edge">
+<title>NSObject&#45;&gt;DBMemory</title>
+<path fill="none" stroke="black" d="M57.75,-71.7C57.75,-64.41 57.75,-55.73 57.75,-47.54"/>
+<polygon fill="black" stroke="black" points="61.25,-47.62 57.75,-37.62 54.25,-47.62 61.25,-47.62"/>
+</g>
+</g>
+</svg>
+        <blockquote class="declared">
+          <dl>
+            <dt><b>Declared in:</b></dt>
+            <dd>DBMemory.h</dd>
+          </dl>
+        </blockquote>
+        <div class="desc">
+          
+          Memory faults are NSExceptions named DBPointerTrap,
+          DBPageFault or DBWriteProtectFault. Virtual page
+          zero and addresses outside the configured space always
+          trap. Their userInfo dictionary contains the faulting
+          word address under <code>address</code>. All addresses
+          are word addresses unless documented otherwise. Instances
+          own their storage and must be confined to one thread.
+          Initial mappings are identity mappings for installed
+          RAM; other pages are vacant. This is an engine
+          configuration, not a workstation boot map.
+        
+        </div>
+        <p class="global_method_index">
+        </p>
+        <hr class="section-separator">
+<div class="method">
+        <h3><a name="method$DBMemory+fieldFromWord$specification$">fieldFromWord:&nbsp;specification:&nbsp;</a></h3>
+        + (uint16_t) <b>fieldFromWord:</b> (uint16_t)word<b> specification:</b> (uint8_t)spec;<br />
+        <div class="desc">
+          
+            Extract a Mesa field. The high nibble is its
+            position from the MSB, and the low nibble is its
+            width minus one. Invalid fields raise an exception.
+          
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBMemory+isVacant$">isVacant:&nbsp;</a></h3>
+        + (BOOL) <b>isVacant:</b> (uint16_t)flags;<br />
+        <div class="desc">
+          
+            Return <code>YES</code> when the low three map bits
+            describe a vacant page.
+          
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBMemory+word$specification$withField$">word:&nbsp;specification:&nbsp;withField:&nbsp;</a></h3>
+        + (uint16_t) <b>word:</b> (uint16_t)word<b> specification:</b> (uint8_t)spec<b> withField:</b> (uint16_t)value;<br />
+        <div class="desc">
+          
+            Replace a Mesa field, truncating <var>value</var>
+            to the field width.
+          
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBMemory-fetchByte$offset$">fetchByte:&nbsp;offset:&nbsp;</a></h3>
+        - (uint8_t) <b>fetchByte:</b> (uint32_t)address<b> offset:</b> (uint32_t)byteOffset;<br />
+        <div class="desc">
+          
+            Read a byte at <var>byteOffset</var> from a word
+            <var>address</var>; high byte comes first.
+          
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBMemory-flagsForPage$">flagsForPage:&nbsp;</a></h3>
+        - (uint16_t) <b>flagsForPage:</b> (uint32_t)page;<br />
+        <div class="desc">
+          
+            Return map flags, or DB_MAP_VACANT for an
+            out-of-range <var>page</var>.
+          
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBMemory-initWithRealPages$virtualPages$">initWithRealPages:&nbsp;virtualPages:&nbsp;</a></h3>
+        - (id) <b>initWithRealPages:</b> (uint32_t)realPages<b> virtualPages:</b> (uint32_t)virtualPages;<br />
+        <div class="desc">
+          
+            Initialize with nonzero page counts,
+            <var>realPages</var> no greater than
+            <var>virtualPages</var>, and at most 131072 virtual
+            pages. Invalid sizes raise
+            NSInvalidArgumentException.
+          
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBMemory-loadData$atRealAddress$">loadData:&nbsp;atRealAddress:&nbsp;</a></h3>
+        - (void) <b>loadData:</b> (NSData*)data<b> atRealAddress:</b> (uint32_t)address;<br />
+        <div class="desc">
+          
+            Load big-endian word bytes at a real-memory word
+            <var>address</var>, bypassing mapping. The complete
+            range and even byte length are checked before
+            modifying RAM.
+          
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBMemory-mapPage$to$flags$">mapPage:&nbsp;to:&nbsp;flags:&nbsp;</a></h3>
+        - (void) <b>mapPage:</b> (uint32_t)virtualPage<b> to:</b> (uint32_t)realPage<b> flags:</b> (uint16_t)flags;<br />
+        <div class="desc">
+          
+            Map a virtual page to a real page. Vacant mappings
+            ignore <var>realPage</var>. Invalid page numbers
+            raise NSInvalidArgumentException.
+          
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBMemory-readDoubleWord$">readDoubleWord:&nbsp;</a></h3>
+        - (uint32_t) <b>readDoubleWord:</b> (uint32_t)address;<br />
+        <div class="desc">
+          
+            Read a Mesa <strong>double</strong> word: low word
+            first, high word second.
+          
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBMemory-readWord$">readWord:&nbsp;</a></h3>
+        - (uint16_t) <b>readWord:</b> (uint32_t)address;<br />
+        <div class="desc">
+          
+            Read a word, setting the page&apos;s referenced flag.
+          
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBMemory-realPageForPage$">realPageForPage:&nbsp;</a></h3>
+        - (uint32_t) <b>realPageForPage:</b> (uint32_t)page;<br />
+        <div class="desc">
+          
+            Return the mapped real <var>page</var>, or zero for
+            a vacant/out-of-range <var>page</var>.
+          
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBMemory-realPages">realPages&nbsp;</a></h3>
+        - (uint32_t) <b>realPages</b>;<br />
+        <div class="desc">
+          
+            Return the installed RAM page count.
+          
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBMemory-storeByte$offset$value$">storeByte:&nbsp;offset:&nbsp;value:&nbsp;</a></h3>
+        - (void) <b>storeByte:</b> (uint32_t)address<b> offset:</b> (uint32_t)byteOffset<b> value:</b> (uint8_t)value;<br />
+        <div class="desc">
+          
+            Replace one byte, preserving the other half of its
+            word.
+          
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBMemory-virtualPages">virtualPages&nbsp;</a></h3>
+        - (uint32_t) <b>virtualPages</b>;<br />
+        <div class="desc">
+          
+            Return the virtual address space page count.
+          
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBMemory-writeWord$value$">writeWord:&nbsp;value:&nbsp;</a></h3>
+        - (void) <b>writeWord:</b> (uint32_t)address<b> value:</b> (uint16_t)value;<br />
+        <div class="desc">
+          
+            Write a word, setting referenced and dirty flags.
+          
+        </div>
+        <hr class="method-separator">
+</div>
+
+              <h1><a name="002000000000">DBMemory macros</a></h1>
+        <p>
+        </p>
+        <h3><a name="macro$DB_MAP_DIRTY">DB_MAP_DIRTY</a></h3>
+         DB_MAP_DIRTY<br />
+        <div class="desc">
+          
+          Page was written.
+        
+        </div>
+        <hr class="method-separator">
+        <h3><a name="macro$DB_MAP_PROTECTED">DB_MAP_PROTECTED</a></h3>
+         DB_MAP_PROTECTED<br />
+        <div class="desc">
+          
+          Writes are prohibited.
+        
+        </div>
+        <hr class="method-separator">
+        <h3><a name="macro$DB_MAP_REFERENCED">DB_MAP_REFERENCED</a></h3>
+         DB_MAP_REFERENCED<br />
+        <div class="desc">
+          
+          Page was read.
+        
+        </div>
+        <hr class="method-separator">
+        <h3><a name="macro$DB_MAP_VACANT">DB_MAP_VACANT</a></h3>
+         DB_MAP_VACANT<br />
+        <div class="desc">
+          
+          Vacant map entry (tested using the low three bits).
+        
+        </div>
+        <hr class="method-separator">
+        <h3><a name="macro$DB_WORDS_PER_PAGE">DB_WORDS_PER_PAGE</a></h3>
+         DB_WORDS_PER_PAGE<br />
+        <div class="desc">
+          
+          Mesa page size in 16-bit words.
+        
+        </div>
+        <hr class="method-separator">
+        <br />
+    </div>
+  </div>
+  </body>
+</html>

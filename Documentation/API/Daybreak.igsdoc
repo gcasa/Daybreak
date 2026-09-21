@@ -1,0 +1,30 @@
+{
+    output = {
+	"Source/DBInstructions.h" = (
+	    "DBInstructions.gsdoc"
+	);
+	"Source/DBMemory.h" = (
+	    "DBMemory.gsdoc"
+	);
+	"Source/DBProcessor.h" = (
+	    "DBProcessor.gsdoc"
+	);
+	"Source/DBProcessorPrivate.h" = (
+	    "DBProcessorPrivate.gsdoc"
+	);
+    };
+    source = {
+	"Source/DBInstructions.h" = (
+	    "Source/DBInstructions.m"
+	);
+	"Source/DBMemory.h" = (
+	    "Source/DBMemory.m"
+	);
+	"Source/DBProcessor.h" = (
+	    "Source/DBProcessor.m"
+	);
+	"Source/DBProcessorPrivate.h" = (
+	    "Source/DBProcessor.m"
+	);
+    };
+}

@@ -1,0 +1,209 @@
+<?xml version="1.0"?>
+<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 1.0.4//EN" "http://www.gnustep.org/gsdoc-1_0_4.dtd">
+<gsdoc base="DBMemory" stylesheeturl="default-styles.css">
+  <head>
+    <title>Daybreak virtual memory</title>
+    <author name="Daybreak contributors">
+    </author>
+    <date>Generated at 2026-09-20 UTC</date>
+    <abstract>
+      Word-addressed Mesa memory and page maps.
+    </abstract>
+    <copy>2017, Dr. Hans-Walter Latz. See COPYING.</copy>
+  </head>
+  <body>
+    <front><contents /></front>
+    <chapter>
+      <heading>
+        Software documentation for the DBMemory class
+      </heading>
+      <class name="DBMemory" super="NSObject">
+        <declared>DBMemory.h</declared>
+        <desc>
+          Memory faults are NSExceptions named DBPointerTrap,
+          DBPageFault or DBWriteProtectFault. Virtual page
+          zero and addresses outside the configured space always
+          trap. Their userInfo dictionary contains the faulting
+          word address under <code>address</code>. All addresses
+          are word addresses unless documented otherwise. Instances
+          own their storage and must be confined to one thread.
+          Initial mappings are identity mappings for installed
+          RAM; other pages are vacant. This is an engine
+          configuration, not a workstation boot map.
+        </desc>
+        <method type="uint16_t" factory="yes">
+          <sel>fieldFromWord:</sel>
+          <arg type="uint16_t">word</arg>
+          <sel>specification:</sel>
+          <arg type="uint8_t">spec</arg>
+          <desc>
+            Extract a Mesa field. The high nibble is its
+            position from the MSB, and the low nibble is its
+            width minus one. Invalid fields raise an exception.
+          </desc>
+        </method>
+        <method type="BOOL" factory="yes">
+          <sel>isVacant:</sel>
+          <arg type="uint16_t">flags</arg>
+          <desc>
+            Return <code>YES</code> when the low three map bits
+            describe a vacant page.
+          </desc>
+        </method>
+        <method type="uint16_t" factory="yes">
+          <sel>word:</sel>
+          <arg type="uint16_t">word</arg>
+          <sel>specification:</sel>
+          <arg type="uint8_t">spec</arg>
+          <sel>withField:</sel>
+          <arg type="uint16_t">value</arg>
+          <desc>
+            Replace a Mesa field, truncating <var>value</var>
+            to the field width.
+          </desc>
+        </method>
+        <method type="uint8_t">
+          <sel>fetchByte:</sel>
+          <arg type="uint32_t">address</arg>
+          <sel>offset:</sel>
+          <arg type="uint32_t">byteOffset</arg>
+          <desc>
+            Read a byte at <var>byteOffset</var> from a word
+            <var>address</var>; high byte comes first.
+          </desc>
+        </method>
+        <method type="uint16_t">
+          <sel>flagsForPage:</sel>
+          <arg type="uint32_t">page</arg>
+          <desc>
+            Return map flags, or DB_MAP_VACANT for an
+            out-of-range <var>page</var>.
+          </desc>
+        </method>
+        <method type="id">
+          <sel>initWithRealPages:</sel>
+          <arg type="uint32_t">realPages</arg>
+          <sel>virtualPages:</sel>
+          <arg type="uint32_t">virtualPages</arg>
+          <desc>
+            Initialize with nonzero page counts,
+            <var>realPages</var> no greater than
+            <var>virtualPages</var>, and at most 131072 virtual
+            pages. Invalid sizes raise
+            NSInvalidArgumentException.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>loadData:</sel>
+          <arg type="NSData*">data</arg>
+          <sel>atRealAddress:</sel>
+          <arg type="uint32_t">address</arg>
+          <desc>
+            Load big-endian word bytes at a real-memory word
+            <var>address</var>, bypassing mapping. The complete
+            range and even byte length are checked before
+            modifying RAM.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>mapPage:</sel>
+          <arg type="uint32_t">virtualPage</arg>
+          <sel>to:</sel>
+          <arg type="uint32_t">realPage</arg>
+          <sel>flags:</sel>
+          <arg type="uint16_t">flags</arg>
+          <desc>
+            Map a virtual page to a real page. Vacant mappings
+            ignore <var>realPage</var>. Invalid page numbers
+            raise NSInvalidArgumentException.
+          </desc>
+        </method>
+        <method type="uint32_t">
+          <sel>readDoubleWord:</sel>
+          <arg type="uint32_t">address</arg>
+          <desc>
+            Read a Mesa <strong>double</strong> word: low word
+            first, high word second.
+          </desc>
+        </method>
+        <method type="uint16_t">
+          <sel>readWord:</sel>
+          <arg type="uint32_t">address</arg>
+          <desc>
+            Read a word, setting the page's referenced flag.
+          </desc>
+        </method>
+        <method type="uint32_t">
+          <sel>realPageForPage:</sel>
+          <arg type="uint32_t">page</arg>
+          <desc>
+            Return the mapped real <var>page</var>, or zero for
+            a vacant/out-of-range <var>page</var>.
+          </desc>
+        </method>
+        <method type="uint32_t">
+          <sel>realPages</sel>
+          <desc>
+            Return the installed RAM page count.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>storeByte:</sel>
+          <arg type="uint32_t">address</arg>
+          <sel>offset:</sel>
+          <arg type="uint32_t">byteOffset</arg>
+          <sel>value:</sel>
+          <arg type="uint8_t">value</arg>
+          <desc>
+            Replace one byte, preserving the other half of its
+            word.
+          </desc>
+        </method>
+        <method type="uint32_t">
+          <sel>virtualPages</sel>
+          <desc>
+            Return the virtual address space page count.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>writeWord:</sel>
+          <arg type="uint32_t">address</arg>
+          <sel>value:</sel>
+          <arg type="uint16_t">value</arg>
+          <desc>
+            Write a word, setting referenced and dirty flags.
+          </desc>
+        </method>
+      </class>
+    </chapter>
+    <chapter>
+      <heading>DBMemory macros</heading>
+      <p></p>
+      <macro name="DB_MAP_DIRTY">
+        <desc>
+          Page was written.
+        </desc>
+      </macro>
+      <macro name="DB_MAP_PROTECTED">
+        <desc>
+          Writes are prohibited.
+        </desc>
+      </macro>
+      <macro name="DB_MAP_REFERENCED">
+        <desc>
+          Page was read.
+        </desc>
+      </macro>
+      <macro name="DB_MAP_VACANT">
+        <desc>
+          Vacant map entry (tested using the low three bits).
+        </desc>
+      </macro>
+      <macro name="DB_WORDS_PER_PAGE">
+        <desc>
+          Mesa page size in 16-bit words.
+        </desc>
+      </macro>
+    </chapter>
+  </body>
+</gsdoc>
