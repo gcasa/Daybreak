@@ -390,6 +390,13 @@ db_button (NSView *parent, NSString *title, id target, SEL action, CGFloat x)
                                             repeats: YES] retain];
   if ([arguments count] > 1 && ![[arguments objectAtIndex: 1] hasPrefix: @"-"])
     [self loadDisk: [arguments objectAtIndex: 1]];
+  else
+    {
+      NSString *last = [[NSUserDefaults standardUserDefaults]
+          stringForKey: @"LastHardDisk"];
+      if (last != nil)
+        [self loadDisk: last];
+    }
 }
 - (void) dealloc
 {
@@ -429,13 +436,13 @@ db_button (NSView *parent, NSString *title, id target, SEL action, CGFloat x)
 {
   if (![self mayDiscardFloppy])
     return NO;
-  if (_machine == nil || ![[_machine disk] changed])
-    return YES;
-  return NSRunAlertPanel (@"Unsaved disk changes",
-                          @"Save a disk copy before closing if you want to "
-                          @"keep this session.",
-                          @"Cancel", @"Discard Changes", nil)
-         == NSAlertAlternateReturn;
+  NS_DURING
+  [[_machine disk] saveWorkingCopy];
+  NS_HANDLER
+  [self reportException: localException];
+  return NO;
+  NS_ENDHANDLER
+  return YES;
 }
 - (NSApplicationTerminateReply) applicationShouldTerminate:
     (NSApplication *)application
@@ -448,6 +455,8 @@ db_button (NSView *parent, NSString *title, id target, SEL action, CGFloat x)
   NSOpenPanel *panel = [NSOpenPanel openPanel];
   (void) sender;
   [panel setAllowsMultipleSelection: NO];
+  [panel setDirectory: [[[NSBundle mainBundle] resourcePath]
+      stringByAppendingPathComponent: @"disks-6085"]];
   if ([panel runModalForTypes: [NSArray arrayWithObject: @"zdisk"]] == NSOKButton
       && [self mayDiscardDisk])
     [self loadDisk: [panel filename]];
@@ -455,13 +464,15 @@ db_button (NSView *parent, NSString *title, id target, SEL action, CGFloat x)
 - (void) loadDisk: (NSString *)path
 {
   NS_DURING
-  DBMachine *machine = [[DBMachine alloc] initWithDisk: path switches: nil];
+  DBMachine *machine = [[DBMachine alloc] initWithDisk: path switches: nil workingCopy: YES];
   [_display setMachine: machine];
   [_machine release];
   _machine = machine;
   if (_hubHost != nil)
     [_machine setNetworkHost: _hubHost port: _hubPort];
   _paused = NO;
+  [[NSUserDefaults standardUserDefaults] setObject: [[_machine disk] path]
+                                           forKey: @"LastHardDisk"];
   [_window setTitle: [NSString stringWithFormat: @"Daybreak — %@",
                                                [path lastPathComponent]]];
   [_pauseButton setTitle: @"Pause"];

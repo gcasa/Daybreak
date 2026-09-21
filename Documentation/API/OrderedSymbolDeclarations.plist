@@ -24,6 +24,9 @@
     );
     DBDisk = (
 	"-initWithPath:",
+	"+workingDirectory",
+	"-initWithWorkingCopyOfPath:",
+	"-saveWorkingCopy",
 	"-path",
 	"-heads",
 	"-cylinders",
@@ -58,6 +61,7 @@
     );
     DBMachine = (
 	"-initWithDisk:switches:",
+	"-initWithDisk:switches:workingCopy:",
 	"-disk",
 	"-diskReads",
 	"-diskWrites",

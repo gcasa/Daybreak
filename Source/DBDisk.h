@@ -5,12 +5,14 @@
 #define DAYBREAK_DISK_H
 #import <Foundation/Foundation.h>
 #include <stdint.h>
-/** A validated zlib-compressed Draco disk. Changes are kept in memory until
-    explicitly exported to a new image; the input file is never overwritten. */
+/** A validated zlib-compressed Draco disk. Ordinary inputs remain read-only;
+    managed Library copies can persist guest writes without altering the seed. */
 @interface DBDisk : NSObject
 {
   NSMutableData *_sectors;
   NSString *_path;
+  NSString *_sourcePath;
+  BOOL _workingCopy;
   uint32_t _sectorCount;
   uint16_t _heads, _cylinders;
   BOOL _changed;
@@ -18,6 +20,14 @@
 /** Load a .zdisk and its optional .zdisk.zdelta overlay. Raises DBDiskError
     for corrupt, incomplete or mismatched images. */
 - (id) initWithPath: (NSString *)path;
+/** Return the user's platform-specific Daybreak hard disk directory. */
++ (NSString *) workingDirectory;
+/** Import an image and its delta into a unique private Library copy, or
+    reopen an existing managed copy. The selected original is preserved. */
+- (id) initWithWorkingCopyOfPath: (NSString *)path;
+/** Atomically persist a managed working disk. Ordinary input images are
+    never saved by this method. Raises DBDiskError on failure. */
+- (void) saveWorkingCopy;
 /** Return the borrowed input path. */
 - (NSString *) path;
 /** Return the number of heads. */
@@ -36,7 +46,8 @@
 - (NSData *) germ;
 /** Return YES after any sector modification. */
 - (BOOL) changed;
-/** Atomically export a complete compressed image. Refuses the input path. */
+/** Atomically export a complete compressed image. Refuses the input and seed
+    paths. Managed disks remain dirty until saveWorkingCopy succeeds. */
 - (void) saveCopyToPath: (NSString *)path;
 @end
 #endif

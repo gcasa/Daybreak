@@ -71,6 +71,19 @@
             germ; OS readiness depends on guest progress.
           </desc>
         </method>
+        <method type="id">
+          <sel>initWithDisk:</sel>
+          <arg type="NSString*">path</arg>
+          <sel>switches:</sel>
+          <arg type="NSString*">switches</arg>
+          <sel>workingCopy:</sel>
+          <arg type="BOOL">working</arg>
+          <desc>
+            Boot a private Library disk when workingCopy is
+            <code>YES</code>; otherwise use an in-memory image
+            suitable for isolated tests.
+          </desc>
+        </method>
         <method type="void">
           <sel>notifyDevice:</sel>
           <arg type="uint16_t">mask</arg>

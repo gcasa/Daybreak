@@ -93,8 +93,8 @@
         - (void) <b>applicationDidFinishLaunching:</b> (NSNotification*)notification;<br />
         <div class="desc">
 
-            Create the window and menus, then optionally open
-            the command-line disk.
+            Create the window and menus, then open the
+            command-line or last working disk.
 
         </div>
         <hr class="method-separator">
@@ -115,8 +115,8 @@
         - (NSApplicationTerminateReply) <b>applicationShouldTerminate:</b> (NSApplication*)application;<br />
         <div class="desc">
 
-            Confirm discarding unsaved changes on
-            <var>application</var> termination.
+            Save the working disk on termination; cancel
+            termination if saving fails.
 
         </div>
         <hr class="method-separator">
@@ -178,8 +178,8 @@
         - (void) <b>loadDisk:</b> (NSString*)path;<br />
         <div class="desc">
 
-            Load a disk, replacing the current machine only after
-            successful loading.
+            Import or resume a Library working disk, replacing
+            the machine after loading.
 
         </div>
         <hr class="method-separator">
@@ -189,8 +189,8 @@
         - (BOOL) <b>mayDiscardDisk</b>;<br />
         <div class="desc">
 
-            Check unsaved disk changes before replacing or
-            quitting the machine.
+            Save the working hard disk and check floppy changes
+            before replacing or quitting.
 
         </div>
         <hr class="method-separator">
@@ -305,8 +305,8 @@
         - (BOOL) <b>windowShouldClose:</b> (id)sender;<br />
         <div class="desc">
 
-            Route window closing through the unsaved-session
-            termination check.
+            Route window closing through working-disk saving and
+            floppy checks.
 
         </div>
         <hr class="method-separator">

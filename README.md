@@ -22,16 +22,31 @@ Load your GNUstep environment before building with its native makefiles.
 ```sh
 make -f Makefile CC=gcc check
 make -f GNUmakefile.gui
-openapp ./Daybreak.app ../dwarf/disks-6085/xde5.0.zdisk
+openapp ./Daybreak.app disks-6085/xde5.0.zdisk
 ```
 
 The GUI also has an Open Disk button. It provides an 832 × 633 monochrome
 screen, keyboard and three-button mouse input, Pause/Resume, single Step,
-Save Copy, floppy insert/eject, and a NetHub connection panel. Disk changes stay in memory until explicitly exported to a
-new `.zdisk`; the input disk and its optional `.zdelta` are never overwritten.
-Booting the OS itself changes its working disk, so save a copy before closing
-if you want those changes. Export while paused for a consistent emulator state;
-as on physical hardware, guest buffers must be flushed before a clean shutdown.
+Save Copy, floppy insert/eject, and a NetHub connection panel.
+
+The three original disk images are included in `disks-6085/` and in application
+bundle resources, along with Dwarf's original image notes. Opening an original
+imports its contents (including an optional `.zdelta`) into a separate writable
+hard disk. Originals are never modified. Working disks live under:
+
+- macOS: `~/Library/Application Support/Daybreak/Hard Disks/`
+- GNUstep: `~/GNUstep/Library/Daybreak/Hard Disks/`
+
+Each import has its own directory, so selecting images with the same filename
+cannot overwrite an existing working disk. Opening a managed disk resumes it;
+selecting an original again creates a fresh copy. The GUI remembers the last
+working disk and reopens it on launch. Changes are saved atomically when replacing
+the disk or quitting normally; a save failure keeps the current session open.
+The command-line `--disk` mode also imports or resumes a working disk, prints its
+location, and saves it on successful completion. Abrupt termination can lose
+changes since the last save. Save Copy exports a separate image without clearing
+pending changes to the managed disk. As on physical hardware, flush guest buffers
+before shutting down for a consistent filesystem.
 
 F1–F8 map to Help, Props, Copy, Move, Find, Open, Undo, Again. Escape is Stop,
 Control is Special, and the mouse buttons are Point, Adjust, Menu. This initial
@@ -41,16 +56,16 @@ On macOS without GNUstep, `make -f Makefile gui` builds
 `build/Daybreak.app` with Apple AppKit and ARC disabled. Launch with:
 
 ```sh
-open build/Daybreak.app --args ../dwarf/disks-6085/vp2.0.5.zdisk
+open build/Daybreak.app --args disks-6085/vp2.0.5.zdisk
 ```
 
 The command-line build supports bounded boot runs and PBM framebuffer exports:
 
 ```sh
 make -f Makefile
-./build/daybreak --disk ../dwarf/disks-6085/xde5.0.zdisk --seconds 30 \
+./build/daybreak --disk disks-6085/xde5.0.zdisk --seconds 30 \
   --snapshot build/xde.pbm
-./build/daybreak --disk ../dwarf/disks-6085/vp2.0.5.zdisk --seconds 30 \
+./build/daybreak --disk disks-6085/vp2.0.5.zdisk --seconds 30 \
   --save-copy build/session.zdisk
 ./build/daybreak --demo
 ```
@@ -68,7 +83,7 @@ Use **Network…** to connect to a Dwarf-compatible NetHub (TCP port 3333 by
 convention), or configure it at launch in the command-line runner:
 
 ```sh
-./build/daybreak --disk ../dwarf/disks-6085/xde5.0.zdisk --seconds 60 \
+./build/daybreak --disk disks-6085/xde5.0.zdisk --seconds 60 \
   --hub localhost --hub-port 3333 --floppy /path/to/disk.imd
 ```
 

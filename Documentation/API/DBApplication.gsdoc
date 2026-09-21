@@ -24,8 +24,8 @@
           <sel>applicationDidFinishLaunching:</sel>
           <arg type="NSNotification*">notification</arg>
           <desc>
-            Create the window and menus, then optionally open
-            the command-line disk.
+            Create the window and menus, then open the
+            command-line or last working disk.
           </desc>
         </method>
         <method type="void">
@@ -40,8 +40,8 @@
           <sel>applicationShouldTerminate:</sel>
           <arg type="NSApplication*">application</arg>
           <desc>
-            Confirm discarding unsaved changes on
-            <var>application</var> termination.
+            Save the working disk on termination; cancel
+            termination if saving fails.
           </desc>
         </method>
         <method type="BOOL">
@@ -85,15 +85,15 @@
           <sel>loadDisk:</sel>
           <arg type="NSString*">path</arg>
           <desc>
-            Load a disk, replacing the current machine only after
-            successful loading.
+            Import or resume a Library working disk, replacing
+            the machine after loading.
           </desc>
         </method>
         <method type="BOOL">
           <sel>mayDiscardDisk</sel>
           <desc>
-            Check unsaved disk changes before replacing or
-            quitting the machine.
+            Save the working hard disk and check floppy changes
+            before replacing or quitting.
           </desc>
         </method>
         <method type="BOOL">
@@ -173,8 +173,8 @@
           <sel>windowShouldClose:</sel>
           <arg type="id">sender</arg>
           <desc>
-            Route window closing through the unsaved-session
-            termination check.
+            Route window closing through working-disk saving and
+            floppy checks.
           </desc>
         </method>
       </class>

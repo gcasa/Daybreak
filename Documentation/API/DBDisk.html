@@ -70,14 +70,25 @@
         </blockquote>
         <div class="desc">
 
-          A validated zlib-compressed Draco disk. Changes are kept in
-          memory until explicitly exported to a new image; the
-          input file is never overwritten.
+          A validated zlib-compressed Draco disk. Ordinary inputs
+          remain read-only; managed Library copies can persist
+          guest writes without altering the seed.
 
         </div>
         <p class="global_method_index">
         </p>
         <hr class="section-separator">
+<div class="method">
+        <h3><a name="method$DBDisk+workingDirectory">workingDirectory&nbsp;</a></h3>
+        + (NSString*) <b>workingDirectory</b>;<br />
+        <div class="desc">
+
+            Return the user&apos;s platform-specific Daybreak hard
+            disk directory.
+
+        </div>
+        <hr class="method-separator">
+</div>
 <div class="method">
         <h3><a name="method$DBDisk-changed">changed&nbsp;</a></h3>
         - (BOOL) <b>changed</b>;<br />
@@ -133,6 +144,18 @@
         <hr class="method-separator">
 </div>
 <div class="method">
+        <h3><a name="method$DBDisk-initWithWorkingCopyOfPath$">initWithWorkingCopyOfPath:&nbsp;</a></h3>
+        - (id) <b>initWithWorkingCopyOfPath:</b> (NSString*)path;<br />
+        <div class="desc">
+
+            Import an image and its delta into a unique private
+            Library copy, or reopen an existing managed copy.
+            The selected original is preserved.
+
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
         <h3><a name="method$DBDisk-path">path&nbsp;</a></h3>
         - (NSString*) <b>path</b>;<br />
         <div class="desc">
@@ -148,7 +171,20 @@
         <div class="desc">
 
             Atomically export a complete compressed image.
-            Refuses the input <var>path</var>.
+            Refuses the input and seed paths. Managed disks
+            remain dirty until saveWorkingCopy succeeds.
+
+        </div>
+        <hr class="method-separator">
+</div>
+<div class="method">
+        <h3><a name="method$DBDisk-saveWorkingCopy">saveWorkingCopy&nbsp;</a></h3>
+        - (void) <b>saveWorkingCopy</b>;<br />
+        <div class="desc">
+
+            Atomically persist a managed working disk.
+            Ordinary input images are never saved by this
+            method. Raises DBDiskError on failure.
 
         </div>
         <hr class="method-separator">

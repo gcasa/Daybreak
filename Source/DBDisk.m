@@ -61,9 +61,77 @@ db_inflate (NSString *path)
 
 @interface DBDisk (Initialization)
 - (void) loadImage: (NSString *)path;
+- (void) writeImageToPath: (NSString *)path;
 @end
 
 @implementation DBDisk
++ (NSString *) workingDirectory
+{
+#ifdef GNUSTEP
+  NSString *library = [NSHomeDirectory ()
+      stringByAppendingPathComponent: @"GNUstep/Library"];
+#else
+  NSString *library = [NSHomeDirectory ()
+      stringByAppendingPathComponent: @"Library/Application Support"];
+#endif
+  return [library stringByAppendingPathComponent: @"Daybreak/Hard Disks"];
+}
+- (id) initWithWorkingCopyOfPath: (NSString *)path
+{
+  NSString *root = db_absolute_path ([[self class] workingDirectory]);
+  NSString *input = db_absolute_path (path);
+  NSString *directory, *destination, *source;
+  NSFileManager *manager = [NSFileManager defaultManager];
+  self = [self initWithPath: input];
+  if (self == nil)
+    return nil;
+  NS_DURING
+  if ([input hasPrefix: [root stringByAppendingString: @"/"]])
+    {
+      source = [NSString stringWithContentsOfFile:
+          [[input stringByDeletingLastPathComponent]
+              stringByAppendingPathComponent: @"source.txt"]
+          encoding: NSUTF8StringEncoding error: NULL];
+      if (source == nil)
+        [NSException raise: @"DBDiskError"
+                    format: @"Managed disk has no source record: %@", input];
+      _sourcePath = [source copy];
+    }
+  else
+    {
+      directory = [root stringByAppendingPathComponent:
+          [[NSProcessInfo processInfo] globallyUniqueString]];
+      if (![manager createDirectoryAtPath: directory
+              withIntermediateDirectories: YES attributes: nil error: NULL])
+        [NSException raise: @"DBDiskError"
+                    format: @"Cannot create hard disk directory %@", directory];
+      destination = [directory stringByAppendingPathComponent:
+          [input lastPathComponent]];
+      if (![input writeToFile: [directory stringByAppendingPathComponent:
+                                  @"source.txt"]
+                  atomically: YES encoding: NSUTF8StringEncoding error: NULL])
+        [NSException raise: @"DBDiskError"
+                    format: @"Cannot record disk source"];
+      [self writeImageToPath: destination];
+      _sourcePath = [_path copy];
+      [_path release];
+      _path = [destination copy];
+    }
+  _workingCopy = YES;
+  NS_HANDLER
+  [self release];
+  [localException raise];
+  NS_ENDHANDLER
+  return self;
+}
+- (void) saveWorkingCopy
+{
+  if (_workingCopy && _changed)
+    {
+      [self writeImageToPath: _path];
+      _changed = NO;
+    }
+}
 - (id) initWithPath: (NSString *)path
 {
   self = [super init];
@@ -144,6 +212,7 @@ db_inflate (NSString *path)
 {
   [_sectors release];
   [_path release];
+  [_sourcePath release];
   [super dealloc];
 }
 - (NSString *) path
@@ -211,12 +280,19 @@ db_inflate (NSString *path)
 }
 - (void) saveCopyToPath: (NSString *)path
 {
+  if ([db_absolute_path (path) isEqual: _path]
+      || [db_absolute_path (path) isEqual: _sourcePath])
+    [NSException raise: @"DBDiskError" format: @"Choose a new output file"];
+  [self writeImageToPath: path];
+  if (!_workingCopy)
+    _changed = NO;
+}
+- (void) writeImageToPath: (NSString *)path
+{
   NSMutableData *raw, *compressed;
   unsigned char *bytes;
   uint32_t i;
   uLongf size;
-  if ([db_absolute_path (path) isEqual: _path])
-    [NSException raise: @"DBDiskError" format: @"Choose a new output file"];
   if ([[NSFileManager defaultManager]
           fileExistsAtPath: [path stringByAppendingString: @".zdelta"]])
     [NSException raise: @"DBDiskError"
@@ -246,6 +322,5 @@ db_inflate (NSString *path)
   [compressed setLength: size];
   if (![compressed writeToFile: path atomically: YES])
     [NSException raise: @"DBDiskError" format: @"Cannot save disk %@", path];
-  _changed = NO;
 }
 @end

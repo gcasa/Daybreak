@@ -172,7 +172,8 @@ main (int argc, char **argv)
       cpu = [[DBMachine alloc]
           initWithDisk: [NSString stringWithUTF8String: file]
               switches: switches ? [NSString stringWithUTF8String: switches]
-                                : nil];
+                                : nil workingCopy: YES];
+      printf ("Working disk: %s\n", [[[(DBMachine *) cpu disk] path] UTF8String]);
       if (hostID)
         [(DBMachine *) cpu setHostID: [NSString stringWithUTF8String: hostID]];
       if (floppy)
@@ -226,6 +227,7 @@ main (int argc, char **argv)
       if (saveCopy != NULL)
         [[(DBMachine *) cpu disk]
             saveCopyToPath: [NSString stringWithUTF8String: saveCopy]];
+      [[(DBMachine *) cpu disk] saveWorkingCopy];
       printf ("MP=%u diskReads=%llu\n", [cpu state]->MP,
               (unsigned long long) [(DBMachine *) cpu diskReads]);
     }

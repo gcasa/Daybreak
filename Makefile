@@ -59,7 +59,7 @@ ifneq ($(HAVE_GNUSTEP),)
 gui:
 	$(MAKE) -f GNUmakefile.gui
 else
-gui: build/Daybreak.app/Contents/MacOS/Daybreak build/Daybreak.app/Contents/Info.plist build/Daybreak.app/Contents/Resources/Daybreak.icns
+gui: build/Daybreak.app/Contents/MacOS/Daybreak build/Daybreak.app/Contents/Info.plist build/Daybreak.app/Contents/Resources/Daybreak.icns build/Daybreak.app/Contents/Resources/disks-6085/.stamp
 endif
 build/Daybreak.app/Contents/MacOS/Daybreak: $(CORE) GUI/DBApplication.m GUI/main.m GUI/DBApplication.h $(HEADERS)
 	mkdir -p build/Daybreak.app/Contents/MacOS
@@ -77,5 +77,10 @@ build/boot-tests: $(CORE) Tests/BootTests.m $(HEADERS) | build
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(OBJCFLAGS) $(CORE) Tests/BootTests.m -o $@ $(LDLIBS)
 .PHONY: boot-check
 boot-check: build/boot-tests
-	./build/boot-tests "$(DWARF)/disks-6085/xde5.0.zdisk" 990 build/xde-boot.pbm
-	./build/boot-tests "$(DWARF)/disks-6085/vp2.0.5.zdisk" 8000 build/viewpoint-boot.pbm
+	./build/boot-tests "disks-6085/xde5.0.zdisk" 990 build/xde-boot.pbm
+	./build/boot-tests "disks-6085/vp2.0.5.zdisk" 8000 build/viewpoint-boot.pbm
+
+build/Daybreak.app/Contents/Resources/disks-6085/.stamp: $(wildcard disks-6085/*)
+	mkdir -p $(@D)
+	cp disks-6085/* $(@D)/
+	touch $@

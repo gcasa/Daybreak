@@ -28,6 +28,10 @@
     This starts execution at the germ; OS readiness depends on guest progress.
  */
 - (id) initWithDisk: (NSString *)path switches: (NSString *)switches;
+/** Boot a private Library disk when workingCopy is YES; otherwise use an
+    in-memory image suitable for isolated tests. */
+- (id) initWithDisk: (NSString *)path switches: (NSString *)switches
+       workingCopy: (BOOL)working;
 /** Return the borrowed working disk. */
 - (DBDisk *) disk;
 /** Return completed disk sector reads. */

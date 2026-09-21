@@ -11,11 +11,17 @@ db_swap (uint16_t value)
 }
 
 @interface DBMachine (Initialization)
-- (void) configureDisk: (NSString *)path switches: (NSString *)switches;
+- (void) configureDisk: (NSString *)path switches: (NSString *)switches
+           workingCopy: (BOOL)working;
 @end
 
 @implementation DBMachine
 - (id) initWithDisk: (NSString *)path switches: (NSString *)switches
+{
+  return [self initWithDisk: path switches: switches workingCopy: NO];
+}
+- (id) initWithDisk: (NSString *)path switches: (NSString *)switches
+       workingCopy: (BOOL)working
 {
   DBMemory *memory = [[DBMemory alloc] initWithRealPages: 8192
                                             virtualPages: 65536];
@@ -23,11 +29,12 @@ db_swap (uint16_t value)
   [memory release];
   if (self != nil)
     {
-      [self configureDisk: path switches: switches];
+      [self configureDisk: path switches: switches workingCopy: working];
     }
   return self;
 }
 - (void) configureDisk: (NSString *)path switches: (NSString *)switches
+           workingCopy: (BOOL)working
 {
   id volatile initializedSelf = self;
   NS_DURING
@@ -38,7 +45,8 @@ db_swap (uint16_t value)
   _hostID[1] = 0xfe31;
   _hostID[2] = 0xab21;
   _receiveStopped = YES;
-  _disk = [[DBDisk alloc] initWithPath: path];
+  _disk = working ? [[DBDisk alloc] initWithWorkingCopyOfPath: path]
+                  : [[DBDisk alloc] initWithPath: path];
   germ = [_disk germ];
   bytes = [germ bytes];
   pages = (unsigned int) [germ length] / 512;

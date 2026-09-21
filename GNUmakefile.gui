@@ -8,7 +8,7 @@ Daybreak_OBJC_FILES = Source/DBMemory.m Source/DBProcessor.m \
   Source/DBDisk.m Source/DBMachine.m Source/DBBlocks.m Source/DBNetwork.m Source/DBFloppy.m Source/DBDevices.m \
   GUI/DBApplication.m GUI/main.m
 Daybreak_APPLICATION_ICON = Daybreak.png
-Daybreak_RESOURCE_FILES = GUI/Resources/Daybreak.png
+Daybreak_RESOURCE_FILES = GUI/Resources/Daybreak.png disks-6085
 ADDITIONAL_INCLUDE_DIRS = -ISource -IGUI
 ADDITIONAL_OBJCFLAGS = -Wall -Wextra -std=gnu99
 ADDITIONAL_GUI_LIBS = -lz

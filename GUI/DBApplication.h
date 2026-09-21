@@ -38,9 +38,9 @@
   DBMachine *_machine;
   BOOL _paused;
 }
-/** Route window closing through the unsaved-session termination check. */
+/** Route window closing through working-disk saving and floppy checks. */
 - (BOOL) windowShouldClose: (id)sender;
-/** Create the window and menus, then optionally open the command-line disk. */
+/** Create the window and menus, then open the command-line or last working disk. */
 - (void) applicationDidFinishLaunching: (NSNotification *)notification;
 /** Release all guest input when the application loses focus. */
 - (void) applicationDidResignActive: (NSNotification *)notification;
@@ -51,7 +51,7 @@
     (NSApplication *)application;
 /** Offer a disk picker for XDE, ViewPoint or another Draco image. */
 - (void) openDisk: (id)sender;
-/** Load a disk, replacing the current machine only after successful loading.
+/** Import or resume a Library working disk, replacing the machine after loading.
  */
 - (void) loadDisk: (NSString *)path;
 /** Choose and insert IMD/DMK media, with an optional write-protect switch. */
@@ -78,9 +78,9 @@
 - (void) refresh;
 /** Stop execution and show the actual exception. */
 - (void) reportException: (NSException *)exception;
-/** Check unsaved disk changes before replacing or quitting the machine. */
+/** Save the working hard disk and check floppy changes before replacing or quitting. */
 - (BOOL) mayDiscardDisk;
-/** Confirm discarding unsaved changes on application termination. */
+/** Save the working disk on termination; cancel termination if saving fails. */
 - (NSApplicationTerminateReply) applicationShouldTerminate:
     (NSApplication *)application;
 @end

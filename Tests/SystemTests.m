@@ -5,6 +5,16 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <zlib.h>
+/* Keep managed-disk tests out of the user's real Library. */
+static NSString *workingTestDirectory;
+@interface DBTestWorkingDisk : DBDisk
+@end
+@implementation DBTestWorkingDisk
++ (NSString *) workingDirectory
+{
+  return workingTestDirectory;
+}
+@end
 static unsigned int checks;
 #define CHECK(x)                                                              \
   do                                                                          \
@@ -291,6 +301,60 @@ disk_tests (void)
     NS_ENDHANDLER CHECK (caught);
   }
   [disk release];
+  {
+    NSString *workingPath;
+    NSData *original = [NSData dataWithContentsOfFile: input];
+    volatile BOOL caught = NO;
+    workingTestDirectory = [directory stringByAppendingPathComponent: @"Library"];
+    disk = [[DBTestWorkingDisk alloc] initWithWorkingCopyOfPath: input];
+    workingPath = [[disk path] copy];
+    CHECK (![workingPath isEqual: input]);
+    CHECK ([workingPath hasPrefix: workingTestDirectory]);
+    [disk writeSector: 123 offset: 10 value: 0x1234];
+    [disk saveCopyToPath: output];
+    CHECK ([disk changed]);
+    NS_DURING [disk saveCopyToPath: input];
+    NS_HANDLER caught = [[localException name] isEqual: @"DBDiskError"];
+    NS_ENDHANDLER CHECK (caught);
+    [disk saveWorkingCopy];
+    CHECK (![disk changed]);
+    [disk release];
+    disk = [[DBTestWorkingDisk alloc] initWithWorkingCopyOfPath: workingPath];
+    CHECK ([[disk path] isEqual: workingPath]);
+    CHECK ([disk wordAtSector: 123 offset: 10] == 0x1234);
+    [disk release];
+    disk = [[DBTestWorkingDisk alloc] initWithWorkingCopyOfPath: input];
+    CHECK (![[disk path] isEqual: workingPath]);
+    CHECK ([disk wordAtSector: 123 offset: 10] == 123);
+    CHECK ([[NSData dataWithContentsOfFile: input] isEqual: original]);
+    /* A failed save must retain pending changes for retry. */
+    [[NSFileManager defaultManager] removeItemAtPath:
+        [[disk path] stringByDeletingLastPathComponent] error: NULL];
+    [disk writeSector: 123 offset: 10 value: 1];
+    caught = NO;
+    NS_DURING [disk saveWorkingCopy];
+    NS_HANDLER caught = [[localException name] isEqual: @"DBDiskError"];
+    NS_ENDHANDLER CHECK (caught && [disk changed]);
+    [disk release];
+    /* Imported deltas are flattened, leaving both source files unchanged. */
+    be_word (bytes + 16 + 123 * 536, 10, 0x5678);
+    length = compressBound ([raw length]);
+    [compressed setLength: length];
+    CHECK (compress2 ([compressed mutableBytes], &length, [raw bytes],
+                      [raw length], 1) == Z_OK);
+    [compressed setLength: length];
+    CHECK ([compressed writeToFile: [input stringByAppendingString: @".zdelta"]
+                         atomically: YES]);
+    disk = [[DBTestWorkingDisk alloc] initWithWorkingCopyOfPath: input];
+    CHECK ([disk wordAtSector: 123 offset: 10] == 0x5678);
+    [disk writeSector: 123 offset: 10 value: 0x9abc];
+    [disk saveWorkingCopy];
+    CHECK ([[NSData dataWithContentsOfFile: input] isEqual: original]);
+    CHECK ([[NSData dataWithContentsOfFile:
+        [input stringByAppendingString: @".zdelta"]] isEqual: compressed]);
+    [disk release];
+    [workingPath release];
+  }
   [compressed setLength: [compressed length] / 2];
   CHECK ([compressed writeToFile: output atomically: YES]);
   {
